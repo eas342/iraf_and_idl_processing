@@ -46,9 +46,10 @@ nlow=1, nhigh=1, nkeep=1, mclip=yes, lsigma=3., hsigma=3., rdnoise="14",
 gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
 ## Use the master dark to create a bad pixel mask
-ccdmask ("masterflat.fits",
-"mask_from_masterflat", ncmed=10, nlmed=10, ncsig=25, nlsig=25, lsigma=15.,
+ccdmask ("masterdark.fits",
+"mask_from_masterdark", ncmed=10, nlmed=10, ncsig=25, nlsig=25, lsigma=15.,
 hsigma=15., ngood=3, linterp=2, cinterp=3, eqinterp=2)
+
 
 ## Make master flat, first combine
 combine ("*flat*.fits",
@@ -87,7 +88,7 @@ scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
 sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
 
 # Make a list of all the science images and output for the processed versions
-ls *bigdog*lincor.fits > science_images.txt
+ls *run*lincor.fits > science_images.txt
 !awk -F, '{$1="../proc/" $1;}1' science_images.txt > proc_science_images.txt
 
 # Proces the science images

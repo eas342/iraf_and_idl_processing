@@ -3,7 +3,7 @@ pro correct_linearity
 
 ;; Find images
 cd,current=current
-filel = file_search(current+'/bigdog*.a.fits')
+filel = file_search(current+'/run*.a.fits')
 nfile = n_elements(filel)
 
 ;; Get the nonlin coefficients
