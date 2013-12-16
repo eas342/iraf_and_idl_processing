@@ -12,3 +12,5 @@ delete science_images.txt
 delete proc_science_images.txt
 delete ../proc/arc*.fits
 delete ../proc/bigdog*.a_lincor.fits
+delete mask_from_masterdark.pl
+
