@@ -2,13 +2,13 @@ delete science_prefixes.txt
 delete extracted_speclist.txt
 delete first_spectrum.txt
 delete arc_prefixes.txt
-delete bigdog*.ms.fits
+delete run*.ms.fits
 delete first_wavecal.fits
 delete masterarc.fits
 delete database/aplast
-delete database/apbigdog*.a*
+delete database/aprun*.a*
 delete database/apshifted_arc
 delete full_disp_list.txt
-delete bigdog*.ms.d.fits
+delete run*.ms.d.fits
 delete *straight*.fits
 delete shifted_arc.fits

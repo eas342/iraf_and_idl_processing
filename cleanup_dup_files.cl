@@ -1,3 +1,3 @@
-delete bigdog*.ms.fits
+delete run*.ms.fits
 delete *straight*.fits
 delet ../edited/*_lincor.fits
