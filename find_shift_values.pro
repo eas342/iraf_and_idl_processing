@@ -37,7 +37,7 @@ case 1 of
       masterSpec = refspec
       save,masterSpec,'masterRefSpec.sav'
    end
-   keyword_set(useMsterSpec): begin
+   keyword_set(useMasterSpec): begin
       restore,'masterRefSpec.sav'
       refspec = masterSpec
    end
