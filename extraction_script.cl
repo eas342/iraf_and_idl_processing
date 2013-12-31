@@ -37,10 +37,10 @@ nlow=1, nhigh=1, nkeep=1, mclip=yes, lsigma=3., hsigma=3., rdnoise="18",
 gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
 # Find the shift values from the masterarc image
-!echo "find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='shifted_arc.fits'" | idl
+!echo "ev_compile_red & find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='shifted_arc.fits'" | idl
 
 #straighten images
-!echo "straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
+!echo "ev_compile_red & straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
 
 #Temporarily use the un-straightened images
 #!mv proc_science_images.txt straight_science_images.txt
