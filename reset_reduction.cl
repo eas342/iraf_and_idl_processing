@@ -13,4 +13,7 @@ delete proc_science_images.txt
 delete ../proc/arc*.fits
 delete ../proc/run*.a_lincor.fits
 delete mask_from_masterdark.pl
+delete mask_from_masterdark.fits
+delete combined_mask.pl
+delete combined_mask.fits
 

@@ -1,0 +1,41 @@
+##################################################
+
+Directions to Self on Using IRAF Reduction and Extraction Scripts
+Optimized for observations in the 3x60’’ mode
+
+##################################################
+
+A: Load the necessary NOAO procedures
+noao
+imred
+specred
+ccdred
+
+B: Prepare data
+Put all data into a directory called "edited" - this will contain a duplicate of all raw data
+All data files should be called "run*.fits"
+All flat images (with relevant (3x60) slit) should be "flat*.fits"
+All dark images should be dark*.fits
+All arc images (with relevant (0.3 x 60) slit) should be arc*.fits
+Make a "proc" directory adjacent to the edited folder
+
+C: Load all IRAF scripts
+(If necessary)
+task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
+
+task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
+task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
+
+task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
+task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.cl
+
+task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
+
+D: Reduce data 
+Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
+Go to the "
+
+E: Extract Spectra
+Straightens (rectifies) all spectral images
+Extracts the spectra with background subtraction
+Makes FITS files of the flux versus wavelength
