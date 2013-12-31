@@ -1,11 +1,16 @@
 pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
                       dec23=dec23,custarc=custarc,custshiftFile=custshiftFile,$
-                      Arcshift=Arcshift,sincFit=sincFit
+                      Arcshift=Arcshift,sincFit=sincFit,saveMasterSpec=saveMasterSpec,$
+                      useMasterSpec=useMasterSpec
 ;; Straightens A Spectrum so that the X direction is wavelength
 ;; discreet - only move by discreet steps
 ;; showfits -- shows the fits to cross-correlations
 ;; dec23 -- looks at the Dec 23 data
 ;; sincFit -- fit the cross correlation to a sinc function (not just a polynomial)
+;; saveMasterSpec -- save a master background spectrum so that other spectra are
+;;                   shifted to a common reference
+;; useMasterSpec -- use the master background spectrum so the current
+;;                  one matches the master
 
 case 1 of 
    n_elements(custarc) NE 0: arcnm=custarc
@@ -27,7 +32,17 @@ shiftArray = fltarr(NY)
 
 recimg = fltarr(NX,NY) ;; where the rectified image goes
 
-refspec = img[*,floor(NY/2)]
+case 1 of
+   keyword_set(saveMasterSpec): begin
+      masterSpec = refspec
+      save,masterSpec,'masterRefSpec.sav'
+   end
+   keyword_set(useMsterSpec): begin
+      restore,'masterRefSpec.sav'
+      refspec = masterSpec
+   end
+   else: refspec = img[*,floor(NY/2)]
+endcase
 
 ;; set the up the PS plot
 if keyword_set(psplot) then begin
@@ -121,7 +136,7 @@ nIter = 4
 Thresh = 5E
 keepPoints = lindgen(NY)
 for i=0,nIter-1l do begin
-   if not keyword_set(showfits) then begin
+   if not keyword_set(showfits) and i EQ nIter-1l then begin
       plot,Pos,shiftarray,xtitle='Row Number',ytitle='Shift Amount',/nodata
    endif
    Npoly = 3
@@ -132,7 +147,7 @@ for i=0,nIter-1l do begin
    endfor
    resid = PolyMod - shiftArray
    keepPoints = where(abs(resid) LT Thresh * robust_sigma(resid),complement=badPoints)
-   if not keyword_set(showfits) then begin
+   if not keyword_set(showfits) and i EQ nIter-1l then begin
       oplot,Pos[keepPoints],shiftArray[keepPoints]
       if badPoints NE [-1] then oplot,Pos[badPoints],shiftArray[badPoints],color=mycol('red'),psym=4,symsize=0.5
       oplot,Pos,PolyMod,color=mycol('green')
