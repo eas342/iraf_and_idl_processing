@@ -36,11 +36,16 @@ zero="none", weight="none", statsec="", lthreshold=INDEF, hthreshold=INDEF,
 nlow=1, nhigh=1, nkeep=1, mclip=yes, lsigma=3., hsigma=3., rdnoise="18",
 gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
-# Find the shift values from the masterarc image
-!echo "ev_compile_red & find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='shifted_arc.fits'" | idl
+# Find the shift values for the masterarc image
+#!echo "ev_compile_red & find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='shifted_arc.fits'" | idl
 
-#straighten images
-!echo "ev_compile_red & straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
+#straighten images to a common image (the middle image in the sequence
+!echo "ev_compile_red & shift_to_common" | idl
+
+# Shift the arc just like the master common image
+ls masterarc.fits > masterArclist.txt
+!echo "masterarc_straight.fits" > straight_masterarcList.txt
+!echo "ev_compile_red & straighten_spec,'masterArclist.txt','straight_masterarcList.txt',shiftlist='master_shifts.txt',/dodivide" | idl
 
 #Temporarily use the un-straightened images
 #!mv proc_science_images.txt straight_science_images.txt
@@ -73,7 +78,7 @@ gain="13", lsigma=3., usigma=3., nsubaps=1, nsum=-60)
 !head -n 1 straight_science_images.txt > first_spectrum.txt
 
 # Use the apertures from the first file for wavelength calibration
-apall ("shifted_arc.fits",
+apall ("masterarc_straight.fits",
 2, output="first_wavecal", apertures="", format="multispec",
 references="@first_spectrum.txt", profiles="", interactive=no, find=no,
 recenter=no, resize=no, edit=yes, trace=no, fittrace=no, extract=yes,

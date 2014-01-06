@@ -13,7 +13,10 @@ restore,filepath('lc_coeff.sav', ROOT=file_dirname(file_which('SpeX.dat'),/MARK)
 satImg = lonarr(1024,1024) + 6000l
 
 for i=0l,nfile-1l do begin
-   a = mrdfits(filel[i],0,header)
+   a = long(mrdfits(filel[i],0,header,/fscale)) ;; force to be long integer
+   ;; change bits to 32
+   sxaddpar,header,'BITPIX',32
+
    NDR = float(fxpar(header,'NDR'))
    divisor = float(fxpar(header,'DIVISOR'))
    itime = float(fxpar(header,'ITIME'))
@@ -27,7 +30,7 @@ for i=0l,nfile-1l do begin
    fxaddpar,header,'NONLIN',1,'Have Non-linear corrections been done?'
 
    writefits,outfile,correctimg,header
-
+;if i GE 6 then stop
 end
 
 end

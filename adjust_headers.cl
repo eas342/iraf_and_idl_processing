@@ -17,3 +17,7 @@ while (fscan (list,s1,s2) != EOF) {
 
 # ... and zero for the flats
 ccdhedit *flat*.fits darktime 0.000
+
+ccdhedit ("*.fits",
+"DISPAXIS", "1", type="string")
+

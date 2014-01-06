@@ -7,8 +7,13 @@ delete first_wavecal.fits
 delete masterarc.fits
 delete database/aplast
 delete database/aprun*.a*
-delete database/apshifted_arc
+delete database/apmasterarc_straight
 delete full_disp_list.txt
 delete run*.ms.d.fits
 delete *straight*.fits
+delete masterarc_straight.fits
 delete shifted_arc.fits
+delete mastershifts.txt
+delete masterRefSpec.sav
+delete masterArcList.txt
+delete straight_masterarcList.txt

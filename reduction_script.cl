@@ -1,8 +1,5 @@
 ls flat*.fits > flatlist.txt
 
-ccdhedit ("*.fits",
-"DISPAXIS", "1", type="string")
-
 
 ## Make master dark
 combine ("*dark*.fits",
