@@ -1,7 +1,7 @@
 pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
                       dec23=dec23,custarc=custarc,custshiftFile=custshiftFile,$
                       Arcshift=Arcshift,sincFit=sincFit,saveMasterSpec=saveMasterSpec,$
-                      useMasterSpec=useMasterSpec
+                      useMasterSpec=useMasterSpec,leaveEdges=leaveEdges
 ;; Straightens A Spectrum so that the X direction is wavelength
 ;; discreet - only move by discreet steps
 ;; showfits -- shows the fits to cross-correlations
@@ -11,6 +11,8 @@ pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
 ;;                   shifted to a common reference
 ;; useMasterSpec -- use the master background spectrum so the current
 ;;                  one matches the master
+;; leaveEdges -- leaved the edges as wrapped edges (otherwise it
+;;               replaces with median of the column)
 
 case 1 of 
    n_elements(custarc) NE 0: arcnm=custarc
@@ -19,6 +21,9 @@ case 1 of
 endcase
 
 img = mrdfits(arcnm,0,origHeader)
+
+;; filter image
+fimg = convol(img,digital_filter(0.15,0.3,50,10))
 
 imgSize = size(img)
 NX = imgSize[1]
@@ -34,15 +39,17 @@ recimg = fltarr(NX,NY) ;; where the rectified image goes
 
 case 1 of
    keyword_set(saveMasterSpec): begin
+      refspec = fimg[*,floor(NY/2)]
       masterSpec = refspec
-      save,masterSpec,'masterRefSpec.sav'
+      save,masterSpec,filename='masterRefSpec.sav'
    end
    keyword_set(useMasterSpec): begin
       restore,'masterRefSpec.sav'
       refspec = masterSpec
    end
-   else: refspec = img[*,floor(NY/2)]
+   else: refspec = fimg[*,floor(NY/2)]
 endcase
+
 
 ;; set the up the PS plot
 if keyword_set(psplot) then begin
@@ -58,15 +65,15 @@ if keyword_set(psplot) then begin
 endif
 
 ;; Remove NaNs (set to 0)
-badp = where(finite(img) NE 1)
-if badp NE [-1] then img[badp] = 0 ;; remove NaNs
+badp = where(finite(fimg) NE 1)
+if badp NE [-1] then fimg[badp] = 0 ;; remove NaNs
 
 ;lagsize = 30l
 lagsize = 30l
 lagarray = lindgen(lagsize) - lagsize/2l
 usefulpoints = lindgen(420) ;; ignore the thermal K band emission
 for i=0l,NY-1l do begin
-   crosscor = c_correlate(refspec[usefulpoints],img[usefulpoints,i],lagarray)
+   crosscor = c_correlate(refspec[usefulpoints],fimg[usefulpoints,i],lagarray)
    if keyword_set(discreet) then begin
       maxCross = max(crosscor,peakv)
    endif else begin
@@ -83,10 +90,11 @@ for i=0l,NY-1l do begin
       ;; Fit a polynomial to the cross correlation
       
       NpolyF = 2
-;      goodmask = where(Pos LT 140 OR $
-;                       Pos GT 200)
-      goodmask = lindgen(lagsize)
-      PolyTrend = poly_fit(lagarray[goodmask],crosscor,NpolyF)
+      ;; Look in the viscinity of the peak
+      maxCross = max(crosscor,peakInd)
+      Peaksize = 6l
+      peakmask = lindgen(Peaksize) + peakInd - Peaksize/2l
+      PolyTrend = poly_fit(lagarray[peakmask],crosscor[peakmask],NpolyF)
 ;      if keyword_set(showfits) or i GE 251 then begin
 ;      if keyword_set(showfits) then begin
       peak = -PolyTrend[1]/(2E * PolyTrend[2])
@@ -97,21 +105,20 @@ for i=0l,NY-1l do begin
       keyword_set(sinc): shiftarray[i] = -result[2]
       else: shiftarray[i] = -peak
    endcase
-
-   if keyword_set(showfits) then begin
-      plot,lagarray,crosscor,ystyle=16,$
-           xtitle='Lag (px)',ytitle='Cross Correlation'
+;stop
+   if keyword_set(showfits) and i EQ 5 then begin
       if keyword_set(showfits) then begin
          PolyShow = fltarr(NY)
          for j=0l,NpolyF do begin
             PolyShow = PolyShow + PolyTrend[j] * lagarray^j
          endfor
-         plot,lagarray,crosscor,ystyle=16
-         oplot,lagarray,PolyShow,color=mycol('green')
+         plot,lagarray,crosscor,ystyle=16,$
+              xtitle='Lag (px)',ytitle='Cross Correlation'
+         oplot,lagarray,PolyShow,color=mycol('red')
          ;; show the peak
-         oplot,[peak,peak],!y.crange,color=mycol('lblue')
+         oplot,[peak,peak],!y.crange,color=mycol('blue')
 ;         plot,img[usefulpoints,i]
-;         wait,0.3
+;         wait,0.1
       endif
       if keyword_set(sincFit) then begin
          oplot,[-shiftarray[i],-shiftarray[i]],!y.crange,color=mycol('red')
@@ -190,6 +197,22 @@ for i=0l,NY-1l do begin
 endfor
 
 
+if not keyword_set(leaveEdges) then begin
+   ;; Replace all the edges with the median edge value
+   ;; This is needed because the shift procedure wraps the spectra
+   ;; around, falsely putting K band data at 0.8um and vice versa
+   medianLeft = median(img[0,*])
+   medianRight = median(img[NX-1l,*])
+   roundedShift = round(Polymod)
+   for i=0l,NY-1l do begin
+      if Polymod[i] GE 0 then begin
+         recimg[0:roundedShift[i],i] = medianLeft
+      endif else begin
+         recimg[NX-1l+roundedShift[i]:NX-1l,i] = medianRight
+      endelse
+   endfor
+endif
 
+   
 writefits,outFitsNm,recimg,origHeader
 end
