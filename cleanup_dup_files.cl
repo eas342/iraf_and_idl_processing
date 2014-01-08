@@ -1,3 +1,4 @@
 delete run*.ms.fits
-delete *straight*.fits
-delet ../edited/*_lincor.fits
+delete run*straight.fits
+delete run*lincor.fits
+delete ../edited/*_lincor.fits
