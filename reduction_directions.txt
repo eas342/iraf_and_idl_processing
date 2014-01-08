@@ -22,7 +22,7 @@ Make a "proc" directory adjacent to the edited folder
 C: Load all IRAF scripts
 (If necessary)
 task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
-
+!echo “ev_compile_red & correct_linearity” | idl
 task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
 task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
 
