@@ -29,6 +29,8 @@ task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.c
 task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
 
 Run these in the proc directory
+Choose a reference aperture (an image where the apertures are found correctly)
+ls run02_0034.a_lincor_straight.fits > ap_reference.txt
 task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
 task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.cl
 
