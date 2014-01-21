@@ -71,7 +71,8 @@ if badp NE [-1] then fimg[badp] = 0 ;; remove NaNs
 ;lagsize = 30l
 lagsize = 30l
 lagarray = lindgen(lagsize) - lagsize/2l
-usefulpoints = lindgen(420) ;; ignore the thermal K band emission
+;usefulpoints = lindgen(420) ;; ignore the thermal K band emission
+usefulpoints = lindgen(200) + 125l ;; ignore the thermal K band emission
 for i=0l,NY-1l do begin
    crosscor = c_correlate(refspec[usefulpoints],fimg[usefulpoints,i],lagarray)
    if keyword_set(discreet) then begin
@@ -142,6 +143,7 @@ Pos = findgen(NY) ;; position
 nIter = 4
 Thresh = 5E
 keepPoints = lindgen(NY)
+!p.multi = [0,1,2]
 for i=0,nIter-1l do begin
    if not keyword_set(showfits) and i EQ nIter-1l then begin
       plot,Pos,shiftarray,xtitle='Row Number',ytitle='Shift Amount',/nodata
@@ -158,10 +160,12 @@ for i=0,nIter-1l do begin
       oplot,Pos[keepPoints],shiftArray[keepPoints]
       if badPoints NE [-1] then oplot,Pos[badPoints],shiftArray[badPoints],color=mycol('red'),psym=4,symsize=0.5
       oplot,Pos,PolyMod,color=mycol('green')
+      ;; Show the residuals
+      plot,pos[keepPoints],shiftArray[keepPoints]-PolyMod[keepPoints],$
+           xtitle='Row Number',ytitle='Residual (px)'
    endif
-
 endfor
-
+!p.multi=0
 
 
 
