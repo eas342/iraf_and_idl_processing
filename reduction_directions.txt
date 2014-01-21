@@ -20,18 +20,20 @@ All arc images (with relevant (0.3 x 60) slit) should be arc*.fits
 Make a "proc" directory adjacent to the edited folder
 
 C: Load all IRAF scripts
-(If necessary)
+#(If necessary)
 task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
 
-Run these in the edited directory
+#Run these in the edited directory
 !echo “ev_compile_red & correct_linearity” | idl
 task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
+#The reset script allows you to reset in case of a mistake
 task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
 
-Run these in the proc directory
-Choose a reference aperture (an image where the apertures are found correctly)
+#Run these in the proc directory
+#Choose a reference aperture (an image where the apertures are found correctly)
 ls run02_0034.a_lincor_straight.fits > ap_reference.txt
 task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
+#The reset script allows you to reset in case of a mistake
 task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.cl
 
 task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
