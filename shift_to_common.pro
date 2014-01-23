@@ -16,13 +16,13 @@ MDirPos = strpos(midfile,MfileName) ;; position where directory ends
 Moutfile = strmid(midfile,0,MDirPos)+'master_straightened_'+MfileName+'.fits'
 MshiftFile = strmid(midfile,0,MDirPos)+'master_shifts.txt'
 
-find_shift_values,custarc=midfile,custshiftFile=MshiftFile,arcshift=Moutfile,/saveMasterSpec
+find_shift_values,custarc=midfile,custshiftFile=MshiftFile,arcshift=Moutfile,/saveMasterSpec,/dodivide
 
 ;; Go through all the images and shift to a common reference
 for i=0l,nfile-1l do begin
    suffixPos = strpos(filel[i],'.fits') ;; position where the suffix starts
    ShiftedFileN = strmid(filel[i],0,suffixPos)+'_straight.fits'
-   find_shift_values,custarc=filel[i],custshiftFile='temp_shifts.txt',arcshift=ShiftedFileN,/useMasterSpec
+   find_shift_values,custarc=filel[i],custshiftFile='temp_shifts.txt',arcshift=ShiftedFileN,/useMasterSpec,/dodivide
 endfor
 
 end

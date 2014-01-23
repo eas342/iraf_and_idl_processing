@@ -1,7 +1,8 @@
 pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
                       dec23=dec23,custarc=custarc,custshiftFile=custshiftFile,$
                       Arcshift=Arcshift,sincFit=sincFit,saveMasterSpec=saveMasterSpec,$
-                      useMasterSpec=useMasterSpec,leaveEdges=leaveEdges
+                      useMasterSpec=useMasterSpec,leaveEdges=leaveEdges,$
+                      dodivide=dodivide
 ;; Straightens A Spectrum so that the X direction is wavelength
 ;; discreet - only move by discreet steps
 ;; showfits -- shows the fits to cross-correlations
@@ -13,6 +14,8 @@ pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
 ;;                  one matches the master
 ;; leaveEdges -- leaved the edges as wrapped edges (otherwise it
 ;;               replaces with median of the column)
+;; dodivide -- divide the data numbers by the divisor (and take into
+;;             account the prefactor for Fowler sampling)
 
 case 1 of 
    n_elements(custarc) NE 0: arcnm=custarc
@@ -21,6 +24,22 @@ case 1 of
 endcase
 
 img = mrdfits(arcnm,0,origHeader)
+
+if keyword_set(dodivide) then begin
+   NDR1 =  float(fxpar(origHeader,"NDR") )
+   divisor = NDR1
+   ;; the prefactor of ~1.5 is due to the read time improvement for
+   ;; eta=1 Fowler sampling (Garnett and Forrest 1993)
+   
+   rtime1 = float(fxpar(origHeader,"TABLE_MS"))/1000E ;; read time, sec
+   Teff1 = float(fxpar(origHeader,"ITIME"))           ;; integration time, sec
+   eta = (NDR1 * 2E * rtime1)/(Teff1 + NDR1 * rtime1)
+   nmax = (Teff1 + NDR1 * rtime1)/(2E * rtime1)
+   prefactor = (1E - eta/2E) /$
+               (1E - 2E * eta/3E + 1E/(6E * eta * nmax^2))
+   
+   img = img * prefactor / divisor
+endif
 
 ;; filter image
 fimg = convol(img,digital_filter(0.15,0.3,50,10))
