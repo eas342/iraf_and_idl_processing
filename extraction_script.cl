@@ -62,8 +62,8 @@ apall ("@ap_reference.txt",
 2, output="extracted_ap_ref_spec", apertures="", format="multispec",
 references="", profiles="", interactive=no, find=yes, recenter=yes, resize=no,
 edit=yes, trace=yes, fittrace=no, extract=yes, extras=yes, review=no,
-line=INDEF, nsum=10, lower=-7., upper=7., apidtable="", b_function="legendre",
-b_order=3, b_sample="-200,-11,11:200", b_naverage=1, b_niterate=3,
+line=INDEF, nsum=-60, lower=-7., upper=7., apidtable="", b_function="legendre",
+b_order=3, b_sample="-200:-11,11:200", b_naverage=1, b_niterate=3,
 b_low_reject=5., b_high_rejec=5., b_grow=0., width=5., radius=10.,
 threshold=0., minsep=100., maxsep=10000., order="increasing", aprecenter="",
 npeaks=INDEF, shift=yes, llimit=-9., ulimit=9., ylevel=0.1, peak=yes, bkg=yes,
@@ -71,14 +71,14 @@ r_grow=0., avglimits=yes, t_nsum=10, t_step=10, t_nlost=3,
 t_function="spline3", t_order=1, t_sample="*", t_naverage=1, t_niterate=1,
 t_low_reject=3., t_high_rejec=3., t_grow=0., background="fit", skybox=1,
 weights="variance", pfit="fit1d", clean=yes, saturation=INDEF, readnoise="13",
-gain="13", lsigma=3., usigma=3., nsubaps=1, nsum=-60)
+gain="13", lsigma=3., usigma=3., nsubaps=1)
 
 # Extract spectra
 apall ("@straight_science_images.txt",
 2, output="@extracted_speclist.txt", apertures="", format="multispec",
 references="@ap_reference.txt", profiles="", interactive=no, find=yes, recenter=yes, resize=no,
 edit=yes, trace=no, fittrace=no, extract=yes, extras=yes, review=no,
-line=INDEF, nsum=10, lower=-7., upper=7., apidtable="", b_function="legendre",
+line=INDEF, nsum=-60, lower=-7., upper=7., apidtable="", b_function="legendre",
 b_order=3, b_sample="-200:-11,11:200", b_naverage=1, b_niterate=3,
 b_low_reject=5., b_high_rejec=5., b_grow=0., width=5., radius=10.,
 threshold=0., minsep=100., maxsep=10000., order="increasing", aprecenter="",
@@ -87,7 +87,7 @@ r_grow=0., avglimits=yes, t_nsum=10, t_step=10, t_nlost=3,
 t_function="legendre", t_order=2, t_sample="*", t_naverage=1, t_niterate=1,
 t_low_reject=3., t_high_rejec=3., t_grow=0., background="fit", skybox=1,
 weights="variance", pfit="fit1d", clean=yes, saturation=INDEF, readnoise="13",
-gain="13", lsigma=3., usigma=3., nsubaps=1, nsum=-60)
+gain="13", lsigma=3., usigma=3., nsubaps=1)
 
 
 # Use the master arc with the first spectral file
