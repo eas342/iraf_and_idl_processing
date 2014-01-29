@@ -215,6 +215,7 @@ for i=0l,NY-1l do begin
    if keyword_set(discreet) then begin
       recimg[*,i] = shift(img[*,i],-lagarray[peakv]) 
    endif else begin
+;      recimg[*,i] = shift_interp(img[*,i],Polymod[i],/spline)
       recimg[*,i] = shift_interp(img[*,i],Polymod[i])
    endelse
 endfor
