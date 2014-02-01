@@ -191,7 +191,7 @@ endfor
 
 ;; Save the spectral shift parameters
 if n_elements(custshiftFile) EQ 0 then custshiftFile='data/shift_data/shift_vals_from_arc.txt'
-forprint,Pos,PolyMod,comment='#Y Position (row)   Shift (px)',$
+forprint,Pos,PolyMod,shiftArray,comment='#Y Position (row)   FittedShift (px)  Measured Shift (px)',$
          textout=custshiftFile
 
 
