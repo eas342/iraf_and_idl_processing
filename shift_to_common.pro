@@ -22,7 +22,8 @@ find_shift_values,custarc=midfile,custshiftFile=MshiftFile,arcshift=Moutfile,/sa
 for i=0l,nfile-1l do begin
    suffixPos = strpos(filel[i],'.fits') ;; position where the suffix starts
    ShiftedFileN = strmid(filel[i],0,suffixPos)+'_straight.fits'
-   find_shift_values,custarc=filel[i],custshiftFile='temp_shifts.txt',arcshift=ShiftedFileN,/useMasterSpec,/dodivide
+   shiftsFileN = strmid(filel[i],0,suffixPos)+'_shifts.txt'
+   find_shift_values,custarc=filel[i],custshiftFile=shiftsFileN,arcshift=ShiftedFileN,/useMasterSpec,/dodivide
 endfor
 
 end
