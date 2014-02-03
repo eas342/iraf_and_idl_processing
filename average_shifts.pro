@@ -36,7 +36,7 @@ writefits,'image_of__model_shifts.fits',Allfitted
 medianShiftFunc = median(RelShifts,dimension=2)
 StandardErrArr = fltarr(nrows)
 for i=0l,nrows-1l do begin
-   StandardErrArr[i] = robust_sigma(RelShifts[i,*])/sqrt(float(nfile - 1l))
+   StandardErrArr[i] = stddev(RelShifts[i,*])/sqrt(float(nfile - 1l))
 endfor
 medianFitted = median(AllFitted,dimension=2)
 
