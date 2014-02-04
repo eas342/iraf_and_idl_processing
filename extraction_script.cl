@@ -41,8 +41,8 @@ gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 #!echo "ev_compile_red & straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
 
 #straighten images to a common image (the middle image in the sequence
-!echo "ev_compile_red & shift_to_common,/onefunc" | idl
-#!echo "ev_compile_red & shift_to_common" | idl
+#!echo "ev_compile_red & shift_to_common,/onefunc" | idl
+!echo "ev_compile_red & shift_to_common" | idl
 
 # Shift the arc just like the master common image
 ls masterarc.fits > masterArclist.txt

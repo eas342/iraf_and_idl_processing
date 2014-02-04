@@ -28,7 +28,8 @@ endif else begin
       suffixPos = strpos(filel[i],'.fits') ;; position where the suffix starts
       ShiftedFileN = strmid(filel[i],0,suffixPos)+'_straight.fits'
       shiftsFileN = strmid(filel[i],0,suffixPos)+'_shifts.txt'
-      find_shift_values,custarc=filel[i],custshiftFile=shiftsFileN,arcshift=ShiftedFileN,/useMasterSpec,/dodivide
+      find_shift_values,custarc=filel[i],custshiftFile=shiftsFileN,arcshift=ShiftedFileN,/useMasterSpec,$
+                        /dodivide,/offsetonly
    endfor
 endelse
    

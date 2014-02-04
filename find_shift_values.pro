@@ -2,7 +2,7 @@ pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
                       dec23=dec23,custarc=custarc,custshiftFile=custshiftFile,$
                       Arcshift=Arcshift,sincFit=sincFit,saveMasterSpec=saveMasterSpec,$
                       useMasterSpec=useMasterSpec,leaveEdges=leaveEdges,$
-                      dodivide=dodivide
+                      dodivide=dodivide,offsetOnly=offsetOnly
 ;; Straightens A Spectrum so that the X direction is wavelength
 ;; discreet - only move by discreet steps
 ;; showfits -- shows the fits to cross-correlations
@@ -16,6 +16,9 @@ pro find_shift_values,discreet=discreet,showfits=showfits,psplot=psplot,$
 ;;               replaces with median of the column)
 ;; dodivide -- divide the data numbers by the divisor (and take into
 ;;             account the prefactor for Fowler sampling)
+;; offsetOnly -- only use the offset from the reference
+;;               spectrum and then apply a master shift function
+;;               instead of a new shift function
 
 case 1 of 
    n_elements(custarc) NE 0: arcnm=custarc
@@ -154,7 +157,6 @@ for i=0l,NY-1l do begin
 endfor
 
 
-
 ;; Show the shifts
 Pos = findgen(NY) ;; position
 ;; Fit a polynomial to the shift curve. Iterate 3 times to throw out
@@ -186,6 +188,14 @@ for i=0,nIter-1l do begin
 endfor
 !p.multi=0
 
+
+if keyword_set(offsetOnly) then begin
+   ;; Only use an offset (not a the full function)
+   readcol,'master_shifts.txt',mrow,masterMShifts,masterMeasuredShift,$
+           format='(F,F,F)',skipline=1
+   offset = PolyMod[floor(NY/2)]
+   PolyMod = masterMshifts + offset
+endif
 
 
 
