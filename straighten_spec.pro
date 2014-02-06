@@ -29,23 +29,6 @@ for j=0l,nfiles-1l do begin
    for i=0l,NY-1l do begin
       recimg[*,i] = shift_interp(img[*,i],shiftMod[i])
    endfor
-
-
-   if not keyword_set(leaveEdges) then begin
-      ;; Replace all the edges with the median edge value
-      ;; This is needed because the shift procedure wraps the spectra
-      ;; around, falsely putting K band data at 0.8um and vice versa
-      medianLeft = median(img[0,*])
-      medianRight = median(img[NX-1l,*])
-      roundedShift = round(shiftmod)
-      for i=0l,NY-1l do begin
-         if shiftmod[i] GE 0 then begin
-            recimg[0:roundedShift[i],i] = medianLeft
-         endif else begin
-            recimg[NX-1l+roundedShift[i]:NX-1l,i] = medianRight
-         endelse
-      endfor
-   endif
    
    if keyword_set(dodivide) then begin
       NDR1 =  float(fxpar(origHeader,"NDR") )
@@ -62,7 +45,7 @@ for j=0l,nfiles-1l do begin
 
       recimg = recimg * prefactor / divisor
    endif
-   
+
    ;; Check if file exists so you don't overwrite anything!
    checkfile = findfile(outfiles[j],count=count)
    if count GE 1 then begin
