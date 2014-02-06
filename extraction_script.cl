@@ -37,17 +37,17 @@ nlow=1, nhigh=1, nkeep=1, mclip=yes, lsigma=3., hsigma=3., rdnoise="18",
 gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
 ## Find the shift values for the masterarc image & use those to straighten the rest
-!echo "ev_compile_red & find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='masterarc_straight.fits'" | idl
-!echo "ev_compile_red & straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
+#!echo "ev_compile_red & find_shift_values,custarc='masterarc.fits',custshiftFile='arc_shifts.txt',arcshift='masterarc_straight.fits'" | idl
+#!echo "ev_compile_red & straighten_spec,'proc_science_images.txt','straight_science_images.txt',shiftlist='arc_shifts.txt',/dodivide" | idl
 
 #straighten images to a common image (the middle image in the sequence
-#!echo "ev_compile_red & shift_to_common,/onefunc" | idl
-!echo "ev_compile_red & shift_to_common" | idl
+!echo "ev_compile_red & shift_to_common,/onefunc" | idl
+#!echo "ev_compile_red & shift_to_common" | idl
 
 # Shift the arc just like the master common image
 ls masterarc.fits > masterArclist.txt
-#!echo "masterarc_straight.fits" > straight_masterarcList.txt
-#!echo "ev_compile_red & straighten_spec,'masterArclist.txt','straight_masterarcList.txt',shiftlist='master_shifts.txt',/dodivide" | idl
+!echo "masterarc_straight.fits" > straight_masterarcList.txt
+!echo "ev_compile_red & straighten_spec,'masterArclist.txt','straight_masterarcList.txt',shiftlist='master_shifts.txt',/dodivide" | idl
 
 #Temporarily use the un-straightened images
 #!mv proc_science_images.txt straight_science_images.txt
