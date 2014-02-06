@@ -18,3 +18,4 @@ delete masterRefSpec.sav
 delete masterArcList.txt
 delete straight_masterarcList.txt
 delete extracted_ap_ref_spec.fits
+delete run*_shifts.txt
