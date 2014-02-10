@@ -29,7 +29,7 @@ endif else begin
       ShiftedFileN = strmid(filel[i],0,suffixPos)+'_straight.fits'
       shiftsFileN = strmid(filel[i],0,suffixPos)+'_shifts.txt'
       find_shift_values,custarc=filel[i],custshiftFile=shiftsFileN,arcshift=ShiftedFileN,/useMasterSpec,$
-                        /dodivide,/offsetonly
+                        /dodivide
    endfor
 endelse
    
