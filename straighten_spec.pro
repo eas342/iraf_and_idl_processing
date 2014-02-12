@@ -27,11 +27,7 @@ for j=0l,nfiles-1l do begin
    NY = imgSize[2]
    assert,n_elements(rowN),'=',NY,"Shift row and image row numbers don't match"
    recimg = fltarr(NX,NY)
-   
-   for i=0l,NY-1l do begin
-      recimg[*,i] = shift_interp(img[*,i],shiftMod[i])
-   endfor
-   
+
    if keyword_set(dodivide) then begin
       NDR1 =  float(fxpar(origHeader,"NDR") )
       divisor = NDR1
@@ -45,8 +41,13 @@ for j=0l,nfiles-1l do begin
       prefactor = (1E - eta/2E) /$
                   (1E - 2E * eta/3E + 1E/(6E * eta * nmax^2))
 
-      recimg = recimg * prefactor / divisor
+      img = img * prefactor / divisor
    endif
+   
+   for i=0l,NY-1l do begin
+      recimg[*,i] = shift_interp(img[*,i],shiftMod[i])
+   endfor
+   
    if not keyword_set(leaveEdges) then begin
       ;; Replace all the edges with the median edge value
       ;; This is needed because the shift procedure wraps the spectra
