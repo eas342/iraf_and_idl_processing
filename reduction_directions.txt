@@ -34,6 +34,7 @@ task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
 ls run02_0034.a_lincor_straight.fits > ap_reference.txt
 task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
 #The reset script allows you to reset in case of a mistake
+#I might have to go into the database/idfirst_wavecal and confirm that the coefficients of the dispersion function are the exact same for aperture 1 and aperture 2
 task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.cl
 
 task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
