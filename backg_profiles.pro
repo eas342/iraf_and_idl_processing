@@ -1,7 +1,9 @@
-pro backg_profiles,psplot=psplot
+pro backg_profiles,psplot=psplot,separation=separation,OverlayStars=OverlayStars
 ;; This script looks for any unusual aspects of the spatial background
 ;; profile that might affect one star differently from the other
 ;; psplot - generates a postscript plot
+;; seperation - if set, lets you control the separation of the plots
+;; OverlayStars - overlay the two stellar profiles
 
 ;; set the up the PS plot
 if keyword_set(psplot) then begin
@@ -19,7 +21,7 @@ endif
 readcol,'straight_science_images.txt',format='(A)',filen
 nfiles = n_elements(filen)
 startTherm = 435 ;; Where thermal emission starts to dominate
-separation = 0.03
+if n_elements(separation) EQ 0 then separation = 0.03
 
 nProfiles = 7
 fileIndex = round(findgen(nProfiles)/float(nProfiles) * float(nfiles))
@@ -41,24 +43,33 @@ for i=0l,nProfiles-1 do begin
    ;; Round the time to the nearest second
    splitTime = strsplit(Longtime,':',/extract)
    time = splitTime[0]+':'+splitTime[1]+':'+strtrim(round(float(splitTime[2])),1)
-   if i EQ 0 then begin
-      Nrows = fxpar(header,'NAXIS2')
-      RowArr = lindgen(Nrows)
-      plot,RowArr,normprof,$
-           xtitle='Row (spatial pixels)',$
-           ytitle='Normalized Flux',$
-           yrange=[1E - 0.05E - separation * nProfiles,1E + 0.05E],$
-           xrange=[0,1.2E * Nrows]
-   endif else begin
-      oplot,RowArr,normProf - offset,color=colorArr[i]
-   endelse
-   lastY = normprof[Nrows-1l] - offset + separation * 0.3E;; Y position for text output
-   xyouts,Nrows * 1.02,lastY,time
-   if i EQ nProfiles-1 then begin
-      xyouts,Nrows * 1.02,lastY - separation,'('+date+')'
-   endif
-endfor
 
+   if keyword_set(OverLayStars) then begin
+      ;; Show the stars re-normalized on top of each other
+;      oplot,Rowarr - 266.5,(normProf - median(NormProf)) * 1.6 +
+;                     Median(NormProf)- offset - 0.08,linestyle=2
+      profstruct = create_struct('data',[[indices],[smoothprof]])
+      mc_findpeaks,profstruct,2,1,posit,apsign,/auto
+   endif else begin
+      if i EQ 0 then begin
+         Nrows = fxpar(header,'NAXIS2')
+         RowArr = lindgen(Nrows)
+         plot,RowArr,normprof,$
+              xtitle='Row (spatial pixels)',$
+              ytitle='Normalized Flux',$
+              yrange=[1E - 0.05E - separation * nProfiles,1E + 0.05E],$
+              xrange=[0,1.2E * Nrows]
+      endif else begin
+         oplot,RowArr,normProf - offset,color=colorArr[i]
+      endelse
+      lastY = normprof[Nrows-10l] - offset + separation * 0.3E ;; Y position for text output
+      xyouts,Nrows * 1.02,lastY,time
+      if i EQ nProfiles-1 then begin
+         xyouts,Nrows * 1.02,lastY - separation,'('+date+')'
+      endif
+   endelse
+   
+endfor
 if keyword_set(psplot) then begin
    device, /close
 ;   cgPS2PDF,plotprenm+'.eps'
@@ -69,7 +80,7 @@ if keyword_set(psplot) then begin
    !p.thick=1
    !x.thick=1
    !y.thick=1
-
+   
 endif
 
 end
