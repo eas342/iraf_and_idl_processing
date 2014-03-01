@@ -31,17 +31,34 @@ zero="none", weight="none", statsec="", lthreshold=INDEF, hthreshold=INDEF,
 nlow=1, nhigh=1, nkeep=1, mclip=yes, lsigma=3., hsigma=3., rdnoise="14",
 gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
+## Process the arc image how I want it so it doesn't accidentally
+## get processed for me by the ccdproc of the science images
+# The fixpix appears to be creating problems so I'm going to skip it
+ccdproc ("masterflat.fits",
+output="trimflat.fits", ccdtype="", max_cache=0, noproc=no, fixpix=no,
+overscan=no, trim=yes, zerocor=no, darkcor=no, flatcor=no, illumcor=no,
+fringecor=no, readcor=no, scancor=no, readaxis="line", 
+fixfile="combined_mask.pl", biassec="",
+trimsec="[550:1024,105:495]", zero="", dark="",
+flat="", illum="", fringe="", minreplace=0.2,
+scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
+sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
+
 ## Trim the flat for use by response
-imcopy masterflat.fits[550:1024,105:495] trimflat.fits
+#imcopy masterflat.fits[550:1024,105:495] trimflat.fits
 response ("trimflat",
 "trimflat", "response", interactive=no, threshold=INDEF, sample="*",
 naverage=1, function="spline3", order=4, low_reject=3., high_reject=3.,
 niterate=3, grow=0., graphics="stdgraph", cursor="")
 
+## copy the reponse file because it gets modified by ccdproc
+imcopy response.fits full_response.fits
+
 ## Make the response file a full image size b/c it will be trimmed by ccdproc
-imarith masterflat.fits * 0. full_response.fits
-imarith full_response.fits + 1. full_response.fits
-imcopy response.fits full_response.fits[550:1024,105:495]
+#imarith masterflat.fits * 0. full_response.fits
+#imarith full_response.fits + 1. full_response.fits
+#imcopy response.fits full_response.fits[550:1024,105:495]
+
 
 # Make a list of all arc images and output images
 ls *arc*lincor.fits > arclist.txt
