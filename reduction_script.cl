@@ -1,8 +1,8 @@
-ls flat*lincor.fits > flatlist.txt
+ls flat*.fits > flatlist.txt
 
 
 ## Make master dark
-combine ("*dark*lincor.fits",
+combine ("*dark*.fits",
 "masterdark.fits", plfile="", sigma="", ccdtype="", subsets=no, delete=no,
 clobber=no, combine="average", reject="avsigclip", project=no, outtype="real",
 offsets="none", masktype="none", maskvalue=0., blank=0., scale="none",
@@ -44,7 +44,7 @@ imarith full_response.fits + 1. full_response.fits
 imcopy response.fits full_response.fits[550:1024,105:495]
 
 # Make a list of all arc images and output images
-ls *arc*lincor.fits > arclist.txt
+ls *arc*.fits > arclist.txt
 !awk -F, '{$1="../proc/" $1;}1' arclist.txt > proc_arclist.txt
 
 # Process the arc images

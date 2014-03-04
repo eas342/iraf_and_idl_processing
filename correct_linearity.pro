@@ -11,7 +11,8 @@ fileData = file_search(current+'/run*.a.fits')
 fileFlat = file_search(current+'/flat*.a.fits')
 fileDark = file_search(current+'/dark*.a.fits')
 fileArc = file_search(current+'/arc*.a.fits')
-filel = [fileData,fileFlat,FileDark,fileArc]
+;filel = [fileData,fileFlat,FileDark,fileArc]
+filel = [fileData]
 
 nfile = n_elements(filel)
 
