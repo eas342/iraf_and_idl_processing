@@ -24,14 +24,12 @@ C: Load all IRAF scripts
 task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
 
 #Run these in the edited directory
-!echo “ev_compile_red & correct_linearity” | idl
 task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
 #The reset script allows you to reset in case of a mistake
 task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
 
 #Run these in the proc directory
-#Choose a reference aperture (an image where the apertures are found correctly)
-ls run02_0034.a_lincor_straight.fits > ap_reference.txt
+
 task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
 #The reset script allows you to reset in case of a mistake
 #I might have to go into the database/idfirst_wavecal and confirm that the coefficients of the dispersion function are the exact same for aperture 1 and aperture 2
@@ -39,11 +37,19 @@ task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.c
 
 task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
 
-D: Reduce data 
-Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
-Go to the "
+D: Reduce data from the “edited” directory
+# Correct for non-linearity
+!echo “ev_compile_red & correct_linearity” | idl
+#Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
+#Change to the edited directory and run
+reduction_script
 
-E: Extract Spectra
-Straightens (rectifies) all spectral images
-Extracts the spectra with background subtraction
-Makes FITS files of the flux versus wavelength
+E: Extract Spectra. Navigate the “proc” directory
+#Choose a reference aperture (an image where the apertures are found correctly) For example:
+ls run02_0034.a_lincor_straight.fits > ap_reference.txt
+#Straightens (rectifies) all spectral images
+#Extracts the spectra with background subtraction
+#Makes FITS files of the flux versus wavelength
+extraction_script
+# If the first time running, edit the identification file so that the coefficients for Aperture 1 and Aperture 2 are identical and run again
+emacs database/idfirst_wavecal
