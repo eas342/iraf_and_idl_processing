@@ -1,6 +1,6 @@
 pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlayStars,$
                      nProfiles=nProfiles,cumulativeFlux=cumulativeFlux,$
-                     customIndex=customIndex
+                     customIndex=customIndex,divideOut=divideOut
 ;; This script looks for any unusual aspects of the spatial background
 ;; profile that might affect one star differently from the other
 ;; psplot - generates a postscript plot
@@ -9,6 +9,7 @@ pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlaySta
 ;; nProfiles - how many profiles to look at
 ;; cumulativeFlux -- show the total flux grows as a function of
 ;;                   aperture radius
+;; divideOut -- divide out all profiles by the median
 
 
 StarHalfRange = 30 ;; half the range to show if zooming in on star
@@ -68,6 +69,11 @@ for i=0l,nProfiles-1 do begin
 
    Nrows = fxpar(header,'NAXIS2')
    RowArr = lindgen(Nrows)
+
+   ;; Make an array for all profiles
+   if n_elements(fullArray) EQ 0 then begin
+      fullArray = fltarr(nProfiles,Nrows)
+   endif
 
    if keyword_set(OverlayStars) then begin
       ;; Show the stars re-normalized on top of each other
@@ -145,7 +151,7 @@ for i=0l,nProfiles-1 do begin
          plot,RowArr,normprof,$
               xtitle='Row (spatial pixels)',$
               ytitle='Normalized Flux',$
-              yrange=[1E - 0.05E - separation * nProfiles,1E + 0.05E],$
+              yrange=[1E - separation * 2E - separation * nProfiles,1E + separation],$
               xrange=[0,1.2E * Nrows]
       endif else begin
          oplot,RowArr,normProf - offset,color=colorArr[i]
@@ -157,8 +163,30 @@ for i=0l,nProfiles-1 do begin
    if i EQ nProfiles-1 then begin
       xyouts,xtext,lastY - separation,'('+date+')'
    endif
-   
+   fullArray[i,*] = normprof
+            
+
 endfor
+
+if keyword_set(divideOut) then begin
+   medianProf = median(fullArray,dimension=1)
+   medianDup = rebin(transpose(medianProf),nProfiles,Nrows)
+   Profratio = fullArray/medianDup
+   for i=0l,Nprofiles-1l do begin
+      offset = separation * i
+   
+      if i EQ 0 then begin
+         plot,RowArr,Profratio[i,*],$
+              xtitle='Row (spatial pixels)',$
+              ytitle='Normalized, divided flux',$
+              yrange=[1E - 2E * separation - separation * nProfiles,1E + 2E * separation],$
+              xrange=[0,1.2E * Nrows]
+      endif else begin
+         oplot,rowArr,profRatio[i,*] - offset,color=colorArr[i]
+      endelse
+   endfor
+endif
+
 if keyword_set(psplot) then begin
    device, /close
 ;   cgPS2PDF,plotprenm+'.eps'
