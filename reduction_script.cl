@@ -12,8 +12,8 @@ gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 
 ## Use the master dark to create a bad pixel mask
 ccdmask ("masterdark.fits",
-"mask_from_masterdark", ncmed=10, nlmed=10, ncsig=25, nlsig=25, lsigma=15.,
-hsigma=15., ngood=3, linterp=2, cinterp=3, eqinterp=2)
+"mask_from_masterdark", ncmed=10, nlmed=10, ncsig=25, nlsig=25, lsigma=30.,
+hsigma=30., ngood=3, linterp=2, cinterp=3, eqinterp=2)
 
 ## Merge this pixel mask with the known bad diagonals
 imcopy ("mask_from_masterdark.pl",
