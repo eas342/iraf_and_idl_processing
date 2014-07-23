@@ -1,6 +1,7 @@
 pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlayStars,$
                      nProfiles=nProfiles,cumulativeFlux=cumulativeFlux,$
-                     customIndex=customIndex,divideOut=divideOut
+                     customIndex=customIndex,divideOut=divideOut,$
+                     semiLog=semiLog,voigt=voigt,lorentz=lorentz
 ;; This script looks for any unusual aspects of the spatial background
 ;; profile that might affect one star differently from the other
 ;; psplot - generates a postscript plot
@@ -10,7 +11,9 @@ pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlaySta
 ;; cumulativeFlux -- show the total flux grows as a function of
 ;;                   aperture radius
 ;; divideOut -- divide out all profiles by the median
-
+;; semiLog -- make the y axis semiLog
+;; voigt - Fit the first profile with a Voigt function
+;; lorentz - Fit with a Lorentz Profile
 
 StarHalfRange = 30 ;; half the range to show if zooming in on star
 BackgStart = 17 ;; distance from star to start background estimation
@@ -30,7 +33,11 @@ if keyword_set(psplot) then begin
    device,encapsulated=1, /helvetica,$
           filename=plotprenm+'.eps'
    device,xsize=14, ysize=10,decomposed=1,/color
+   if keyword_set(overlaystars) then begin
+      device,xsize=20, ysize=14,decomposed=1,/color
+   endif else device,xsize=14, ysize=10,decomposed=1,/color
 endif
+
 
 readcol,'straight_science_images.txt',format='(A)',filen
 nfiles = n_elements(filen)
@@ -44,6 +51,11 @@ endif else begin
    if n_elements(nProfiles) EQ 0 then nProfiles = 7
    fileIndex = round(findgen(nProfiles)/float(nProfiles) * float(nfiles))
 endelse
+
+if keyword_set(overlaystars) then begin
+   !p.multi=[0,1,2]
+endif
+
 
 ;; color options between images
 colorOptions = [!p.color,mycol(['red','blue','dgreen'])]
@@ -121,28 +133,80 @@ for i=0l,nProfiles-1 do begin
             
          endif else begin
             if i EQ 0 and j EQ 0 then begin
+               if keyword_set(semiLog) then begin
+                  myYrange = [1E-5,1]
+               endif else begin
+                  myYrange= [0E - 0.05E - separation * nProfiles,0.2E]
+               endelse
+
                plot,xplot,yplot,$
                     xtitle='Spatial Pixels',$
                     ytitle='Normalized Flux',$
                     xrange = [-StarHalfRange,StarHalfRange * 1.4E],$
-                    yrange=[0E - 0.05E - separation * nProfiles,0.2E],$
+                    yrange=myYrange,ylog=semiLog,$
                     xstyle=1
                ;; Show Error Bar
                rsigma = robust_sigma(ybackg/ytotal)
                oploterror,[-StarHalfRange/2E],[separation * 0.5E],[0E],$
                           rsigma
+
+               ;; Show slit width
+               SlitHalfWidth = 10.2 ;; 3" x 6.83px/" /2
+               oplot,[-1E,-1E] * SlitHalfWidth,!y.crange
+               oplot,[1E,1E] * SlitHalfWidth,!y.crange
+               
+               case 1 of
+                  keyword_set(Voigt): begin
+                     ;; Fit to a Voigt profile
+                     FitType='Voigt'
+                     expr = 'P[0] * voigt(P[1],(X - P[2])/(1.41421E * P[3]))'
+                     yerr = rsigma[0] + fltarr(n_elements(yplot))
+                     start = [1E,0.1E,0E,3E]
+                     P = mpfitexpr(expr,xplot,yplot,yerr,start)
+                     X = xplot
+                     junk = execute('yfit = '+expr)
+;                  yfit = expression_eval(expr,xplot,result)
+                  end
+                  keyword_set(Lorentz): begin
+                     ;; Fit to a Lorentz
+                     FitType='Lorentz'
+                     expr = 'P[0] * P[1]/(3.1459265E * (X^2 + P[1]^2))'
+                     yerr = rsigma[0] + fltarr(n_elements(yplot))
+                     start = [1E,2E]
+                     P = mpfitexpr(expr,xplot,yplot,yerr,start)
+                     X = xplot
+                     junk = execute('yfit = '+expr)
+;                  yfit = expression_eval(expr,xplot,result)
+                  end
+                  else: begin
+                  ;; Fit to Gaussian
+                  yfit = gaussfit(xplot,yplot,A,nterms=5)
+                  FitType='Gaussian'
+                  print,'A= ',A
+                  print,'for A_0 e^-(0.5 * (x-A_1)^2/A2^2) + A_3 + A_4 X'
+                  end
+               endcase
+               oplot,xplot,yfit,linestyle=1
+
+               residArrayX = xplot
+               residArrayY = yfit - yplot
+               residArrayE = rsigma[0]
+               ;; Save the profile
+               save,xplot,yplot,rsigma,filename='profile_data.sav'
             endif else begin
                oplot,xplot,yplot - offset,color=colorArr[i],$
                      lineStyle=styleOpt[j]
             endelse
             lastY = -offset + separation * 0.2E
             xtext = StarHalfRange * 1.02
+            
          endelse
       endfor
       if i EQ nProfiles-1 then begin
          al_legend,/left,/bottom,$
-                   ['Planet Host','Reference'],$
-                   linestyle=styleOpt
+                   ['Planet Host','Reference',FitType],$
+                   linestyle=[styleOpt,1],/clear,$
+                   charsize=0.7
       endif
 
       
@@ -185,6 +249,23 @@ if keyword_set(divideOut) then begin
          oplot,rowArr,profRatio[i,*] - offset,color=colorArr[i]
       endelse
    endfor
+endif
+
+;; show the residuals for the target star and reference star
+if keyword_set(overlaystars) then begin
+;   residArrayX = xplot
+;   residArrayY = yfit - yplot
+;   residArrayE = rsigma
+   nresid = n_elements(residArrayX)
+   residErArr = fltarr(nresid) + rsigma[0]
+   plot,residArrayX,residArrayY,$
+        xtitle='Spatial Pixels',$
+        ytitle='Residual',/nodata,$
+        xrange=[-StarHalfRange,StarHalfRange * 1.4E],$
+        xstyle=1
+   oploterror,residArrayX,residArrayY,fltarr(nresid),residErArr,$
+              psym=3
+   !p.multi=0
 endif
 
 if keyword_set(psplot) then begin
