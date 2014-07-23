@@ -38,6 +38,7 @@ task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.c
 task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
 
 D: Reduce data from the “edited” directory
+adjust_headers
 # Correct for non-linearity
 !echo “ev_compile_red & correct_linearity” | idl
 #Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
@@ -47,6 +48,14 @@ reduction_script
 E: Extract Spectra. Navigate the “proc” directory
 #Choose a reference aperture (an image where the apertures are found correctly) For example:
 ls run02_0034.a_lincor_straight.fits > ap_reference.txt
+# Make a local parameter file for the background region, star separation and background order. #You can copy the master one
+# Define the local parameters
+cl < local_parameters.cl
+
+# Copy a idfirst_wavecal from another previous extraction to make the line identification easier
+
+
+
 #Straightens (rectifies) all spectral images
 #Extracts the spectra with background subtraction
 #Makes FITS files of the flux versus wavelength
