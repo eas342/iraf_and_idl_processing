@@ -34,8 +34,8 @@ gain="13", snoise="0.", sigscale=0.1, pclip=-0.5, grow=0)
 ## Trim the flat for use by response
 imcopy masterflat.fits[510:1024,105:495] trimflat.fits
 response ("trimflat",
-"trimflat", "response", interactive=no, threshold=INDEF, sample="*",
-naverage=1, function="spline3", order=4, low_reject=3., high_reject=3.,
+"trimflat", "response", interactive=no, threshold=500, sample="*",
+naverage=1, function="spline3", order=10, low_reject=3., high_reject=3.,
 niterate=3, grow=0., graphics="stdgraph", cursor="")
 
 ## Make the response file a full image size b/c it will be trimmed by ccdproc
