@@ -20,17 +20,22 @@ if n_elements(Nsig) EQ 0 then Nsig=4
   nonmask = where(mask EQ 0)
   goodp = nonmask
   modelY = median(y[goodp]) + fltarr(Xlength) ;; initial model is flat
-  
+
   for l=0l,niter-1l do begin
      resid = y - modelY
      rsigma = robust_sigma(resid[goodp])
      goodp = where(abs(resid) LT Nsig * rsigma and $
                    mask EQ 0,complement=badp)
-     polyMod = poly_fit(x[goodp],y[goodp],Npoly)
-     modelY = eval_poly(x,polyMod)
+     if goodp NE [-1] then begin
+        polyMod = poly_fit(x[goodp],y[goodp],Npoly)
+        modelY = eval_poly(x,polyMod)
+     endif else begin
+        polyMod = fltarr(Npoly)
+        modelY = fltarr(Xlength)
+     endelse
   endfor
   finalResid = y - modelY
-  sigma = robust_sigma(finalResid[goodp])
+  if goodp NE [-1] then sigma = robust_sigma(finalResid[goodp]) else sigma = !values.f_nan
   if keyword_set(showplot) then begin
      plot,x,y,/nodata,xstyle=1,$
           yrange=threshold(y)
