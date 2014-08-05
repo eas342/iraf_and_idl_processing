@@ -138,8 +138,8 @@ for i=0l,lastfile do begin
    ;; Save the spectrum
    finalData = fltarr(Xlength,Nap,NSpecTypes)
    for k=0l,Nap-1l do begin
-      finalData[*,k,0] = optflux[*,k]
-      finalData[*,k,1] = sumflux[*,k]
+      finalData[*,k,0] = sumflux[*,k]
+      finalData[*,k,1] = optflux[*,k]
       finalData[*,k,2] = bflux[*,k]
       finalData[*,k,3] = sigflux[*,k]
       finalData[*,k,4] = proflux[*,k]
