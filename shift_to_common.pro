@@ -4,7 +4,8 @@ pro shift_to_common,onefunc=onefunc
 
 ;; Find images
 cd,current=current
-filel = file_search(current+'/run*lincor.fits')
+filel = file_search(current+'/run*.fits')
+;; Put back in /run*lincor.fits when you re-incorporate non-linearity curves!!
 nfile = n_elements(filel)
 
 ;; make a master common spectrum from the middle science file

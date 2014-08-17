@@ -23,7 +23,7 @@ C: Load all IRAF scripts
 #(If necessary)
 task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
 
-#Run these in the edited directory
+#Run these in the edited directory, first set the trim section & other reduction parameters
 task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
 #The reset script allows you to reset in case of a mistake
 task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
@@ -41,6 +41,7 @@ D: Reduce data from the “edited” directory
 adjust_headers
 # Correct for non-linearity
 !echo “ev_compile_red & correct_linearity” | idl
+cl < local_red_params.cl
 #Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
 #Change to the edited directory and run
 reduction_script
