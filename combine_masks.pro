@@ -6,7 +6,13 @@ pro combine_masks,file1,file2
 a = mrdfits(file1,0,header1)
 b = mrdfits(file2,0,header2)
 
-c = a or b
+xlength = fxpar(header1,'NAXIS1')
+ylength = fxpar(header1,'NAXIS2')
+if fxpar(header1,'NAXIS1') EQ fxpar(header2,'NAXIS1') and $
+   fxpar(header1,'NAXIS2') EQ fxpar(header2,'NAXIS2') then begin
+   c = a or b
+endif else c = a
+
 ;; Save the combined
 writefits,'combined_mask.fits',c,header1
 
