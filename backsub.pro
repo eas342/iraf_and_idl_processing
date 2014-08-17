@@ -1,5 +1,6 @@
 pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
-            showCRplot=showCRplot,comparSpec=comparSpec
+            showCRplot=showCRplot,comparSpec=comparSpec,$
+            allimages=allimages
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -10,7 +11,8 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;; showCR - show the cosmic ray rejection
 ;; comparSpec - compare the spectra extracted with variance
 ;;              weighted/profile/sum extraction
-
+;; allimages - process all images (instead of subset, which is the
+;;             default for savesteps
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -40,10 +42,9 @@ cprofNames = strarr(nfile);; cosmic ray images
 posit = fltarr(nfile,Nap) ;; aperture positions
 
 if keyword_set(saveSteps) then lastfile = 9 else lastfile=nfile-1l
-
+if keyword_set(allimages) then lastfile = nfile-1l
 
 for i=0l,lastfile do begin
-;for i=0l,5l do begin
    a = mrdfits(straightlist[i],0,header,/silent) * Gain ;; make everything in electrons
    ;; get the aperture center
    posit[i,*] = retrieve_apcenter(straightlist[i],Nap)
@@ -64,7 +65,7 @@ for i=0l,lastfile do begin
    cosImage = intarr(xlength,ylength) ;; cosmic ray image
    varImage = fltarr(xlength,ylength) ;; variance image
 
-   NSpectypes = 5 ;; number of spectral types to save in extraction
+   NSpectypes = 6 ;; number of spectral types to save in extraction
    optflux = fltarr(Xlength,Nap) ;; optimal extraction of flux
    sumflux = fltarr(Xlength,Nap) ;; sum extraction (not optimal extraction)
    bflux = fltarr(Xlength,Nap) ;; background spectra
@@ -153,8 +154,18 @@ for i=0l,lastfile do begin
       endfor
 
 
-      ;; optimal extraction
-      sigflux = sqrt(proflux)
+      ;; Save the wavelength solution (only the first time through)
+      if i EQ 0 and m EQ 0 then begin
+         wavelSol = wavecal() ;; get it from the firstwavecal database file
+         lamgrid = eval_poly(findgen(Xlength),wavelSol)
+      endif
+
+      ;; optimal extraction error
+      for k=0l,Nap-1l do begin
+         variance = total(fitImage[*,Apstart[k]:ApEnd[k]],2)/$
+                    total(fitImage[*,Apstart[k]:ApEnd[k]]^2 / varImage[*,Apstart[k]:ApEnd[k]],2)
+         sigflux[*,k] = sqrt(variance)
+      endfor
       
       ;; Save the spectrum
       finalData = fltarr(Xlength,Nap,NSpecTypes)
@@ -164,6 +175,8 @@ for i=0l,lastfile do begin
          finalData[*,k,2] = bflux[*,k]
          finalData[*,k,3] = sigflux[*,k]
          finalData[*,k,4] = proflux[*,k]
+         finalData[*,k,4] = proflux[*,k]
+         finalData[*,k,5] = lamgrid
       endfor
       postpos = strpos(straightlist[i],'.fits')
       outprefix = strmid(straightlist[i],0,postpos)
@@ -173,7 +186,7 @@ for i=0l,lastfile do begin
       sxaddpar,fluxhead,'NAXIS2',Nap
       sxaddpar,fluxhead,'NAXIS3',NSpecTypes
       sxaddpar,fluxhead,'Extracted','TRUE','Fluxes are extracted'
-      bandIDS = ['Optimal','Sum','Background','Sigma','ProfWeighted']
+      bandIDS = ['Optimal','Sum','Background','Sigma','ProfWeighted','Wavelength']
       for l=0l,NSpecTypes-1l do begin
          sxaddpar,fluxhead,'BANDID'+strtrim(l+1,1),bandIDS[l],"Band explanation"
       endfor
