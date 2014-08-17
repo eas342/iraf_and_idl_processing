@@ -29,19 +29,7 @@ for j=0l,nfiles-1l do begin
    recimg = fltarr(NX,NY)
 
    if keyword_set(dodivide) then begin
-      NDR1 =  float(fxpar(origHeader,"NDR") )
-      divisor = NDR1
-      ;; the prefactor of ~1.5 is due to the read time improvement for
-      ;; eta=1 Fowler sampling (Garnett and Forrest 1993)
-
-      rtime1 = float(fxpar(origHeader,"TABLE_MS"))/1000E ;; read time, sec
-      Teff1 = float(fxpar(origHeader,"ITIME")) ;; integration time, sec
-      eta = (NDR1 * 2E * rtime1)/(Teff1 + NDR1 * rtime1)
-      nmax = (Teff1 + NDR1 * rtime1)/(2E * rtime1)
-      prefactor = (1E - eta/2E) /$
-                  (1E - 2E * eta/3E + 1E/(6E * eta * nmax^2))
-
-      img = img * prefactor / divisor
+      img = do_divide(img,origheader)
    endif
    
    for i=0l,NY-1l do begin
