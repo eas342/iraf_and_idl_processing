@@ -1,5 +1,6 @@
 function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
-                        showplot=showplot,Nsig=Nsig,sigma=sigma
+                        showplot=showplot,Nsig=Nsig,sigma=sigma,$
+                        gaussian=gaussian
 ;; Fits a robust polynomial to a set of coordinates (x,y) with
 ;; polynomial order npoly
 ;; mask -- allows you to specify which points are masked
@@ -7,6 +8,7 @@ function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
 ;; showplot -- shows a plot of the fit
 ;; Nsig - the sigma clipping level
 ;; sigma - an OUTPUT that gives the robust sigma of the residuals
+;; gaussian - fit a 2D Gaussian instead of Polynomial
 
 Xlength = n_elements(x)
 assert,Xlength,'=',n_elements(y),'X & Y Inputs to robust poly fitting not same length'  
