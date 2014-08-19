@@ -1,12 +1,16 @@
-pro fits_display,a,findscale=findscale,$
+pro fits_display,input,findscale=findscale,$
                  usescale=usescale,outscale=outscale
 ;; This script displays a fits image and allows you to set the scaling
+;; If the input is a data array, it uses that
+;; if the input is a string, it reads the file
 ;; with right right mouse click and exit the scaling with a left click
 ;; findscale - directs fits_display to find a scaling
 ;; usescale - directs fits_display to use a specific histogram scaling
 ;; outscale  - a user variable to store the used scale
 
-;a = mrdfits(filen,0,header)
+type = size(input,/type)
+
+if type EQ 7 then a = mrdfits(input,0,header) else a=input
 
 if keyword_set(findscale) then begin
 ;; start cursor
@@ -34,7 +38,7 @@ if keyword_set(findscale) then begin
    usescale = outscale
 endif
 if n_elements(usescale) EQ 0 then usescale = [0.3,0.7]
-plotimage,a,range=outscale
+plotimage,a,range=usescale
 !MOUSE.button = 1
 
 
