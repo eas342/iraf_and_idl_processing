@@ -55,7 +55,8 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 #imcopy response.fits[0] full_response.fits[0][510:1024,105:495]
 #imcopy response.fits[0] full_response.fits[0][80:878,24:615]
 #imarith full_response.fits[0] + response.fits[0] full_response.fits
-imcopy response.fits full_response.fits
+#imcopy response.fits full_response.fits
+!echo "ev_compile_red & shift_flat_structure" | idl
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
 ## Reads in the s1 parameter from local_red
 #!echo "ev_compile_red & copy_response" | idl
