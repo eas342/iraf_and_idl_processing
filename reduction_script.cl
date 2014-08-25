@@ -1,6 +1,12 @@
 ##List flat fields and save with extension 0
 !for f in flat*.fits; do echo "$f[0]"; done > flatlist.txt
 
+# Make a list of all the science images and output for the processed versions
+!for f in *run*.fits; do echo "$f[0]"; done > science_images.txt
+## PUT back in *run*lincor.fits eventually when doing linearity corrections!!!
+ls run*.fits > science_images_plain.txt
+!awk -F, '{$1="../proc/" $1;}1' science_images_plain.txt > proc_science_images.txt
+
 ## Make master dark
 combine ("*dark*.fits[0]",
 "masterdark.fits", plfile="", sigma="", ccdtype="", subsets=no, delete=no,
@@ -56,10 +62,13 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 #imcopy response.fits[0] full_response.fits[0][80:878,24:615]
 #imarith full_response.fits[0] + response.fits[0] full_response.fits
 #imcopy response.fits full_response.fits
-!echo "ev_compile_red & shift_flat_structure" | idl
+!echo "ev_compile_red & find_flat_structure" | idl
+!echo "ev_compile_red & move_flat_field" | idl
+#Make a list of the customized flat fields
+!ls response_for*.fits > responselist.txt
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
 ## Reads in the s1 parameter from local_red
-#!echo "ev_compile_red & copy_response" | idl
+#!echo "ev_compile_red & copy_response" | idl ## this is now an obsolete task
 
 # Make a list of all arc images and output images
 ls *arc*.fits > arclist_orig.txt
@@ -77,12 +86,6 @@ flat="full_response.fits", illum="", fringe="", minreplace=0.2,
 scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
 sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
 
-# Make a list of all the science images and output for the processed versions
-!for f in *run*.fits; do echo "$f[0]"; done > science_images.txt
-## PUT back in *run*lincor.fits eventually when doing linearity corrections!!!
-ls *run*.fits > science_images_plain.txt
-!awk -F, '{$1="../proc/" $1;}1' science_images_plain.txt > proc_science_images.txt
-
 # Proces the science images
 ccdproc ("@science_images.txt",
 output="@proc_science_images.txt", ccdtype="", max_cache=0, noproc=no, fixpix=yes,
@@ -90,6 +93,6 @@ overscan=no, trim=yes, zerocor=no, darkcor=yes, flatcor=yes, illumcor=no,
 fringecor=no, readcor=no, scancor=no, readaxis="line",
 fixfile="combined_mask.pl", biassec="",
 trimsec=(s1), zero="", dark="masterdark.fits[0]",
-flat="full_response.fits[0]", illum="", fringe="", minreplace=0.2,
+flat="@responselist.txt", illum="", fringe="", minreplace=0.2,
 scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
 sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)

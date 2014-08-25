@@ -1,10 +1,10 @@
-pro shift_flat_structure,showplot=showplot
+pro find_flat_structure,showplot=showplot
 ;; Fits the flat field line by line, subtracts it, shifts this
 ;; structure and puts it back in
 ;; showplot - shows the fits
 
 nrowpoly = 1 ;; order of polynomial fitting a row
-vertShift = 1
+vertShift = 0
 a= mrdfits('response.fits',0,header)
 
 xlength = fxpar(header,'NAXIS1')
@@ -30,6 +30,10 @@ sheader = header
 fxaddpar,sheader,'STRIPE_FIT','TRUE','The result of each row fitted to a polynomial'
 fxaddpar,sheader,'STRIPE_ORDER',nrowpoly,'Order of the polynomial fit to each row'
 writefits,'stripes_image.fits',struct,sheader
+pxheader = sheader
+fxaddpar,pxheader,'STRIPE_SUBTRACTED','TRUE','Stripe image subtracted from response file'
+writefits,'stripe_sub_image.fits',ssubI,pxheader
+
 fxaddpar,sheader,'STRIPE_SHIFTED',vertShift,'The amount that each row was shifted before being added back'
 writefits,'full_response.fits',outimage,sheader
 end

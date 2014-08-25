@@ -18,3 +18,4 @@ delete combined_mask.pl
 delete combined_mask.fits
 delete arclist_orig.txt
 delete science_images_plain.txt
+delete response_for*run*.fits
