@@ -12,7 +12,7 @@ pro fits_display,input,findscale=findscale,$
 type = size(input,/type)
 
 if type EQ 7 then begin
-   a = mrdfits(input,0,header)
+   a = mod_rdfits(input,0,header)
    Ftitle = input
 endif else begin 
    a=input

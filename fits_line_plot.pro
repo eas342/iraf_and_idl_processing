@@ -11,7 +11,7 @@ if n_elements(current) EQ 0 then i=0l else i = current
 firsttime = 1
 while (!mouse.button NE 4) do begin
    if type EQ 7 then begin
-      a = mrdfits(fileL[i],0,header)
+      a = mod_rdfits(fileL[i],0,header)
       Ftitle = filel[i]
    endif else begin 
       a=filel[0]
