@@ -26,8 +26,12 @@ if n_elements(Nsig) EQ 0 then Nsig=4
   for l=0l,niter-1l do begin
      resid = y - modelY
      rsigma = robust_sigma(resid[goodp])
-     goodp = where(abs(resid) LT Nsig * rsigma and $
-                   mask EQ 0,complement=badp)
+     if rsigma EQ 0E then begin
+        goodp = where(mask EQ 0,complement=badp)
+     endif else begin
+        goodp = where(abs(resid) LT Nsig * rsigma and $
+                      mask EQ 0,complement=badp)
+     endelse
      if goodp NE [-1] then begin
         polyMod = poly_fit(x[goodp],y[goodp],Npoly)
         modelY = eval_poly(x,polyMod)
