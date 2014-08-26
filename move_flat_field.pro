@@ -56,9 +56,9 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      for j=0l,nx-1l do begin
         shiftstruct[j,*] = transpose(shift_interp(transpose(s[j,*]),peak));,/spline))
      endfor
-     addedFlat = shiftstruct + r ;; add in the pixel-to-pixel structure
+     dividedFlat = r * shiftstruct ;; add in the pixel-to-pixel structure
      ;; Trim the flat to the same as the original response
-     finalFlat = addedFlat[rtrimReg[0]:rtrimReg[1],rtrimReg[2]:rtrimReg[3]]
+     finalFlat = dividedflat[rtrimReg[0]:rtrimReg[1],rtrimReg[2]:rtrimReg[3]]
      outheader = rheader
      fxaddpar,outheader,'STRIPE_SUBTRACTED','FALSE'
      fxaddpar,outheader,'STRIPE_SHIFTED',peak,$
@@ -91,13 +91,13 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
         stop
         ;; Show the final flat field in comparison to the science
         ;; image
-        outsub = median(addedFlat[breg[0]:breg[1],breg[2]:breg[3]],dimension=1)
+        outsub = median(dividedflat[breg[0]:breg[1],breg[2]:breg[3]],dimension=1)
         plot,csub[subrange]/median(csub[subrange]),psym=10,ystyle=16,title=shortname
         oplot,outsub[subrange]/median(outsub[subrange]),psym=10,color=mycol('yellow')
         al_legend,['Science Image','Custom Final Flat'],$
                   color=[!p.color,mycol('yellow')],/bottom,linestyle=[0,0]
         stop
-        flattenedSub = c[breg[0]:breg[1],breg[2]:breg[3]]/addedflat[breg[0]:breg[1],breg[2]:breg[3]]
+        flattenedSub = c[breg[0]:breg[1],breg[2]:breg[3]]/dividedflat[breg[0]:breg[1],breg[2]:breg[3]]
 ;        fits_display,flattenedSub
         showMed = median(flattenedSub,dimension=1)
         plot,showMed[subRange],ystyle=16,psym=10

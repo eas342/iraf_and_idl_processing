@@ -65,7 +65,7 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 !echo "ev_compile_red & find_flat_structure" | idl
 !echo "ev_compile_red & move_flat_field" | idl
 #Make a list of the customized flat fields
-!ls response_for*.fits > responselist.txt
+!ls response_for*.fits > response_list.txt
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
 ## Reads in the s1 parameter from local_red
 #!echo "ev_compile_red & copy_response" | idl ## this is now an obsolete task
@@ -86,13 +86,28 @@ flat="full_response.fits", illum="", fringe="", minreplace=0.2,
 scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
 sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
 
-# Proces the science images
-ccdproc ("@science_images.txt",
-output="@proc_science_images.txt", ccdtype="", max_cache=0, noproc=no, fixpix=yes,
-overscan=no, trim=yes, zerocor=no, darkcor=yes, flatcor=yes, illumcor=no,
-fringecor=no, readcor=no, scancor=no, readaxis="line",
-fixfile="combined_mask.pl", biassec="",
-trimsec=(s1), zero="", dark="masterdark.fits[0]",
-flat="@responselist.txt", illum="", fringe="", minreplace=0.2,
-scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
-sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
+
+# Proces the science images in a loop since there is a 
+#customized flat field for every science image
+string *list1, *list2, *list3, s4
+int *junk1
+
+list1 = "science_images.txt"
+list2 = "proc_science_images.txt"
+list3 = "response_list.txt"
+
+while (fscan (list1,s2) != EOF && fscan(list2,s3) != EOF && fscan(list3,s4) != EOF){
+  printf("%s to %s with %s\n",s2,s3,s4)
+  ccdproc ((s2),
+	   output=(s3), ccdtype="", max_cache=0, noproc=no, fixpix=yes,
+	   overscan=no, trim=yes, zerocor=no, darkcor=yes, flatcor=yes, illumcor=no,
+	   fringecor=no, readcor=no, scancor=no, readaxis="line",
+	   fixfile="combined_mask.pl", biassec="",
+	   trimsec=(s1), zero="", dark="masterdark.fits[0]",
+	   flat=(s4), illum="", fringe="", minreplace=0.2,
+	   scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
+	   sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
+  
+}
+  
+

@@ -18,10 +18,10 @@ for i=0l,ylength-1l do begin
    struct[*,i] = eval_poly(columNum,polyParam)
 endfor
 
-ssubI = a - struct;; stripe subtracted image
+ssubI = a / struct;; stripe divided image
 shiftstruct = shift(struct,0,vertShift) ;; shift the structure
 ;; Put it back in
-outimage = ssubI + shiftstruct
+outimage = ssubI * shiftstruct
 ;outimage = shift(a,0,vertshift) ;; shift the entire flat image
 
 
