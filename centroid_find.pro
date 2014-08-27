@@ -1,10 +1,15 @@
-function centroid_find,a,fwhm=fwhm
+function centroid_find,a,fwhm=fwhm,startCoord=startCoord
 ;; Find the centroid within a boxin the x & y directions
 ;; a -- the 2d data array
 ;; fwhm - stellar FWHM
 
-  
-cursor,xcur,ycur,/down
+
+if keyword_set(startCoord) then begin
+   xcur = startcoord[0]
+   ycur = startcoord[1]
+endif else begin
+   cursor,xcur,ycur,/down
+endelse
 cntrd,a,xcur,ycur,xcen,ycen,fwhm,/keepcenter
 
 

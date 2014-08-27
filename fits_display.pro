@@ -1,5 +1,6 @@
 pro fits_display,input,findscale=findscale,$
-                 usescale=usescale,outscale=outscale
+                 usescale=usescale,outscale=outscale,$
+                 message=message
 ;; This script displays a fits image and allows you to set the scaling
 ;; If the input is a data array, it uses that
 ;; if the input is a string, it reads the file
@@ -8,16 +9,20 @@ pro fits_display,input,findscale=findscale,$
 ;; usescale - directs fits_display to use a specific histogram
 ;;            scaling. It is a 6 element array. [xbL,xtR,ybL,ytL,low,high]
 ;; outscale  - a user variable to store the scale found with the mouse
+;; message - a message to the display in the title
 
 type = size(input,/type)
 
 if type EQ 7 then begin
    a = mod_rdfits(input,0,header)
-   Ftitle = input
-endif else begin 
-   a=input
-   Ftitle = ''
-endelse
+endif else a=input
+
+case 1 of
+   keyword_set(message): Ftitle=message 
+   type EQ 7: Ftitle = input
+   else: Fitle = ''
+endcase
+
 
 if keyword_set(findscale) then begin
 ;; start cursor

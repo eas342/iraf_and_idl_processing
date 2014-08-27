@@ -1,6 +1,7 @@
 function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
                         showplot=showplot,Nsig=Nsig,sigma=sigma,$
-                        gaussian=gaussian
+                        gaussian=gaussian,customfunc=customfunc,$
+                        start=start,quiet=quiet
 ;; Fits a robust polynomial to a set of coordinates (x,y) with
 ;; polynomial order npoly
 ;; mask -- allows you to specify which points are masked
@@ -9,6 +10,9 @@ function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
 ;; Nsig - the sigma clipping level
 ;; sigma - an OUTPUT that gives the robust sigma of the residuals
 ;; gaussian - fit a 2D Gaussian instead of Polynomial
+;; customfunc - does a custom functional fit
+;; start - the intial guess for points in a functional fit
+;; quiet - passed on to mpfitfun to suppress output
 
 Xlength = n_elements(x)
 assert,Xlength,'=',n_elements(y),'X & Y Inputs to robust poly fitting not same length'  
@@ -33,8 +37,14 @@ if n_elements(Nsig) EQ 0 then Nsig=4
                       mask EQ 0,complement=badp)
      endelse
      if goodp NE [-1] then begin
-        polyMod = poly_fit(x[goodp],y[goodp],Npoly)
-        modelY = eval_poly(x,polyMod)
+        if keyword_set(customfunc) then begin
+           yerr = fltarr(n_elements(goodp)) + rsigma
+           polyMod = mpfitexpr(customfunc,x[goodp],y[goodp],yerr,start,/quiet)
+           modelY = expression_eval(customfunc,x,polyMod)
+        endif else begin
+           polyMod = poly_fit(x[goodp],y[goodp],Npoly)
+           modelY = eval_poly(x,polyMod)
+        endelse
      endif else begin
         polyMod = fltarr(Npoly)
         modelY = fltarr(Xlength)
@@ -46,7 +56,7 @@ if n_elements(Nsig) EQ 0 then Nsig=4
      plot,x,y,/nodata,xstyle=1,$
           yrange=threshold(y)
      oplot,x[goodp],y[goodp],psym=4
-     oplot,x[badp],y[badp],psym=5,color=mycol('yellow')
+     if badp NE [-1] then oplot,x[badp],y[badp],psym=5,color=mycol('yellow')
      oplot,x,modelY,color=mycol('lblue')
      stop
   endif

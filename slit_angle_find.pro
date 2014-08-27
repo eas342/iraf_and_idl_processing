@@ -1,12 +1,24 @@
 pro slit_angle_find,nosky=nosky,rescale=rescale,$
-                    saveimgs=saveimgs,skyscale=skyscale
+                    saveimgs=saveimgs,skyscale=skyscale,$
+                    reslit=reslit,restar=restar
 ;; This script is designed to find the angle between two stars and the
 ;; slit
 ;;nosky - don't do sky subtraction
 ;; savimgs - saves the subtracted image & derivative image (for slit finding)
-;; skyscale -- scales a previous sky image by the exposure time
+;; skyscale -- scales a previous sky image by the exposure time when
+;;             attempting a sky subtraction
+;; reslit -- Reset the box in which to find the slit
+;; restar -- reselect locations of the stars
 
 fwhm=8E ;; star FWHM
+
+;; Check for a previous set of preferences
+saveFilen = 'ev_local_slit_angle_prefs.sav'
+cd,current=currentD
+FindPref = file_search(currentD+'/'+saveFilen)
+if findPref NE '' then begin
+   restore,currentD+'/'+saveFilen
+endif
 
 ;; Find the last run file
 cd,current=currentd
@@ -29,26 +41,53 @@ endif else skysub = a
 
 if keyword_set(rescale) then begin
    fits_display,skysub,/findscale,outscale=scale1
-endif else begin
-   scale1 = threshold(skysub,low=0.1,high=0.9)
-endelse
+endif
+
+if n_elements(slitbox) EQ 0 OR keyword_set(reslit) then begin
+   slitbox = find_click_box()
+endif
 
 nstars = 2
-plotimage,skysub,range=scale1,$
-          title='Click on two stars, lower one first'
+
+;slitAngle = 90.1
+slitAngle = slit_find(skysub,slitbox,yfunc=slitpos);,/showp)
+
+if keyword_set(restar) then begin
+   starmessage = 'Click on two stars, lower one first'
+endif else begin
+   starmessage = 'Using star starting locations from previous file'
+endelse
+
+fits_display,skysub,usescale=scale1,$
+             message=starmessage
+ycoord = findgen(n_elements(skysub[0,*]))
+slitP = eval_poly(ycoord,slitpos)
+plots,slitP,ycoord,color=mycol('blue')
+
 coord = fltarr(2,nstars)
-for i=0l,nstars-1l do begin
-   coord[*,i] = centroid_find(skysub,fwhm=fwhm)
-endfor
+
+if keyword_set(restar) OR n_elements(coordstart) EQ 0 then begin
+   for i=0l,nstars-1l do begin
+      coord[*,i] = centroid_find(skysub,fwhm=fwhm)
+   endfor
+endif else begin
+   ;; In the default mode, it just uses the previous star coordinates
+   for i=0l,nstars-1l do begin
+      coord[*,i] = centroid_find(skysub,fwhm=fwhm,startCoord=coordstart[*,i])
+   endfor
+endelse
+
 DeltaY = coord[1,1] - coord[1,0]
 DeltaX = coord[0,1] - coord[0,0]
 AngleCW = atan(deltaY,deltaX) * 180E/!PI
 
-print,'Star Angle = ',AngleCW
+;print,'Star Angle = ',AngleCW
+print,'Star-Slit Angle = ',(angleCW - slitAngle),' deg CCW'
 
-slitAngle = 90.1
-
-print,'Slit Misalignment = ',(slitAngle - angleCW)
+topStarDiff = coord[0,1] - slitP[coord[1,1]]
+botStarDiff = coord[0,0] - slitP[coord[1,0]]
+print,'Top Star    Diff = ',topStarDiff,' px right of slit cen'
+print,'Bottom Star Diff = ',botStarDiff,' px right of slit cen'
 
 ;; Find slit position
 ;slitMod = slit_position_find(a)
@@ -60,5 +99,9 @@ if keyword_set(saveimgs) then begin
    writefits,'subtracted.fits',skysub,header
    writefits,'deriv.fits',derivImg,header
 endif
+
+coordstart = coord ; save the star locations for quicker analysis of future images
+save,scale1,slitBox,coordstart,$
+     filename=saveFilen
 
 end
