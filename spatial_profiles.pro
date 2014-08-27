@@ -41,7 +41,7 @@ endif
 
 readcol,'straight_science_images.txt',format='(A)',filen
 nfiles = n_elements(filen)
-startTherm = 435 ;; Where thermal emission starts to dominate
+;startTherm = 435 ;; Where thermal emission starts to dominate
 if n_elements(separation) EQ 0 then separation = 0.03
 
 if keyword_set(customIndex) then begin
@@ -69,9 +69,13 @@ StyleOpt = [0,2]
 for i=0l,nProfiles-1 do begin
    a = mrdfits(filen[fileIndex[i]],0,header)
    ;; find the profile, excluding 
-   prof = total(a[0:startTherm-1l,*],1)
+;   prof = total(a[0:startTherm-1l,*],1)
+;   prof = median(a[0:startTherm-1l,*],dimension=1)
+   prof = total(a,1)
    NormVal = median(Prof)
    normProf = prof/NormVal
+   medprof = median(a,dimension=1)
+   medprof = medprof/median(medprof) ;; normalized median profile
    offset = separation * i
    date = fxpar(header,'DATE_OBS')
    Longtime = fxpar(header,'TIME_OBS')
@@ -91,7 +95,8 @@ for i=0l,nProfiles-1 do begin
       ;; Show the stars re-normalized on top of each other
 ;      oplot,Rowarr - 266.5,(normProf - median(NormProf)) * 1.6 +
 ;                     Median(NormProf)- offset - 0.08,linestyle=2
-      profstruct = create_struct('data',[[RowArr],[normProf]])
+      ;; Ignore the ends (last 4 pixels and first 4)
+      profstruct = create_struct('data',[[RowArr[4l:nrows-4l]],[medProf[4l:nrows-4l]]])
       mc_findpeaks,profstruct,2,1,posit,apsign,/auto
       for j=0l,1l do begin
          Lowp = max([0,posit[j] - StarHalfRange])
@@ -145,6 +150,7 @@ for i=0l,nProfiles-1 do begin
                     xrange = [-StarHalfRange,StarHalfRange * 1.4E],$
                     yrange=myYrange,ylog=semiLog,$
                     xstyle=1
+
                ;; Show Error Bar
                rsigma = robust_sigma(ybackg/ytotal)
                oploterror,[-StarHalfRange/2E],[separation * 0.5E],[0E],$
