@@ -50,7 +50,7 @@ endif
 nstars = 2
 
 ;slitAngle = 90.1
-slitAngle = slit_find(skysub,slitbox,yfunc=slitpos);,/showp)
+slitAngle = slit_find(a,slitbox,yfunc=slitpos);,/showp)
 
 if keyword_set(restar) then begin
    starmessage = 'Click on two stars, lower one first'
