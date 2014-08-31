@@ -1,6 +1,6 @@
 pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             showCRplot=showCRplot,comparSpec=comparSpec,$
-            allimages=allimages
+            allimages=allimages,showStarshift=showstarshift
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -13,6 +13,8 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;;              weighted/profile/sum extraction
 ;; allimages - process all images (instead of subset, which is the
 ;;             default for savesteps
+;; showStarshift - show the shifting of the two stars in creating a
+;;                 ratio image
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -33,6 +35,7 @@ mprofNames = strarr(nfile);; measured profile
 fprofNames = strarr(nfile);; fitted profile
 rprofNames = strarr(nfile);; source- subtracted images
 cprofNames = strarr(nfile);; cosmic ray images
+dprofNames = strarr(nfile);; star ratio images
 
 ;; Make these directories if they don't exist
 ;dirlist = ['m_profiles','f_profiles']
@@ -166,6 +169,33 @@ for i=0l,lastfile do begin
                     total(fitImage[*,Apstart[k]:ApEnd[k]]^2 / varImage[*,Apstart[k]:ApEnd[k]],2)
          sigflux[*,k] = sqrt(variance)
       endfor
+
+      ;; ratio image
+      if i EQ 0 then begin
+         fixApstart = Apstart
+         fixApend = ApEnd
+      endif
+      star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
+      star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
+
+      ;; Find the shift of the two stars
+      star1quickProf = total(fitImage[*,fixApstart[0]:fixApEnd[0]],1)
+      star2quickProf = total(fitImage[*,fixApstart[1]:fixApEnd[1]],1)
+      ;; shift to match the core and peak, not so much wings
+;      midAp = round(apsize)
+;      corestart = MidAp - round(Apsize/2E)
+;      coreend = midAp + round(Apsize/2E)
+
+      shiftAmt = cross_cor_find(star1quickProf,star2quickProf,$
+                                nlag=50l,fitsize=8l,showplot=showstarshift)
+      star2img = shift_interp(star2img,-shiftAmt)
+
+      nonzeropt = where(star2img NE 0E,complement=zeropt)
+      ratioImg = star1img
+      if nonzeropt NE [-1] then $
+         ratioImg[nonzeropt] = star1img[nonzeropt]/star2img[nonzeropt]
+      if zeropt NE [-1] then $
+         ratioImg[zeropt] = !values.f_nan
       
       ;; Save the spectrum
       finalData = fltarr(Xlength,Nap,NSpecTypes)
@@ -243,26 +273,31 @@ for i=0l,lastfile do begin
       fheader = header                             ;; header for the normalized profile fit
       rheader = header                             ;; header for the profile-subtracted image
       cheader = header                             ;; header for the marked cosmic ray hits/bad pixels
-      
+      dheader = header                             ;; header for ratio image
+
       sxaddpar,bheader,'BACKSUB','TRUE','Background Subtraction performed'
       sxaddpar,pheader,'PROFILE','TRUE','Normalized profile'
       sxaddpar,pheader,'FITPROFILE','TRUE','Normalized fit profile'
       sxaddpar,sheader,'SourceSub','TRUE','Source subtracted'
       sxaddpar,cheader,'BadPix','TRUE','Bad Pixels/Cosmic Rays are marked'
       sxaddpar,cheader,'BITPIX',16,''
-      
+      sxaddpar,dheader,'NAXIS1',n_elements(ratioImg[*,0])
+      sxaddpar,dheader,'NAXIS2',n_elements(ratioImg[0,*])
+      sxaddpar,dheader,'Ratio','TRUE','Ratio of two stars'
+
       backsubNames[i] = outprefix+'_backsub.fits'
       mprofNames[i] = outprefix+'_m_profile.fits'
       fprofNames[i] = outprefix+'_f_profile.fits'
       rprofNames[i] = outprefix+'_subtracted.fits'
       cprofNames[i] = outprefix+'_c_ray.fits'
+      dprofNames[i] = outprefix+'_ratio.fits'
       
       writefits,backsubNames[i],outImage,bheader
       writefits,mprofNames[i],profImage,pheader
       writefits,fprofNames[i],fitImage,fheader
       writefits,rprofNames[i],resImage,rheader
-      writefits,cprofNames[i],cosImage,cheader
-      
+;      writefits,cprofNames[i],cosImage,cheader
+      writefits,dprofNames[i],ratioImg,dheader
    endif
    
    ;; Print an update every 50 files
