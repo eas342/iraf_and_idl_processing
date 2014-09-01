@@ -23,17 +23,17 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'r' OR status EQ 'R': begin
          print,'Choose a FITS file'
          filen = choose_file(filetype='fits')
-         fits_display,filen,usescale=currentScale
+         fits_display,filen,usescale=currentScale,lineP=lineP
          if n_elements(fileL) EQ 0 then begin
             fileL = filen
          endif else fileL = [fileL,filen]
          slot = n_elements(fileL)-1l
       end
       status EQ 's' OR status EQ 'S': begin
-         fits_display,filel[slot],/findscale,outscale=CurrentS
+         fits_display,filel[slot],/findscale,outscale=CurrentS,lineP=lineP
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,usescale=currentS)
+         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP)
       end
       status EQ 'c' OR status EQ 'C': begin
          undefine,fileL
@@ -47,6 +47,13 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'd' OR status EQ 'D': begin
          lineP = fits_line_draw(fileL[slot],useScale=currentS)
+      end
+      status EQ 'b' OR status EQ 'B': begin
+         boxC = find_click_box(filel[slot],usescale=currentS,$
+                               /get_direction)
+      end
+      status EQ 'bp' OR status EQ 'Bp': begin
+         fits_line_plot,fileL,boxP=boxC,current=slot
       end
       status EQ 'nothing': begin
       end

@@ -1,6 +1,6 @@
 pro fits_display,input,findscale=findscale,$
                  usescale=usescale,outscale=outscale,$
-                 message=message
+                 message=message,lineP=lineP
 ;; This script displays a fits image and allows you to set the scaling
 ;; If the input is a data array, it uses that
 ;; if the input is a string, it reads the file
@@ -10,6 +10,7 @@ pro fits_display,input,findscale=findscale,$
 ;;            scaling. It is a 6 element array. [xbL,xtR,ybL,ytL,low,high]
 ;; outscale  - a user variable to store the scale found with the mouse
 ;; message - a message to the display in the title
+;; lineP - load in and display previous line and box parameters
 
 type = size(input,/type)
 
@@ -67,5 +68,15 @@ endelse
 plotimage,a,range=scaleNums,title=Ftitle
 !MOUSE.button = 1
 
+if n_elements(lineP) NE 0 then begin
+   if LineP.type EQ 'line' then begin
+      oplot,LineP.xcoor,LineP.ycoor,color=mycol('red'),thick=2
+   endif else begin
+      boxArrX = [lineP.xcoor[0],lineP.xcoor[0],lineP.xcoor[1],lineP.xcoor[1],lineP.xcoor[0]]
+      boxArrY = [lineP.ycoor[0],lineP.ycoor[1],lineP.ycoor[1],lineP.ycoor[0],lineP.ycoor[0]]
+      oplot,boxArrX,boxArrY,color=mycol('red'),thick=2
+      box_display,LineP
+   endelse
+endif
 
 end

@@ -1,11 +1,22 @@
-function find_click_box,bcolor=bcolor
+function find_click_box,filen,bcolor=bcolor,$
+                        get_direction=get_direction,$
+                        usescale=usescale
 ;; This function takes user input and draws a box
+;; filen - an optional input to display the file
 ;; bcolor - an option to specify the color of the box
 ;; returns an array of 2 points x coordinates then y coordinates
 ;; [[xBL,yBL],[xTR,yTR]] for x,y bottom left and top right
+;; get_direction - find out an X or Y direction for plotting. Then,
+;;                 the output is a structure, direction, xcoor/ycoor etc.
+
+  if n_elements(filen) NE 0 then begin
+     fits_display,filen,usescale=usescale
+  endif
+
   print,'Draw lower left corner of box'
   cursor,xboxBL,yboxBL,/down
   print,'Draw upper right corner of box'
+
 
   if n_elements(bcolor) EQ 0 then bcolor=mycol('green')
   cursor,xboxTR,yboxTR,/down
@@ -13,11 +24,32 @@ function find_click_box,bcolor=bcolor
   boxH = yboxTR - yboxBL
   boxArrX = [xboxBL,xboxBL,xboxTR,xboxTR,xboxBL]
   boxArrY = [yboxBL,yboxTR,yboxTR,yboxBL,yboxBL]
-  plots,boxArrX,boxarrY,color=bcolor,thick=1.8
-  outArray = [[xboxBL,yboxBL],[xboxTR,yboxTR]]
 
-  print,'Click again to exit'
-  cursor,xjunk,yjunk,/down
+  if keyword_set(get_direction) then begin
+     print,'Change direction w/ left mouse click. Right click when done'
+     direction = 'y'
+     outArray = create_struct('direction',direction,$
+                              'Xcoor',[min(boxArrX),max(boxArrX)],$
+                              'Ycoor',[min(boxArrY),max(boxArrY)],$
+                              'type','box')
+     while  (!mouse.button NE 4) do begin
+        if outarray.direction EQ 'y' then outarray.direction = 'x' else begin
+           outarray.direction = 'y'
+        endelse
+        fits_display,filen,usescale=usescale,lineP=outarray
+;        plots,boxArrX,boxarrY,color=bcolor,thick=1.8
+;        box_display,outarray
+        cursor,xjunk,yjunk,/down,/normal
+     endwhile
+     !MOUSE.button=1
+  endif else begin
+     
+     plots,boxArrX,boxarrY,color=bcolor,thick=1.8
+     print,'Click again to exit'
+     cursor,xjunk,yjunk,/down
+     outArray = [[xboxBL,yboxBL],[xboxTR,yboxTR]]
+  endelse
+
   return,outArray
 
 end

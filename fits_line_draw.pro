@@ -19,7 +19,7 @@ function fits_line_draw,filen,useScale=usescale
   ycoor = [ycur1,ycur2]
   lineP = create_struct('direction',direction,$
                         'XCOOR',xcoor,$
-                        'YCOOR',ycoor)
+                        'YCOOR',ycoor,'type','line')
   oplot,xcoor,ycoor,color=mycol('red'),thick=2
   return, lineP
 
