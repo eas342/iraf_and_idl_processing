@@ -13,13 +13,18 @@ function find_click_box,filen,bcolor=bcolor,$
      fits_display,filen,usescale=usescale
   endif
 
-  print,'Draw lower left corner of box'
-  cursor,xboxBL,yboxBL,/down
-  print,'Draw upper right corner of box'
-
-
   if n_elements(bcolor) EQ 0 then bcolor=mycol('green')
-  cursor,xboxTR,yboxTR,/down
+
+  print,'Draw lower left corner of box'
+  cursor,x1,y1,/down
+  print,'Draw upper right corner of box'
+  cursor,x2,y2,/down
+
+  xboxBL = min([x1,x2]) ;; ensure that BL and top Right are found
+  xboxTR = max([x1,x2])
+  yboxBL = min([y1,y2])
+  yboxTR = max([y1,y2])
+
   boxW = xboxTR - xboxBL
   boxH = yboxTR - yboxBL
   boxArrX = [xboxBL,xboxBL,xboxTR,xboxTR,xboxBL]
@@ -27,14 +32,14 @@ function find_click_box,filen,bcolor=bcolor,$
 
   if keyword_set(get_direction) then begin
      print,'Change direction w/ left mouse click. Right click when done'
-     direction = 'y'
+     direction = 'x'
      outArray = create_struct('direction',direction,$
                               'Xcoor',[min(boxArrX),max(boxArrX)],$
                               'Ycoor',[min(boxArrY),max(boxArrY)],$
                               'type','box')
      while  (!mouse.button NE 4) do begin
-        if outarray.direction EQ 'y' then outarray.direction = 'x' else begin
-           outarray.direction = 'y'
+        if outarray.direction EQ 'x' then outarray.direction = 'y' else begin
+           outarray.direction = 'x'
         endelse
         fits_display,filen,usescale=usescale,lineP=outarray
 ;        plots,boxArrX,boxarrY,color=bcolor,thick=1.8

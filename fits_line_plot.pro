@@ -26,10 +26,14 @@ while (!mouse.button NE 4) do begin
       xplot = min(Linep.ycoor) + lindgen(abs(LineP.ycoor[1] - Linep.ycoor[0]))
    endelse
    ;; Get the ordinate axis
-   if lineP.direction EQ 'x' then begin
-      yplot = a[xplot,LineP.ycoor[0]]
+;   case 1 of 
+;      LineP.type EQ 'line': begin
+   if LineP.direction EQ 'x' then begin
+      yplot = total(a[xplot,LineP.ycoor[0]:LineP.ycoor[1]],2)
+      yplot = yplot / float(LineP.ycoor[1] - LineP.ycoor[0] + 1l);; renormalize for avg
    endif else begin
-      yplot = a[LineP.xcoor[0],xplot]
+      yplot = total(a[LineP.xcoor[0]:LineP.xcoor[1],xplot],1)
+      yplot = yplot / float(LineP.xcoor[1] - LineP.xcoor[0] + 1l);; renormalize for avg
    endelse
 
    plot,xplot,yplot,ystyle=16,$

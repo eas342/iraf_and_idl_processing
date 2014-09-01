@@ -3,8 +3,8 @@ pro multi_image_viewer
 
 actions = ['(q)uit','(r)ead new file','set (s)cale',$
            '(t)oggle image mode','(d)raw a line',$
-           '(p)lot a line',$
-          '(b)ox draw mode','(c)lear previous seetings']
+           '(p)lot a line or box','(pm) to plot median',$
+          '(b)ox draw mode','(c)lear previous settings']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -36,20 +36,29 @@ while status NE 'q' and status NE 'Q' do begin
          slot = toggle_fits(fileL,usescale=currentS,lineP=lineP)
       end
       status EQ 'c' OR status EQ 'C': begin
-         undefine,fileL
-         undefine,currentS
-         undefine,slot
-         status = 'r'
-         skipaction=1
+         confirm=''
+         print,'Are you sure you want to delete all settings?'
+         read,confirm
+         if confirm EQ 'y' or confirm EQ 'Y' or confirm EQ 'yes' $
+            or confirm EQ 'Yes' then begin
+            undefine,fileL
+            undefine,currentS
+            undefine,slot
+            status = 'r'
+            skipaction=1
+         endif
       end
       status EQ 'p' OR status EQ 'P': begin
          fits_line_plot,fileL,lineP=lineP,current=slot
+      end
+      status EQ 'pm' OR status EQ 'PM': begin
+         fits_line_plot,fileL,lineP=lineP,current=slot,/median
       end
       status EQ 'd' OR status EQ 'D': begin
          lineP = fits_line_draw(fileL[slot],useScale=currentS)
       end
       status EQ 'b' OR status EQ 'B': begin
-         boxC = find_click_box(filel[slot],usescale=currentS,$
+         lineP = find_click_box(filel[slot],usescale=currentS,$
                                /get_direction)
       end
       status EQ 'bp' OR status EQ 'Bp': begin
