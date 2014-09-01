@@ -23,7 +23,7 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'r' OR status EQ 'R': begin
          print,'Choose a FITS file'
          filen = choose_file(filetype='fits')
-         fits_display,filen,usescale=currentScale,lineP=lineP
+         fits_display,filen,usescale=currentS,lineP=lineP
          if n_elements(fileL) EQ 0 then begin
             fileL = filen
          endif else fileL = [fileL,filen]
@@ -44,6 +44,7 @@ while status NE 'q' and status NE 'Q' do begin
             undefine,fileL
             undefine,currentS
             undefine,slot
+            undefine,lineP
             status = 'r'
             skipaction=1
          endif
