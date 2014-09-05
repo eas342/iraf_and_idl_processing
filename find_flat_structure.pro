@@ -13,8 +13,12 @@ columNum = findgen(xlength)
 ;; Make a structure image
 struct = fltarr(xlength,ylength)
 
+;; Make a mask for some of the structure I won't fit
+mask = intarr(xlength)
+;mask[0l:85l] = 1l
+
 for i=0l,ylength-1l do begin
-   polyParam = ev_robust_poly(columNum,a[*,i],nrowpoly,showplot=showplot)
+   polyParam = ev_robust_poly(columNum,a[*,i],nrowpoly,showplot=showplot,mask=mask)
    struct[*,i] = eval_poly(columNum,polyParam)
 endfor
 

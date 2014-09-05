@@ -1,8 +1,8 @@
-function fits_line_draw,filen,useScale=usescale
+function fits_line_draw,filen,useScale=usescale,zoombox=zoombox
 ;; Allows a user to draw a line on a fits image which can later be
 ;; plotted
   
-  fits_display,filen,usescale=usescale
+  fits_display,filen,usescale=usescale,zoombox=zoombox
   cursor,xcur1,ycur1,/down
   cursor,xcur2,ycur2,/down
   deltaX = xcur2 - xcur1

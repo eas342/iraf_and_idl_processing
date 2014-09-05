@@ -1,6 +1,6 @@
 pro fits_display,input,findscale=findscale,$
                  usescale=usescale,outscale=outscale,$
-                 message=message,lineP=lineP
+                 message=message,lineP=lineP,zoomBox=zoomBox
 ;; This script displays a fits image and allows you to set the scaling
 ;; If the input is a data array, it uses that
 ;; if the input is a string, it reads the file
@@ -11,6 +11,7 @@ pro fits_display,input,findscale=findscale,$
 ;; outscale  - a user variable to store the scale found with the mouse
 ;; message - a message to the display in the title
 ;; lineP - load in and display previous line and box parameters
+;; zoomBox - a region to zoom in on the image
 
 type = size(input,/type)
 
@@ -58,14 +59,30 @@ if n_elements(usescale) EQ 0 then begin
 endif else begin
    maxX = n_elements(a[*,0]) - 1l
    maxY = n_elements(a[0,*]) - 1l
+   if maxX LT usescale[0] then usescale[0] =maxX
    if maxX LT usescale[1] then usescale[1] =maxX
+   if maxY LT usescale[2] then usescale[2] =maxY
    if maxY LT usescale[3] then usescale[3] =maxY
+   
    scaleNums = threshold(a[usescale[0]:usescale[1],$
                           usescale[2]:usescale[3]],$
                          low=usescale[4],high=usescale[5])
 endelse
 
-plotimage,a,range=scaleNums,title=Ftitle
+if n_elements(zoombox) EQ 0 then begin
+   plotimage,a,range=scaleNums,title=Ftitle
+endif else begin
+   myXrange = fltarr(2)
+   myYrange = fltarr(2)
+   myXrange[0] = min(zoombox[0,*])
+   myXrange[1] = max(zoombox[0,*])
+   myYrange[0] = min(zoombox[1,*])
+   myYrange[1] = max(zoombox[1,*])
+   plotimage,a,range=scaleNums,title=Ftitle,$
+             xrange=myXrange,yrange=myYrange
+endelse
+
+
 !MOUSE.button = 1
 
 if n_elements(lineP) NE 0 then begin

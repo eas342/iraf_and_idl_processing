@@ -1,11 +1,11 @@
-function toggle_fits,fileL,usescale=usescale,lineP=lineP
+function toggle_fits,fileL,usescale=usescale,lineP=lineP,zoombox=zoombox
 ;; Toggles between FITS files with clicks
 ;; It returns the last index the user stopped with
 
   i = 0l
   nFile = n_elements(fileL)
   while (!mouse.button NE 4) do begin
-     fits_display,fileL[i],usescale=usescale,lineP=lineP
+     fits_display,fileL[i],usescale=usescale,lineP=lineP,zoombox=zoombox
      slot = i
 
      cursor,xcur,ycur,/normal,/down
@@ -17,6 +17,8 @@ function toggle_fits,fileL,usescale=usescale,lineP=lineP
 
   endwhile
   !MOUSE.button=1
+  ;; make sure slot is defined, otherwise it produces an IDl error
+  if n_elements(slot) EQ 0 then slot=0 
 return,slot
 
 end
