@@ -6,7 +6,7 @@ pro move_flat_field,showplot=showplot,psubreg=psubreg
 ;; psubreg - show a sub-region of the line plots
 
 lagsize=15l ;; how far to look at the cross correlation
-fitsize = 2l ;; how far on either side of the peak to fit
+
 NpolyF = 2
 statusrefresh=30l ;; how many images before showing the filename
 
@@ -18,12 +18,18 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
 
   ;; Get the local parameters
   readcol,'local_red_params.cl',skipline=3,$
-          junk,varname,inputBregion,format='(A,A,A)',delimiter=' '
+          junk,varname,varvalue,format='(A,A,A)',delimiter=' '
 
   if varname[0] NE 'backbox' then begin
      print,'No backbox found for move_lat_field'
      return
-  end else breg = parse_iraf_regions(inputBregion)
+  end else breg = parse_iraf_regions(varvalue[0])
+  fsizesearch = where(varname EQ 'fitsize')
+
+  ;; Choose how far on either side of the peak to fit
+  if fsizesearch NE [-1] then begin
+     fitsize = long(varvalue[fsizesearch[0]])
+  endif else fitsize=2
 
   s = mod_rdfits(stripeF,0,sheader,trimReg=strimReg)
   r = mod_rdfits(responseF,0,rheader,trimReg=rtrimReg)
