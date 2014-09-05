@@ -81,8 +81,8 @@ for i=0l,lastfile do begin
    Highp = lonarr(Nap)
    for k=0l,Nap-1l do begin
       ;; Choose a region surrounding the aperture 
-      LowP[k] = max([SubtractStart,posit[i,k] - Backsize])
-      HighP[k] = min([EndSubtract,posit[i,k] + Backsize])
+      LowP[k] = max([0l,posit[i,k] - Backsize])
+      HighP[k] = min([Ylength-1l,posit[i,k] + Backsize])
       MaskArray[LowP[k]:HighP[k]] = 1
    endfor
 
