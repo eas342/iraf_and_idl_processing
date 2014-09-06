@@ -1,5 +1,5 @@
 pro fits_line_plot,fileL,lineP=lineP,current=current,$
-                   median=median
+                   median=median,makestop=makestop
 ;; This plots a line or box depending on input
 ;; lineP - a structure of line coordinates
 ;; boxC - a structure of box coordinates
@@ -50,7 +50,7 @@ while (!mouse.button NE 4) do begin
    plot,xplot,yplot,ystyle=16,$
         title=Ftitle,$
         xtitle=lineP.direction+' coordinate',psym=10
-
+   if keyword_set(makestop) then stop
    cursor,xcur,ycur,/normal,/down
    if xcur LT 0.5 then begin
       i = wrap_mod((i - 1l),nfile)

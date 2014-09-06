@@ -5,6 +5,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
+           '(ps) to plot and stop',$
           '(b)ox draw mode','(c)lear previous settings',$
           '(l)oad another parameter file.',$
           '(z)oom in']
@@ -62,6 +63,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'pm' OR status EQ 'PM': begin
          fits_line_plot,fileL,lineP=lineP,current=slot,/median
+      end
+      status EQ 'ps' OR status EQ 'PS': begin
+         fits_line_plot,fileL,lineP=lineP,current=slot,/makestop
       end
       status EQ 'd' OR status EQ 'D': begin
          lineP = fits_line_draw(fileL[slot],useScale=currentS,zoombox=zoombox)
