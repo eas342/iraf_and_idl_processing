@@ -12,7 +12,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent
      endif else begin
         trimReg = parse_iraf_regions(ccdsec)
         b = fltarr(trimReg[1]+1l,trimReg[3]+1l)
-        b[trimReg[0]:trimReg[1],trimReg[2]:trimReg[3]] = a
+        if fxpar(header,"NAXIS1") EQ (trimReg[1] - trimReg[0] + 1l) and $
+           fxpar(header,"NAXIS2") EQ (trimReg[3] - trimReg[2] + 1l) then begin
+           b[trimReg[0]:trimReg[1],trimReg[2]:trimReg[3]] = a
+        endif else b =a
      endelse
   endif else b=a
   return,b
