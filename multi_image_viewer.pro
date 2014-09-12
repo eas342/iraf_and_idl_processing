@@ -2,9 +2,12 @@ pro multi_image_viewer
 ;; Displays multiple fits files and lets you go between them
 
 actions = ['(q)uit','(r)ead new file',$
+           '(rf) read a file with filter',$
+           '(rfa) read a set of files with a filter',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
+           '(op) overplot line or box mode',$
            '(ps) to plot and stop',$
           '(b)ox draw mode','(c)lear previous settings',$
           '(l)oad another parameter file.',$
@@ -17,7 +20,7 @@ FindPref = file_search(currentD+'/ev_local_display_params.sav')
 if findPref NE '' then begin
    restore,currentD+'/ev_local_display_params.sav'
    if n_elements(filel) NE 0 then status='nothing' else status = 'r'
-endif else status = 'r'
+endif else status = 'o'
 
 while status NE 'q' and status NE 'Q' do begin
    nfile = n_elements(fileL)
@@ -25,18 +28,37 @@ while status NE 'q' and status NE 'Q' do begin
    if n_elements(slot) EQ 0 then slot = nfile-1l
    case 1 of
       status EQ 'r' OR status EQ 'R' OR $
-         status EQ 'o' OR status EQ 'O': begin
-         if status EQ 'r' OR status EQ 'R' then begin
-            print,'Choose a FITS file'
-            filen = choose_file(filetype='fits')
-         endif else begin
-            filen = dialog_pickfile(/read,filter='*.fits')
-         endelse
+         status EQ 'o' OR status EQ 'O' OR $
+         status EQ 'rf' OR status EQ 'RF': begin
+         case 1 of
+            status EQ 'r' OR status EQ 'R': begin
+               print,'Choose a FITS file'
+               filen = choose_file(filetype='fits')
+            end
+            status EQ 'rf' OR status EQ 'RF': begin
+               print,'Choose file filter'
+               filter=''
+               read,filter
+               filen = choose_file(filetype=filter)
+            end
+            else: filen = dialog_pickfile(/read,filter='*.fits')
+         endcase
          fits_display,filen,usescale=currentS,lineP=lineP,zoombox=zoombox
          if n_elements(fileL) EQ 0 then begin
             fileL = filen
          endif else fileL = [fileL,filen]
          slot = n_elements(fileL)-1l
+      end
+      status EQ 'rfa' OR status EQ 'RFA': begin
+         prevFileL = fileL
+         print,'Choose file filter'
+         filter=''
+         read,filter
+         fileL = choose_file(filetype=filter,/all)
+         if fileL EQ [''] then fileL = prevFileL else begin
+            slot = n_elements(fileL)-1l
+            fits_display,filel[slot],usescale=currentS,lineP=lineP,zoombox=zoombox
+         endelse
       end
       status EQ 's' OR status EQ 'S': begin
          fits_display,filel[slot],/findscale,outscale=CurrentS,lineP=lineP,zoombox=zoombox
@@ -54,12 +76,15 @@ while status NE 'q' and status NE 'Q' do begin
             undefine,currentS
             undefine,slot
             undefine,lineP
-            status = 'r'
+            status = 'o'
             skipaction=1
          endif
       end
       status EQ 'p' OR status EQ 'P': begin
          fits_line_plot,fileL,lineP=lineP,current=slot
+      end
+      status EQ 'op' OR status EQ 'OP': begin
+         fits_line_plot,fileL,lineP=lineP,current=slot,/overplot
       end
       status EQ 'pm' OR status EQ 'PM': begin
          fits_line_plot,fileL,lineP=lineP,current=slot,/median
