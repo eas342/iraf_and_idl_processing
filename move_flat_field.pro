@@ -1,9 +1,10 @@
-pro move_flat_field,showplot=showplot,psubreg=psubreg
+pro move_flat_field,showplot=showplot,psubreg=psubreg,spline=spline
 ;; Moves the structure in the flat field to best-fit the data's
 ;; flat field
 ;; responsefile - the iraf response file that has the flat field, but
 ;;                with the stripe structure subtracted from it
 ;; psubreg - show a sub-region of the line plots
+;; spline - use spline interpolation
 
 lagsize=15l ;; how far to look at the cross correlation
 
@@ -60,8 +61,9 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      shiftstruct = s
      nx = n_elements(s[*,0])
      for j=0l,nx-1l do begin
-        shiftstruct[j,*] = transpose(shift_interp(transpose(s[j,*]),peak));,/spline))
+        shiftstruct[j,*] = transpose(shift_interp(transpose(s[j,*]),peak,spline=spline))
      endfor
+
      dividedFlat = r * shiftstruct ;; add in the pixel-to-pixel structure
      ;; Trim the flat to the same as the original response
      finalFlat = dividedflat[rtrimReg[0]:rtrimReg[1],rtrimReg[2]:rtrimReg[3]]
