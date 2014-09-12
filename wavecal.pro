@@ -1,7 +1,7 @@
 function wavecal
 ;; Finds the wavelength versus pixel solution
 
-Npoly = 3 ;; polynomial solution
+Npoly = 2 ;; polynomial solution
 
 ;from the Argon line identification table, find a wavelength solution
 openr,1,'database/idfirst_wavecal'
