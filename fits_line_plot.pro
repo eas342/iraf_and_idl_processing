@@ -52,11 +52,14 @@ while (!mouse.button NE 4) do begin
 
    if counter GT 0 and keyword_set(overplot) then begin
       colorArr = myarraycol(counter+1)
+      plottedInd = [plottedInd,i]
       oplot,xplot,yplot,color=colorArr[counter],psym=10
+      al_legend,fileL[plottedInd],color=colorArr,linestyle=0
    endif else begin
       plot,xplot,yplot,ystyle=16,$
            title=Ftitle,$
            xtitle=lineP.direction+' coordinate',psym=10
+      plottedInd = i
    endelse
    if keyword_set(makestop) then stop
    cursor,xcur,ycur,/normal,/down
