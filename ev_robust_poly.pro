@@ -1,7 +1,8 @@
 function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
                         showplot=showplot,Nsig=Nsig,sigma=sigma,$
                         gaussian=gaussian,customfunc=customfunc,$
-                        start=start,quiet=quiet
+                        start=start,quiet=quiet,yerr=yerr,$
+                        custyrange=custyrange
 ;; Fits a robust polynomial to a set of coordinates (x,y) with
 ;; polynomial order npoly
 ;; mask -- allows you to specify which points are masked
@@ -13,6 +14,8 @@ function ev_robust_poly,x,y,npoly,mask=mask,niter=niter,$
 ;; customfunc - does a custom functional fit
 ;; start - the intial guess for points in a functional fit
 ;; quiet - passed on to mpfitfun to suppress output
+;; yerr - an input error (otherwise is usese robust-sigma to estimate)
+;; custyrange - custom plot range when showPlot is acivated
 
 Xlength = n_elements(x)
 assert,Xlength,'=',n_elements(y),'X & Y Inputs to robust poly fitting not same length'  
@@ -38,23 +41,32 @@ if n_elements(Nsig) EQ 0 then Nsig=4
      endelse
      if goodp NE [-1] then begin
         if keyword_set(customfunc) then begin
-           yerr = fltarr(n_elements(goodp)) + rsigma
-           polyMod = mpfitexpr(customfunc,x[goodp],y[goodp],yerr,start,/quiet)
+           if n_elements(yerr) EQ 0 then begin
+              useyerr = fltarr(n_elements(goodp)) + rsigma
+           endif else useyerr = yerr[goodp]
+           polyMod = mpfitexpr(customfunc,x[goodp],y[goodp],useyerr,start,/quiet)
            modelY = expression_eval(customfunc,x,polyMod)
         endif else begin
-           polyMod = poly_fit(x[goodp],y[goodp],Npoly)
+           if keyword_set(yerr) then begin
+              polyMod = poly_fit(x[goodp],y[goodp],Npoly,measure_errors=yerr[goodp])
+           endif else begin
+              polyMod = poly_fit(x[goodp],y[goodp],Npoly)
+           endelse
            modelY = eval_poly(x,polyMod)
         endelse
      endif else begin
-        polyMod = fltarr(Npoly)
+        ;; Give up if no good points
+        polyMod = fltarr(Npoly+1l)
         modelY = fltarr(Xlength)
+        l = niter-1l
      endelse
   endfor
   finalResid = y - modelY
   if goodp NE [-1] then sigma = robust_sigma(finalResid[goodp]) else sigma = !values.f_nan
   if keyword_set(showplot) then begin
+     if n_elements(custYrange) EQ 0 then custYrange = threshold(y)
      plot,x,y,/nodata,xstyle=1,$
-          yrange=threshold(y)
+          yrange=custYrange
      oplot,x[goodp],y[goodp],psym=4
      if badp NE [-1] then oplot,x[badp],y[badp],psym=5,color=mycol('yellow')
      oplot,x,modelY,color=mycol('lblue')
