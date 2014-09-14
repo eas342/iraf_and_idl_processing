@@ -1,6 +1,7 @@
 pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             showCRplot=showCRplot,comparSpec=comparSpec,$
-            allimages=allimages,showStarshift=showstarshift
+            allimages=allimages,showStarshift=showstarshift,$
+            showRatioFit=showRatioFit
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -15,6 +16,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;;             default for savesteps
 ;; showStarshift - show the shifting of the two stars in creating a
 ;;                 ratio image
+;; showRatioFit - show fitting the ratio of the two stars to a polynomial
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -68,12 +70,15 @@ for i=0l,lastfile do begin
    cosImage = intarr(xlength,ylength) ;; cosmic ray image
    varImage = fltarr(xlength,ylength) ;; variance image
 
-   NSpectypes = 6 ;; number of spectral types to save in extraction
+   bandIDS = ['Optimal','Sum','Background','Sigma','ProfWeighted','Wavelength',$
+              'StarRatio']
+   NSpectypes = n_elements(bandIDs) ;; number of spectral types to save in extraction
    optflux = fltarr(Xlength,Nap) ;; optimal extraction of flux
    sumflux = fltarr(Xlength,Nap) ;; sum extraction (not optimal extraction)
    bflux = fltarr(Xlength,Nap) ;; background spectra
    sigflux = fltarr(Xlength,Nap) ;; uncertainty in optimally extracted flux
    proflux = fltarr(Xlength,Nap) ;; profile-weighted extraction (profile-weighted extraction, which applies in the case of background limited observations)
+   fluxrat = fltarr(Xlength,Nap) + 1E;; ratio of the stars (stored in ap 0)
    bsigmas = fltarr(Xlength) ;; standard deviation in background
 
    MaskArray = intarr(Ylength)
@@ -170,58 +175,6 @@ for i=0l,lastfile do begin
          sigflux[*,k] = sqrt(variance)
       endfor
 
-      ;; ratio image
-      if i EQ 0 then begin
-         fixApstart = Apstart
-         fixApend = ApEnd
-      endif
-      star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
-      star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
-
-      ;; Find the shift of the two stars
-      star1quickProf = total(fitImage[*,fixApstart[0]:fixApEnd[0]],1)
-      star2quickProf = total(fitImage[*,fixApstart[1]:fixApEnd[1]],1)
-      ;; shift to match the core and peak, not so much wings
-;      midAp = round(apsize)
-;      corestart = MidAp - round(Apsize/2E)
-;      coreend = midAp + round(Apsize/2E)
-
-      shiftAmt = cross_cor_find(star1quickProf,star2quickProf,$
-                                nlag=50l,fitsize=8l,showplot=showstarshift)
-      star2img = shift_interp(star2img,-shiftAmt)
-
-      nonzeropt = where(star2img NE 0E,complement=zeropt)
-      ratioImg = star1img
-      if nonzeropt NE [-1] then $
-         ratioImg[nonzeropt] = star1img[nonzeropt]/star2img[nonzeropt]
-      if zeropt NE [-1] then $
-         ratioImg[zeropt] = !values.f_nan
-      
-      ;; Save the spectrum
-      finalData = fltarr(Xlength,Nap,NSpecTypes)
-      for k=0l,Nap-1l do begin
-         finalData[*,k,0] = sumflux[*,k]
-         finalData[*,k,1] = optflux[*,k]
-         finalData[*,k,2] = bflux[*,k]
-         finalData[*,k,3] = sigflux[*,k]
-         finalData[*,k,4] = proflux[*,k]
-         finalData[*,k,4] = proflux[*,k]
-         finalData[*,k,5] = lamgrid
-      endfor
-      postpos = strpos(straightlist[i],'.fits')
-      outprefix = strmid(straightlist[i],0,postpos)
-      fluxhead = header
-      
-      sxaddpar,fluxhead,'NAXIS',3
-      sxaddpar,fluxhead,'NAXIS2',Nap
-      sxaddpar,fluxhead,'NAXIS3',NSpecTypes
-      sxaddpar,fluxhead,'Extracted','TRUE','Fluxes are extracted'
-      bandIDS = ['Optimal','Sum','Background','Sigma','ProfWeighted','Wavelength']
-      for l=0l,NSpecTypes-1l do begin
-         sxaddpar,fluxhead,'BANDID'+strtrim(l+1,1),bandIDS[l],"Band explanation"
-      endfor
-      sxaddpar,fluxhead,'APNUM1','1 1 '+strtrim(ApStart[0],1)+' '+strtrim(ApEnd[0],1)
-      writefits,outprefix+'_es_ms.fits',finalData,fluxhead
       
       ;; show the residuals
       resImage = outImage         ;; start with the background-subtracted image
@@ -263,6 +216,83 @@ for i=0l,lastfile do begin
             endfor
       endif
       
+
+      ;; Find the ratio image. Separate this from the Cosmic Ray
+      ;; iteration loop
+;      if i EQ 0 then begin
+         fixApstart = Apstart
+         fixApend = ApEnd
+         ratioYSize = fixApend[0] - fixApstart[0] + 1l
+         ratioYind = findgen(ratioYSize)
+         midSubApYarr = ratioYsize/2
+;      endif
+      star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
+      star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
+;      star1img = fitimage[*,fixApstart[0]:fixApEnd[0]]
+;      star2img = fitimage[*,fixApstart[1]:fixApEnd[1]]
+      ;; Find the shift of the two stars, only the first time
+;      if i EQ 0 then begin
+         star1quickProf = total(fitImage[*,fixApstart[0]:fixApEnd[0]],1)
+         star2quickProf = total(fitImage[*,fixApstart[1]:fixApEnd[1]],1)
+      ;; shift to match the core and peak, not so much wings
+         shiftAmt = cross_cor_find(star1quickProf,star2quickProf,$
+                                   nlag=50l,fitsize=3l,showplot=showstarshift)
+;      midAp = round(apsize)
+;      corestart = MidAp - round(Apsize/2E)
+;      coreend = midAp + round(Apsize/2E)
+;      endif
+      star2img = transpose(shift_interp(transpose(star2img),-shiftAmt))
+      nonzeropt = where(star2img NE 0E,complement=zeropt)
+      ratioImg = star1img
+      if nonzeropt NE [-1] then $
+         ratioImg[nonzeropt] = star1img[nonzeropt]/star2img[nonzeropt]
+      if zeropt NE [-1] then $
+         ratioImg[zeropt] = !values.f_nan
+      ;; Find the variance in the ratio
+      star1imgVar = varimage[*,fixApstart[0]:fixApEnd[0]]
+      star2imgVar = varimage[*,fixApstart[1]:fixApEnd[1]]
+      star2imgVar = transpose(shift_interp(transpose(star2imgVar),-shiftAmt))
+      star2imgFErr = sqrt(star1imgVar)/abs(star2img)
+      star1imgFErr = sqrt(star1imgVar)/abs(star1img)
+      ratioImgErr = abs(ratioImg) * sqrt(star1imgFErr^2 + star2imgFErr^2)
+
+      for j=0l,Xlength-1l do begin
+         polyRatioFit = ev_robust_poly(ratioYind,transpose(ratioImg[j,*]),$
+                                       0,showPlot=showRatioFit,$
+                                       yerr=transpose(ratioImgErr[j,*]),$
+                                      custYrange=[-2,2.5],nsig=2E)
+         fluxrat[j,0] = eval_poly(midSubApYarr,polyRatioFit)
+         if keyword_set(showRatioFit) then begin
+            oplot,[midSubApYarr],[fluxrat[j,0]],psym=4,symsize=2,color=mycol('red')
+            oploterr,ratioYind,transpose(ratioImg[j,*]),transpose(ratioImgErr[j,*])
+            stop
+         end
+      endfor
+      
+      ;; Save the spectrum
+      finalData = fltarr(Xlength,Nap,NSpecTypes)
+      for k=0l,Nap-1l do begin
+         finalData[*,k,0] = sumflux[*,k]
+         finalData[*,k,1] = optflux[*,k]
+         finalData[*,k,2] = bflux[*,k]
+         finalData[*,k,3] = sigflux[*,k]
+         finalData[*,k,4] = proflux[*,k]
+         finalData[*,k,5] = lamgrid
+         finalData[*,k,6] = fluxrat[*,k]
+      endfor
+      postpos = strpos(straightlist[i],'.fits')
+      outprefix = strmid(straightlist[i],0,postpos)
+      fluxhead = header
+      
+      sxaddpar,fluxhead,'NAXIS',3
+      sxaddpar,fluxhead,'NAXIS2',Nap
+      sxaddpar,fluxhead,'NAXIS3',NSpecTypes
+      sxaddpar,fluxhead,'Extracted','TRUE','Fluxes are extracted'
+      for l=0l,NSpecTypes-1l do begin
+         sxaddpar,fluxhead,'BANDID'+strtrim(l+1,1),bandIDS[l],"Band explanation"
+      endfor
+      sxaddpar,fluxhead,'APNUM1','1 1 '+strtrim(ApStart[0],1)+' '+strtrim(ApEnd[0],1)
+      writefits,outprefix+'_es_ms.fits',finalData,fluxhead
       
    endfor
    
