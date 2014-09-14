@@ -18,5 +18,12 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent
         endif else b =a
      endelse
   endif else b=a
-  return,b
+  if fxpar(header,'NAXIS') EQ 3 then begin
+     ;; For now we'll read spectra 3d data cubes for spsectra
+     ;; as firsta aperture
+     c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
+     c[*,*] = b[*,0,*]
+  endif else c=b
+
+  return,c
 end
