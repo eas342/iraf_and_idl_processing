@@ -42,8 +42,10 @@ while (!mouse.button NE 4) do begin
       endelse
    endif else begin
       if LineP.direction EQ 'x' then begin
-         yplot = total(a[xplot,LineP.ycoor[0]:LineP.ycoor[1]],2)
-         yplot = yplot / float(LineP.ycoor[1] - LineP.ycoor[0] + 1l) ;; renormalize for avg
+         if LineP.type EQ 'box' then begin
+            yplot = total(a[xplot,LineP.ycoor[0]:LineP.ycoor[1]],2)
+            yplot = yplot / float(LineP.ycoor[1] - LineP.ycoor[0] + 1l) ;; renormalize for avg
+         endif else yplot = a[xplot,LineP.ycoor[0]]
       endif else begin
          yplot = total(a[LineP.xcoor[0]:LineP.xcoor[1],xplot],1)
          yplot = yplot / float(LineP.xcoor[1] - LineP.xcoor[0] + 1l) ;; renormalize for avg
