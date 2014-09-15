@@ -8,6 +8,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
            '(op) overplot line or box mode',$
+           '(opd) overplot and divide by median',$
            '(ps) to plot and stop',$
           '(b)ox draw mode','(c)lear previous settings',$
           '(l)oad another parameter file.',$
@@ -85,6 +86,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'op' OR status EQ 'OP': begin
          fits_line_plot,fileL,lineP=lineP,current=slot,/overplot
+      end
+      status EQ 'opd' OR status EQ 'OPD': begin
+         fits_line_plot,fileL,lineP=lineP,current=slot,/overplot,/normalize
       end
       status EQ 'pm' OR status EQ 'PM': begin
          fits_line_plot,fileL,lineP=lineP,current=slot,/median

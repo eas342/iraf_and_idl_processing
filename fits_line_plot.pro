@@ -1,11 +1,12 @@
 pro fits_line_plot,fileL,lineP=lineP,current=current,$
                    median=median,makestop=makestop,$
-                   overplot=overplot
+                   overplot=overplot,normalize=normalize
 ;; This plots a line or box depending on input
 ;; lineP - a structure of line coordinates
 ;; boxC - a structure of box coordinates
 ;; median - do a median instead of an average
 ;; overplot - makes an over-plot
+;; normalize - normalize the plot by the median
 
 if n_elements(lineP) EQ 0 then begin
    print,'No line drawn to plot'
@@ -51,6 +52,9 @@ while (!mouse.button NE 4) do begin
          yplot = yplot / float(LineP.xcoor[1] - LineP.xcoor[0] + 1l) ;; renormalize for avg
       endelse
    endelse
+   if keyword_set(normalize) then begin
+      yplot = yplot/median(yplot)
+   endif
 
    if counter GT 0 and keyword_set(overplot) then begin
       colorArr = myarraycol(counter+1)
