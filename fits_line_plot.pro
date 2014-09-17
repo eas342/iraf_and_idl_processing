@@ -1,4 +1,4 @@
-pro fits_line_plot,fileL,lineP=lineP,current=current,$
+function fits_line_plot,fileL,lineP=lineP,current=current,$
                    median=median,makestop=makestop,$
                    overplot=overplot,normalize=normalize
 ;; This plots a line or box depending on input
@@ -8,17 +8,20 @@ pro fits_line_plot,fileL,lineP=lineP,current=current,$
 ;; overplot - makes an over-plot
 ;; normalize - normalize the plot by the median
 
-if n_elements(lineP) EQ 0 then begin
-   print,'No line drawn to plot'
-   return
-endif
 
 nfile = n_elements(filel)
 type = size(filel[0],/type)
 if n_elements(current) EQ 0 then i=0l else i = current
+
+if n_elements(lineP) EQ 0 then begin
+   print,'No line drawn to plot'
+   return,i
+endif
+
 firsttime = 1
 counter=0
 while (!mouse.button NE 4) do begin
+   slot = i ;; current image slot number
    if type EQ 7 then begin
       a = mod_rdfits(fileL[i],0,header)
       Ftitle = filel[i]
@@ -77,5 +80,7 @@ while (!mouse.button NE 4) do begin
    counter = counter + 1
 endwhile
 !Mouse.button=1
+
+return,slot
 
 end

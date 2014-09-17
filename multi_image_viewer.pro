@@ -65,7 +65,7 @@ while status NE 'q' and status NE 'Q' do begin
          fits_display,filel[slot],/findscale,outscale=CurrentS,lineP=lineP,zoombox=zoombox
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox)
+         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot)
       end
       status EQ 'c' OR status EQ 'C': begin
          confirm=''
@@ -82,19 +82,19 @@ while status NE 'q' and status NE 'Q' do begin
          endif
       end
       status EQ 'p' OR status EQ 'P': begin
-         fits_line_plot,fileL,lineP=lineP,current=slot
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot)
       end
       status EQ 'op' OR status EQ 'OP': begin
-         fits_line_plot,fileL,lineP=lineP,current=slot,/overplot
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot)
       end
       status EQ 'opd' OR status EQ 'OPD': begin
-         fits_line_plot,fileL,lineP=lineP,current=slot,/overplot,/normalize
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,/normalize)
       end
       status EQ 'pm' OR status EQ 'PM': begin
-         fits_line_plot,fileL,lineP=lineP,current=slot,/median
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/median)
       end
       status EQ 'ps' OR status EQ 'PS': begin
-         fits_line_plot,fileL,lineP=lineP,current=slot,/makestop
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/makestop)
       end
       status EQ 'd' OR status EQ 'D': begin
          lineP = fits_line_draw(fileL[slot],useScale=currentS,zoombox=zoombox)
@@ -104,7 +104,7 @@ while status NE 'q' and status NE 'Q' do begin
                                /get_direction,zoombox=zoombox)
       end
       status EQ 'bp' OR status EQ 'Bp': begin
-         fits_line_plot,fileL,boxP=boxC,current=slot
+         slot = fits_line_plot(fileL,boxP=boxC,current=slot)
       end
       status EQ 'l' OR status EQ 'L': begin
          print,'Choose a parameter file'
