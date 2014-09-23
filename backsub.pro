@@ -27,7 +27,7 @@ while ~ eof(1) do begin
    junk = execute(tempstring)
 endwhile
 close,1
-
+tinit = systime(1); initial time
 ;; Get the list of spectrograph images
 readcol,'straight_science_images.txt',$
         straightlist,format='(A)'
@@ -91,15 +91,41 @@ for i=0l,lastfile do begin
       MaskArray[LowP[k]:HighP[k]] = 1
    endfor
 
+   t2 = systime(1)
+   print,'Line 93 t=',t2-tinit
+
    for m=0l,CRIter-1l do begin
+      t2 = systime(1)
+      print,'Line 99, t=',t2 - tinit
       if m GT 0 then a = replace_pixels(a,badpix,showP=showCRplot)
+
+      t2 = systime(1)
+      print,'Line 101, t=',t2 - tinit
+      if m GT 0 then stop
       for j=SubtractStart,EndSubtract do begin
          
+         t2 = systime(1)
+         if j EQ 5 then print,'Line 107, t=',t2 - tinit
+         if j LE 5 and m GT 0 then begin
+            print,'Line 107, t=',t2 - tinit
+            stop
+         endif
+
          ;; Fit background with a robust polynomial & subtract
          modelBParams = ev_robust_poly(rownum,transpose(a[j,*]),Bpoly,$
                                        mask=maskArray,niter=Fiter,$
                                        showplot=showB,Nsig=Nsig,sigma=backsigma)
-         
+         prevT = t2
+         t2 = systime(1)
+;         if t2 - prevT GT 0.001E then stop
+
+         if j EQ 5 then print,'Line 116, t=',t2-tinit
+;         print,'Backfit calc, delta T=',t2 - prevT
+         if j LT 5 and m GT 0 then begin
+            print,'Line 116, t=',t2-tinit
+            stop
+         endif
+
          for k=0l,Nap-1l do begin
             ;; Save the background flux
             bflux[j,k] = eval_poly(posit[i,k],modelBParams)
@@ -109,12 +135,19 @@ for i=0l,lastfile do begin
          bsigmas[j] = backsigma
          
          outImage[j,*] = a[j,*] - eval_poly(rownum,modelBParams)
+
          profimage[j,*] = norm_array(transpose(outimage[j,*]),apsize,posit[i,*])
          
          if keyword_set(showplot) and j GT 90 then begin
             plot,profimage[j,*]
          endif
+         t2 = systime(1)
+         if j EQ 5 then print,'Line 135, t=',t2 - tinit
+         
       endfor
+      t2 = systime(1)
+      print,'Line 140, t=',t2 - tinit
+
       ;; Fit the spatial profiles
       ApStart = lonarr(Nap)
       ApEnd = lonarr(Nap)
@@ -216,7 +249,8 @@ for i=0l,lastfile do begin
             endfor
       endif
       
-
+      t2 = systime(1)
+      print,"line 220, t=",t2-tinit
       ;; Find the ratio image. Separate this from the Cosmic Ray
       ;; iteration loop
 ;      if i EQ 0 then begin
@@ -256,6 +290,8 @@ for i=0l,lastfile do begin
       star1imgFErr = sqrt(star1imgVar)/abs(star1img)
       ratioImgErr = abs(ratioImg) * sqrt(star1imgFErr^2 + star2imgFErr^2)
 
+      t2 = systime(1)
+      print,'Line 265 t=',t2 - tinit
       for j=0l,Xlength-1l do begin
          polyRatioFit = ev_robust_poly(ratioYind,transpose(ratioImg[j,*]),$
                                        0,showPlot=showRatioFit,$
@@ -268,6 +304,8 @@ for i=0l,lastfile do begin
             stop
          end
       endfor
+      t2 = systime(1)
+      print,'Line 280 t=',t2 - tinit
       
       ;; Save the spectrum
       finalData = fltarr(Xlength,Nap,NSpecTypes)
@@ -294,6 +332,8 @@ for i=0l,lastfile do begin
       sxaddpar,fluxhead,'APNUM1','1 1 '+strtrim(ApStart[0],1)+' '+strtrim(ApEnd[0],1)
       writefits,outprefix+'_es_ms.fits',finalData,fluxhead
       
+      t2 = systime(1)
+      print,'Line 308 t=',t2 - tinit
    endfor
    
    
@@ -332,6 +372,7 @@ for i=0l,lastfile do begin
    
    ;; Print an update every 50 files
    if i mod 50 EQ 0 then print,'Image '+outprefix+' done'
+   stop
 endfor
 
 forprint,backsubNames,textout='backsub_list.txt'
