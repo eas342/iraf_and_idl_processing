@@ -33,11 +33,17 @@ if n_elements(Nsig) EQ 0 then Nsig=4
   for l=0l,niter-1l do begin
      resid = y - modelY
      rsigma = robust_sigma(resid[goodp])
+
      if rsigma EQ 0E then begin
         goodp = where(mask EQ 0,complement=badp)
      endif else begin
-        goodp = where(abs(resid) LT Nsig * rsigma and $
-                      mask EQ 0,complement=badp)
+        if n_elements(yerr) NE 0 then begin
+           goodp = where(abs(resid)/yerr LT Nsig and $
+                         mask EQ 0,complement=badp)
+        endif else begin
+           goodp = where(abs(resid) LT Nsig * rsigma and $
+                         mask EQ 0,complement=badp)
+        endelse
      endelse
      if goodp NE [-1] then begin
         if keyword_set(customfunc) then begin
@@ -48,11 +54,12 @@ if n_elements(Nsig) EQ 0 then Nsig=4
            modelY = expression_eval(customfunc,x,polyMod)
         endif else begin
            if keyword_set(yerr) then begin
-              polyMod = poly_fit(x[goodp],y[goodp],Npoly,measure_errors=yerr[goodp])
+              polyMod = poly_fit(x[goodp],y[goodp],Npoly,measure_errors=yerr[goodp],status=status)
            endif else begin
-              polyMod = poly_fit(x[goodp],y[goodp],Npoly)
+              polyMod = poly_fit(x[goodp],y[goodp],Npoly,status=status)
            endelse
            modelY = eval_poly(x,polyMod)
+
         endelse
      endif else begin
         ;; Give up if no good points
