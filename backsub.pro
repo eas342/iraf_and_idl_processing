@@ -1,7 +1,7 @@
 pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             showCRplot=showCRplot,comparSpec=comparSpec,$
             allimages=allimages,showStarshift=showstarshift,$
-            showRatioFit=showRatioFit
+            showRatioFit=showRatioFit,timing=timing
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -17,6 +17,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;; showStarshift - show the shifting of the two stars in creating a
 ;;                 ratio image
 ;; showRatioFit - show fitting the ratio of the two stars to a polynomial
+;; timing - print the timing if asked to when trying to speed up backsub
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -39,10 +40,13 @@ rprofNames = strarr(nfile);; source- subtracted images
 cprofNames = strarr(nfile);; cosmic ray images
 dprofNames = strarr(nfile);; star ratio images
 
+fileUpdateCycle = 5l ;; number of files at which to update
+
 ;; Make these directories if they don't exist
 ;dirlist = ['m_profiles','f_profiles']
 ;if dir_exist('profiles') EQ 0 then junk = spawn('mkdir profiles')
 ;if dir_exist('p
+t2 = timing()
 
 posit = fltarr(nfile,Nap) ;; aperture positions
 
@@ -69,6 +73,8 @@ for i=0l,lastfile do begin
    resImage = fltarr(xlength,ylength) ;; profile-subtracted (residuals)
    cosImage = intarr(xlength,ylength) ;; cosmic ray image
    varImage = fltarr(xlength,ylength) ;; variance image
+   xIndex = rebin(lindgen(xlength),xlength,ylength)
+   yIndex = transpose(rebin(lindgen(ylength),ylength,xlength))
 
    bandIDS = ['Optimal','Sum','Background','Sigma','ProfWeighted','Wavelength',$
               'StarRatio']
@@ -92,7 +98,9 @@ for i=0l,lastfile do begin
    endfor
 
    for m=0l,CRIter-1l do begin
+      if keyword_set(timing) then t2 = timing(t2,'Line 97')
       if m GT 0 then a = replace_pixels(a,badpix,showP=showCRplot)
+      if keyword_set(timing) then t2 =  timing(t2,'Line 99')
       for j=SubtractStart,EndSubtract do begin
          
          ;; Fit background with a robust polynomial & subtract
@@ -115,6 +123,7 @@ for i=0l,lastfile do begin
             plot,profimage[j,*]
          endif
       endfor
+      if keyword_set(timing) then t2 =  timing(t2,'Line 125')
       ;; Fit the spatial profiles
       ApStart = lonarr(Nap)
       ApEnd = lonarr(Nap)
@@ -193,8 +202,11 @@ for i=0l,lastfile do begin
       pospix = where(resImage GT 0,complement=negpix)
       highSig = median(resImage[pospix])
       lowSig = median(resImage[negpix])
+
       badpix = where(resImage GT CRsigma * highSig OR $
-                     resImage LT CRsigma * lowSig)
+                     resImage LT CRsigma * lowSig and $
+                     ((yIndex GE Lowp[0] and yIndex LE highp[0]) OR $
+                      (yIndex GE Lowp[1] and yIndex LE highp[1])))
 
       if keyword_set(showCRplot) then begin
          plothist,resImage,xrange=[lowSig,highSig] * 5E * CRsigma,/ylog
@@ -216,7 +228,7 @@ for i=0l,lastfile do begin
             endfor
       endif
       
-
+      if keyword_set(timing) then t2 =  timing(t2,'line 229')
       ;; Find the ratio image. Separate this from the Cosmic Ray
       ;; iteration loop
 ;      if i EQ 0 then begin
@@ -265,10 +277,11 @@ for i=0l,lastfile do begin
          if keyword_set(showRatioFit) then begin
             oplot,[midSubApYarr],[fluxrat[j,0]],psym=4,symsize=2,color=mycol('red')
             oploterr,ratioYind,transpose(ratioImg[j,*]),transpose(ratioImgErr[j,*])
+            print,'Column ',j
             stop
          end
       endfor
-      
+      if keyword_set(timing) then t2 =  timing(t2,'line 229')
       ;; Save the spectrum
       finalData = fltarr(Xlength,Nap,NSpecTypes)
       for k=0l,Nap-1l do begin
@@ -331,7 +344,7 @@ for i=0l,lastfile do begin
    endif
    
    ;; Print an update every 50 files
-   if i mod 50 EQ 0 then print,'Image '+outprefix+' done'
+   if i mod fileUpdateCycle EQ 0 then print,'Image '+outprefix+' done'
 endfor
 
 forprint,backsubNames,textout='backsub_list.txt'
