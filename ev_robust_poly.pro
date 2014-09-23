@@ -67,7 +67,7 @@ if n_elements(Nsig) EQ 0 then Nsig=4
      if n_elements(custYrange) EQ 0 then custYrange = threshold(y)
      plot,x,y,/nodata,xstyle=1,$
           yrange=custYrange
-     oplot,x[goodp],y[goodp],psym=4
+     if goodp NE [-1] then oplot,x[goodp],y[goodp],psym=4
      if badp NE [-1] then oplot,x[badp],y[badp],psym=5,color=mycol('yellow')
      oplot,x,modelY,color=mycol('lblue')
      stop
