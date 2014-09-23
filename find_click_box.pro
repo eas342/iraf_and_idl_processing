@@ -41,7 +41,7 @@ function find_click_box,filen,bcolor=bcolor,$
         if outarray.direction EQ 'x' then outarray.direction = 'y' else begin
            outarray.direction = 'x'
         endelse
-        fits_display,filen,usescale=usescale,lineP=outarray
+        fits_display,filen,usescale=usescale,lineP=outarray,zoombox=zoombox
 ;        plots,boxArrX,boxarrY,color=bcolor,thick=1.8
 ;        box_display,outarray
         cursor,xjunk,yjunk,/down,/normal
