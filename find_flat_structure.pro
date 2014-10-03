@@ -1,13 +1,17 @@
-pro find_flat_structure,showplot=showplot,showskyfit=showskyfit
+pro find_flat_structure,showplot=showplot,showskyfit=showskyfit,$
+                        custResponse=custResponse,nrowpoly=nrowpoly
 ;; Fits the flat field line by line, subtracts it, shifts this
 ;; structure and puts it back in
 ;; showplot - shows the polynomial fits to the respone function
 ;; showkyfit - shows the polynomial fits to the sky image
 
-nrowpoly = 0 ;; order of polynomial fitting a row in the response image
+if n_elements(nrowpoly) EQ 0 then begin
+   nrowpoly = 1 ;; order of polynomial fitting a row in the response image
+endif
 nskyrowpoly = 2 ;; order of the polynomial fit to the sky image
 
-b = mod_rdfits('response.fits',0,header,trimReg=trimReg)
+if n_elements(custResponse) EQ 0 then custResponse = 'response.fits'
+b = mod_rdfits(custResponse,0,header,trimReg=trimReg)
 a = b[trimReg[0]:trimReg[1],trimREg[2]:trimReg[3]]
 
 ;; If sky images list is available, make an average sky
