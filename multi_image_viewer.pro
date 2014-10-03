@@ -5,12 +5,15 @@ actions = ['(q)uit','(r)ead new file',$
            '(rf) read a file with filter',$
            '(rfa) read a set of files with a filter',$
            '(o)pen new file w/ browser','set (s)cale',$
+           '(h)elp prints the commands',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
            '(op) overplot line or box mode',$
            '(opd) overplot and divide by median',$
            '(ps) to plot and stop',$
           '(b)ox draw mode','(c)lear previous settings',$
+           '(cf) to clear file list',$
+           '(fedit) to export filelist to a text file for editing',$
           '(l)oad another parameter file.',$
           '(z)oom in','(save) EPS of FITS image']
 naction = n_elements(actions)
@@ -63,6 +66,15 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 's' OR status EQ 'S': begin
          fits_display,filel[slot],/findscale,outscale=CurrentS,lineP=lineP,zoombox=zoombox
+      end
+      status EQ 'fedit' OR status EQ 'FEDIT': begin
+         forprint,filel,textout='ev_local_display_filelist.txt',/silent,$
+                  /nocomment
+         spawn,'open ev_local_display_filelist.txt'
+      end
+      status EQ 'fread' OR status EQ 'FREAD': begin
+         readcol,'ev_local_display_filelist.txt',filel,format='(A)'
+         if slot GT n_elements(filel) -1l then slot=0
       end
       status EQ 't' OR status EQ 'T': begin
          slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot)
@@ -131,14 +143,16 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'nothing': begin
       end
+      status EQ 'h' OR status EQ 'H': begin
+         for i=0l,naction-1l do begin
+            print,actions[i]+' ',format='(A,$)'
+         endfor
+         print,''
+      end
       else: print,'Unrecognized Action'
    endcase
    
-   print,'Choose an action'
-   for i=0l,naction-1l do begin
-      print,actions[i]+' ',format='(A,$)'
-   endfor
-   print,''
+   print,'Choose an action or press (h) for help on actions'
    if not skipaction then read,'Action: ',status
 ;   status = get_kbrd()
 
