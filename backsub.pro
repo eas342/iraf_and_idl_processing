@@ -1,7 +1,9 @@
 pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             showCRplot=showCRplot,comparSpec=comparSpec,$
             allimages=allimages,showStarshift=showstarshift,$
-            showRatioFit=showRatioFit,timing=timing
+            showRatioFit=showRatioFit,timing=timing,$
+            usemedRatio=usemedRatio,printcentroid=printcentroid,$
+            secondFlat=secondFlat
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -18,6 +20,10 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;;                 ratio image
 ;; showRatioFit - show fitting the ratio of the two stars to a polynomial
 ;; timing - print the timing if asked to when trying to speed up backsub
+;; usemedRatio - uses the median ratio image to re-flatten the ratio image
+;; printcentroid - a diagnostic test, which prints the
+;;                 centroid of the first star
+;; secondFlat - use the second flat to flatten again
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -28,6 +34,10 @@ while ~ eof(1) do begin
    junk = execute(tempstring)
 endwhile
 close,1
+
+if keyword_set(secondFlat) then begin
+   secondFlat = mrdfits('secondflat.fits',0,secondFlatH)
+endif
 
 ;; Get the list of spectrograph images
 readcol,'straight_science_images.txt',$
@@ -46,7 +56,7 @@ fileUpdateCycle = 5l ;; number of files at which to update
 ;dirlist = ['m_profiles','f_profiles']
 ;if dir_exist('profiles') EQ 0 then junk = spawn('mkdir profiles')
 ;if dir_exist('p
-t2 = timing()
+t2 = es_timing()
 
 posit = fltarr(nfile,Nap) ;; aperture positions
 
@@ -59,6 +69,10 @@ for i=0l,lastfile do begin
    posit[i,*] = retrieve_apcenter(straightlist[i],Nap)
    Xlength =  fxpar(header,'NAXIS1')
    Ylength =  fxpar(header,'NAXIS2')
+
+   if keyword_set(secondFlat) then begin
+      a = a/secondflat
+   endif
 
 ;   SubstractStart = 50 ;; column (X) to start doing background subtraction
 ;EndSubtract = 495 ;; column (X) to stop doing background subtraction
@@ -98,9 +112,9 @@ for i=0l,lastfile do begin
    endfor
 
    for m=0l,CRIter-1l do begin
-      if keyword_set(timing) then t2 = timing(t2,'Line 97')
+      if keyword_set(timing) then t2 = es_timing(t2,'Line 97')
       if m GT 0 then a = replace_pixels(a,badpix,showP=showCRplot)
-      if keyword_set(timing) then t2 =  timing(t2,'Line 99')
+      if keyword_set(timing) then t2 =  es_timing(t2,'Line 99')
       for j=SubtractStart,EndSubtract do begin
          
          ;; Fit background with a robust polynomial & subtract
@@ -123,7 +137,7 @@ for i=0l,lastfile do begin
             plot,profimage[j,*]
          endif
       endfor
-      if keyword_set(timing) then t2 =  timing(t2,'Line 125')
+      if keyword_set(timing) then t2 =  es_timing(t2,'Line 125')
       ;; Fit the spatial profiles
       ApStart = lonarr(Nap)
       ApEnd = lonarr(Nap)
@@ -228,7 +242,7 @@ for i=0l,lastfile do begin
             endfor
       endif
       
-      if keyword_set(timing) then t2 =  timing(t2,'line 229')
+      if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
       ;; Find the ratio image. Separate this from the Cosmic Ray
       ;; iteration loop
 ;      if i EQ 0 then begin
@@ -238,6 +252,10 @@ for i=0l,lastfile do begin
          ratioYind = findgen(ratioYSize)
          midSubApYarr = ratioYsize/2
 ;      endif
+         if keyword_set(usemedRatio) and i EQ 0 then begin
+            medRat = mrdfits('ratio_median.fits',0,headMedRatio)
+         endif
+
       star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
       star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
 ;      star1img = fitimage[*,fixApstart[0]:fixApEnd[0]]
@@ -253,6 +271,7 @@ for i=0l,lastfile do begin
 ;      corestart = MidAp - round(Apsize/2E)
 ;      coreend = midAp + round(Apsize/2E)
 ;      endif
+
       star2img = transpose(shift_interp(transpose(star2img),-shiftAmt))
       nonzeropt = where(star2img NE 0E,complement=zeropt)
       ratioImg = star1img
@@ -267,6 +286,17 @@ for i=0l,lastfile do begin
       star2imgFErr = sqrt(star1imgVar)/abs(star2img)
       star1imgFErr = sqrt(star1imgVar)/abs(star1img)
       ratioImgErr = abs(ratioImg) * sqrt(star1imgFErr^2 + star2imgFErr^2)
+      
+      if keyword_set(printcentroid) then begin
+         centroid = total(star1quickProf * ratioYind)/(total(star1quickProf))
+         midPYind = 0.5E * (float(fixApEnd[0]) - float(fixApStart[0]))
+         print,"Star 1 centroid= ",centroid - midPYind
+      endif
+
+      if keyword_set(usemedRatio) then begin
+         ratioImg = ratioImg/medRat
+         ratioImgErr = ratioImgErr/medRat
+      endif
 
       for j=0l,Xlength-1l do begin
          polyRatioFit = ev_robust_poly(ratioYind,transpose(ratioImg[j,*]),$
@@ -281,7 +311,8 @@ for i=0l,lastfile do begin
             stop
          end
       endfor
-      if keyword_set(timing) then t2 =  timing(t2,'line 229')
+
+      if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
       ;; Save the spectrum
       finalData = fltarr(Xlength,Nap,NSpecTypes)
       for k=0l,Nap-1l do begin
