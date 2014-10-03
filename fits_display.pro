@@ -20,7 +20,7 @@ if type EQ 7 then begin
 endif else a=input
 
 case 1 of
-   keyword_set(message): Ftitle=message 
+   n_elements(message) NE 0: Ftitle=message 
    type EQ 7: Ftitle = input
    else: Fitle = ''
 endcase
@@ -53,6 +53,7 @@ if keyword_set(findscale) then begin
       cursor,xcur,ycur,/normal,/down
       outscale = usescale
    endwhile
+   !MOUSE.button=1
 endif
 if n_elements(usescale) EQ 0 then begin
    scaleNums = threshold(a,low=0.3,high=0.7)
