@@ -65,7 +65,7 @@ if n_elements(Nsig) EQ 0 then Nsig=4
         ;; Give up if no good points
         polyMod = fltarr(Npoly+1l)
         modelY = fltarr(Xlength)
-        l = niter-1l
+        break
      endelse
   endfor
   finalResid = y - modelY
