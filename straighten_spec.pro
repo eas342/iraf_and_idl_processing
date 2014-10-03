@@ -1,5 +1,5 @@
 pro straighten_spec,inlist,outlist,shiftlist=shiftlist,dodivide=dodivide,$
-                    smooth=smooth
+                    smooth=smooth,reverse=reverse
 ;; Straightens the spectra
 ;; inlist is a list of input images
 ;; outlist is a list of output images
@@ -10,6 +10,8 @@ pro straighten_spec,inlist,outlist,shiftlist=shiftlist,dodivide=dodivide,$
 if n_elements(shiftlist) EQ 0 then shiftlist='data/shift_data/shift_vals_from_arc.txt'
 ;; Read in the straightening data
 readcol,shiftlist,rowN,shiftMod,format='(F,F)',skipline=1
+
+if keyword_set(reverse) then shiftMod = shiftMod * (-1D)
 
 ;; Read the list of spectra to straighten & their output file names
 readcol,inlist,infiles,format='(A)'
