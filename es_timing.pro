@@ -1,4 +1,4 @@
-function timing,a,message
+function es_timing,a,message
 ;; Calculates the time and prints a message at that line
 ;; a  - optional input for the previous time
 
