@@ -12,7 +12,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(ps) to plot and stop',$
           '(b)ox draw mode','(c)lear previous settings',$
           '(l)oad another parameter file.',$
-          '(z)oom in']
+          '(z)oom in','(save) EPS of FITS image']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -55,7 +55,7 @@ while status NE 'q' and status NE 'Q' do begin
          print,'Choose file filter'
          filter=''
          read,filter
-         fileL = choose_file(filetype=filter,/all)
+         fileL = choose_file(filter=filter,/all)
          if fileL EQ [''] then fileL = prevFileL else begin
             slot = n_elements(fileL)-1l
             fits_display,filel[slot],usescale=currentS,lineP=lineP,zoombox=zoombox
@@ -67,6 +67,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 't' OR status EQ 'T': begin
          slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot)
       end
+      status EQ 'save' OR status EQ 'SAVE': begin
+         save_image,fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot
+      end
       status EQ 'c' OR status EQ 'C': begin
          confirm=''
          print,'Are you sure you want to delete all settings?'
@@ -77,6 +80,18 @@ while status NE 'q' and status NE 'Q' do begin
             undefine,currentS
             undefine,slot
             undefine,lineP
+            status = 'o'
+            skipaction=1
+         endif
+      end
+      status EQ 'cf' OR status EQ 'CF': begin
+         confirm=''
+         print,'Are you sure you want to clear all file lists?'
+         read,confirm
+         if confirm EQ 'y' or confirm EQ 'Y' or confirm EQ 'yes' $
+            or confirm EQ 'Yes' then begin
+            undefine,fileL
+            undefine,slot
             status = 'o'
             skipaction=1
          endif
