@@ -117,7 +117,7 @@ for i=0l,NY-1l do begin
       else: shiftarray[i] = -peak
    endcase
 ;stop
-   if keyword_set(showfits) and i EQ 5 then begin
+   if keyword_set(showfits) and i GT 5 then begin
       if keyword_set(showfits) then begin
          PolyShow = fltarr(NY)
          for j=0l,NpolyF do begin
@@ -130,6 +130,7 @@ for i=0l,NY-1l do begin
          oplot,[peak,peak],!y.crange,color=mycol('blue')
 ;         plot,img[usefulpoints,i]
 ;         wait,0.1
+         stop
       endif
       if keyword_set(sincFit) then begin
          oplot,[-shiftarray[i],-shiftarray[i]],!y.crange,color=mycol('red')
