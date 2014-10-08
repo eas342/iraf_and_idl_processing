@@ -1,9 +1,10 @@
-pro quick_response
+pro quick_response,custfile=custfile
 ;; Takes the trimmed flat and uses a simple median filter to remove 
 
-  a1 = mrdfits('trimflat.fits',0,flathead)
+  if n_elements(custfile) EQ 0 then custfile = 'trimflat.fits'
+  a1 = mrdfits(custfile,0,flathead)
   medianF = filter_image(a1,median=20,/all_pixels)
   div = a1 / medianF
-  writefits,'median_response.fits',div,flatHead
+  writefits,'median_filtered_response.fits',div,flatHead
 
 end
