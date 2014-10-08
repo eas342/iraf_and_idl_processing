@@ -15,7 +15,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(cf) to clear file list',$
            '(fedit) to export filelist to a text file for editing',$
           '(l)oad another parameter file.',$
-          '(z)oom in','(save) EPS of FITS image']
+          '(z)oom in','(save) EPS of FITS image',$
+          '(asave) to save all images in file list']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -81,6 +82,12 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'save' OR status EQ 'SAVE': begin
          save_image,fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot
+      end
+      status EQ 'asave' OR status EQ 'ASAVE': begin
+         for i=0l,n_elements(fileL)-1l do begin
+            save_image,fileL,usescale=currentS,lineP=lineP,$
+                       zoombox=zoombox,startslot=i
+         endfor
       end
       status EQ 'c' OR status EQ 'C': begin
          confirm=''
