@@ -1,11 +1,13 @@
 pro straighten_spec,inlist,outlist,shiftlist=shiftlist,dodivide=dodivide,$
-                    smooth=smooth,reverse=reverse
+                    smooth=smooth,reverse=reverse,oneImage=oneImage,$
+                    overWrite=overWrite
 ;; Straightens the spectra
 ;; inlist is a list of input images
 ;; outlist is a list of output images
 ;; dodivide -- use the divisor keyword to divide the frame by the
 ;;             number of reads
 ;; smooth - run a boxcar filter in the spectral direction
+;; oneImage - operate on one image instead of a whole file list
 
 if n_elements(shiftlist) EQ 0 then shiftlist='data/shift_data/shift_vals_from_arc.txt'
 ;; Read in the straightening data
@@ -14,8 +16,14 @@ readcol,shiftlist,rowN,shiftMod,format='(F,F)',skipline=1
 if keyword_set(reverse) then shiftMod = shiftMod * (-1D)
 
 ;; Read the list of spectra to straighten & their output file names
-readcol,inlist,infiles,format='(A)'
-readcol,outlist,outfiles,format='(A)'
+if keyword_set(oneImage) then begin
+   infiles = [inlist]
+   outfiles = [outlist]
+endif else begin
+   readcol,inlist,infiles,format='(A)'
+   readcol,outlist,outfiles,format='(A)'
+endelse
+
 nfiles = n_elements(infiles)
 assert,nfiles,'=',n_elements(outfiles),'In/Out file lists are mismatched.'
 
@@ -66,7 +74,7 @@ for j=0l,nfiles-1l do begin
 
    ;; Check if file exists so you don't overwrite anything!
    checkfile = findfile(outfiles[j],count=count)
-   if count GE 1 then begin
+   if count GE 1 and not keyword_set(overWrite) then begin
       print,"Out File Exists!"
       stop
    endif else writefits,outfiles[j],recimg,origHeader
