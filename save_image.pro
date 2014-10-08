@@ -23,7 +23,7 @@ namePrefix = splitPrefix[0]
    device,xsize=14, ysize=10,decomposed=1,/color
 
    fits_display,fileL[i],usescale=usescale,lineP=lineP,zoombox=zoombox,$
-                message=''
+                message=namePrefix+'.fits'
 
 
    device, /close
