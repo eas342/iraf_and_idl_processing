@@ -1,5 +1,5 @@
-pro slit_deconvolution,filter=filter,psplot=psplot,$
-                       useplainArgon=useplainArgon
+function slit_deconvolution,arcNar,arcWide,filter=filter,psplot=psplot,$
+                       useplainArgon=useplainArgon,showplots=showplots
 ;; Deconvolves a arc spectra to find the slit function
 ;; filter - does a low pass filter in Fourier domain
 ;; psplot - saves a postscript plot
@@ -18,27 +18,32 @@ if keyword_set(psplot) then begin
           filename=plotprenm+'.eps'
    device,xsize=30, ysize=40,decomposed=1,/color
 endif
-
-!p.multi = [0,0,8]
+if keyword_set(showplots) then begin
+   !p.multi = [0,0,8]
+endif
 
 Np = 2048l
 midP = 512
 ;; Convolved one
-restore,'slit3_arcspec.sav'
+;restore,'slit3_arcspec.sav'
 convolSD = fltarr(np)
-nY = n_elements(yplot3)
-convolSD[midP:(midP+nY-1)] = yplot3
+nY = n_elements(arcWide)
+convolSD[midP:(midP+nY-1)] = arcWide
 sz = size(convolSD)
 
-plot,convolSD,title='Convolution (3x60)',charsize=2
+if keyword_set(showplots) then begin
+   plot,convolSD,title='Convolution (3x60)',charsize=2
+endif
 
 ;; Delta functions
-restore,'nar_slit_arcspec.sav'
+;restore,'nar_slit_arcspec.sav'
 ;restore,'narrower_slit_arcspec_deconvol.sav'
-;yplot = deltasDec
-narArc = fltarr(Np)
-narArc[midP:(midP+nY-1l)] = yplot
-plot,narArc,title='Function (0.3x60)',charsize=2
+narArc = fltarr(np)
+narArc[midP:(midP+nY-1l)] = arcNar
+if keyword_set(showplots) then begin
+   plot,narArc,title='Function (0.3x60)',charsize=2
+endif
+
 
 if keyword_set(useplainArgon) then begin
    fulldeltas = narArc
@@ -47,7 +52,9 @@ endif else begin
    normKern = narrSKern / total(NarrSkern)
    for i=0l,300 do Max_Likelihood, narArc, normkern, Narrdeconv,ft_psf=psf_ft
    fulldeltas = Narrdeconv
-   plot,fulldeltas,title='De-convolved Argon',charsize=2
+   if keyword_set(showplots) then begin
+      plot,fulldeltas,title='De-convolved Argon',charsize=2
+   endif
 endelse
 ;fulldeltas[midP:(midP+nY-1l)] = yplot
 
@@ -55,34 +62,51 @@ endelse
 ;; Shifted Convolved
 
 shiftConvolSD = shift(convolSD,-sz[1]/2)
-plot,shiftConvolSD,title='Shifted Convolution (3x60)',charsize=2
+
+if keyword_set(showplots) then begin
+   plot,shiftConvolSD,title='Shifted Convolution (3x60)',charsize=2
+endif
+
 
 fftconvolSD = fft(shiftConvolSD)/float(sz[1])
 if keyword_set(filter) then begin
    filterAmt = 750l
    fftconvolSD[1024-filterAmt:1023+filterAmt] = complex(0E,0E)
 endif
-plot,fftconvolSD,title='FFT Shifted Convolution',charsize=2
-oplot,imaginary(fftconvolSD),color=mycol('yellow')
+if keyword_set(showplots) then begin
+   plot,fftconvolSD,title='FFT Shifted Convolution',charsize=2
+   oplot,imaginary(fftconvolSD),color=mycol('yellow')
+endif
+
 
 fftdeltas = fft(fulldeltas)
 if keyword_set(filter) then begin
    fftdeltas[1024-filterAmt:1023+filterAmt] = complex(0E,0E)
 endif
-plot,fftdeltas,title='FFT Function (0.3x60)',charsize=2
-oplot,imaginary(fftdeltas),color=mycol('yellow')
+if keyword_set(showplots) then begin
+   plot,fftdeltas,title='FFT Function (0.3x60)',charsize=2
+   oplot,imaginary(fftdeltas),color=mycol('yellow')
+endif
+
 
 nonZ = where(fftDeltas NE 0E)
 fftDeconvol = complexarr(sz[1])
 if nonz NE [-1] then fftDeconvol[nonz] = fftconvolSD[nonz]/fftDeltas[nonz]
 
-plot,fftDeconvol,title='FFT Convolution / FFT Function',charsize=2
-oplot,imaginary(fftDeconvol),color=mycol('yellow')
+if keyword_set(showplots) then begin
+   plot,fftDeconvol,title='FFT Convolution / FFT Function',charsize=2
+   oplot,imaginary(fftDeconvol),color=mycol('yellow')
+endif
+
 
 deconvol = fft(fftDeconvol,/inverse) * float(sz[1])
-plot,deconvol,title='De-convolution (to get Kernel)',charsize=2
+if keyword_set(showplots) then begin
+   plot,deconvol,title='De-convolution (to get Kernel)',charsize=2
+endif
 
-save,deconvol,filename='slit_func_estimate.sav'
+
+;save,deconvol,filename='slit_func_estimate.sav'
+
 
 ;plot,fulldeltas,/nodata,yrange=[-.5,1.5],title='Function',charsize=2
 ;oplot,fulldeltas,color=mycol('red')
@@ -97,7 +121,10 @@ save,deconvol,filename='slit_func_estimate.sav'
 ;
 ;
 ;;oplot,square
-!p.multi = 0
+if keyword_set(showplots) then begin
+   !p.multi = 0
+   stop
+endif
 
 if keyword_set(psplot) then begin
    device, /close
@@ -111,5 +138,7 @@ if keyword_set(psplot) then begin
    !y.thick=1
    
 endif
+
+return, deconvol[midP:(midP+nY-1l)]
 
 end
