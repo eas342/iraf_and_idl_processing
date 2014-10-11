@@ -20,7 +20,25 @@ namePrefix = splitPrefix[0]
    plotprenm = namePrefix
    device,encapsulated=1, /helvetica,$
           filename=plotprenm+'.eps'
-   device,xsize=14, ysize=10,decomposed=1,/color
+
+   if n_elements(zoombox) NE 0 then begin
+      psXlength = max(zoombox[0,*]) - min(zoombox[0,*])
+      psYlength = max(zoombox[1,*]) - min(zoombox[1,*])
+      if psXlength GT psYlength then begin
+         psXs = 14
+         psYs = 14E * float(psYlength)/float(psXlength)
+         if pSYs LT 4E then psYs = 3E
+      endif else begin
+         psYs = 10
+         psXs = 10E * float(psXlength)/float(psYlength)
+         if pSXs LT 4E then psXs = 4E
+      endelse
+
+   endif else begin
+      psXs = 14
+      psYs = 10
+   end
+   device,xsize=psXs, ysize=psYs,decomposed=1,/color
 
    fits_display,fileL[i],usescale=usescale,lineP=lineP,zoombox=zoombox,$
                 message=namePrefix+'.fits'
