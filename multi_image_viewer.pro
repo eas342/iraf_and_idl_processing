@@ -99,6 +99,7 @@ while status NE 'q' and status NE 'Q' do begin
             undefine,currentS
             undefine,slot
             undefine,lineP
+            undefine,zoombox
             status = 'o'
             skipaction=1
          endif
