@@ -1,10 +1,13 @@
-pro move_flat_field,showplot=showplot,psubreg=psubreg,spline=spline
+pro move_flat_field,showplot=showplot,psubreg=psubreg,spline=spline,$
+                    twoDir=twoDir
 ;; Moves the structure in the flat field to best-fit the data's
 ;; flat field
 ;; responsefile - the iraf response file that has the flat field, but
 ;;                with the stripe structure subtracted from it
 ;; psubreg - show a sub-region of the line plots
 ;; spline - use spline interpolation
+;; twoDir - shift the flat in two directions to account for two
+;;          directional flexure
 
 lagsize=15l ;; how far to look at the cross correlation
 
@@ -25,6 +28,12 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      print,'No backbox found for move_lat_field'
      return
   end else breg = parse_iraf_regions(varvalue[0])
+  if keyword_set(twoDir) then begin
+     sB = parse_iraf_regions(varvalue[1]) ;; background spectrum
+     medSky = mod_rdfits('skymedian_untrim.fits',0,skyMedHead)
+     medSubSpec = median(medSky[sB[0]:sB[1],sB[2]:sB[3]],dimension=2)
+  endif
+
   fsizesearch = where(varname EQ 'fitsize')
 
   ;; Choose how far on either side of the peak to fit
@@ -57,12 +66,10 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      highp = min([lagsize-1l,topInd + fitsize])
      PolyTrend = poly_fit(lagarray[lowp:highp],crosscor[lowp:highp],NpolyF)
      peak = -PolyTrend[1]/(2E * polyTrend[2])
+
      ;; shift the flat field structure
      shiftstruct = s
-     nx = n_elements(s[*,0])
-     for j=0l,nx-1l do begin
-        shiftstruct[j,*] = transpose(shift_interp(transpose(s[j,*]),peak,spline=spline))
-     endfor
+     shiftstruct= shift_interp(s,[0,peak],spline=spline)
 
      dividedFlat = r * shiftstruct ;; add in the pixel-to-pixel structure
      ;; Trim the flat to the same as the original response
