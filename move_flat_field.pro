@@ -32,6 +32,7 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      sB = parse_iraf_regions(varvalue[1]) ;; background spectrum
      medSky = mod_rdfits('skymedian_untrim.fits',0,skyMedHead)
      medSubSpec = median(medSky[sB[0]:sB[1],sB[2]:sB[3]],dimension=2)
+     fmsubspec = convol(medsubspec,digital_filter(0.15,0.3,50,10))
   endif
 
   fsizesearch = where(varname EQ 'fitsize')
@@ -57,6 +58,7 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      ;; get the filename 
      splitname = strsplit(sciencelist[i],'.',/extract)
      shortname = splitname[0]
+
      ;; median spatial structure in science image
      csub = median(c[breg[0]:breg[1],breg[2]:breg[3]],dimension=1)
      crosscor = c_correlate(ssub,csub,lagarray)
@@ -66,10 +68,26 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      highp = min([lagsize-1l,topInd + fitsize])
      PolyTrend = poly_fit(lagarray[lowp:highp],crosscor[lowp:highp],NpolyF)
      peak = -PolyTrend[1]/(2E * polyTrend[2])
+     vertDir = peak
+
+     if keyword_set(twoDir) then begin
+        ;; Median spectral structure
+        csubSpec = median(c[sB[0]:sB[1],sB[2]:sB[3]],dimension=2)
+        fcsubSpec = convol(csubspec,digital_filter(0.15,0.3,50,10))
+        crosscor = c_correlate(fmsubspec,fcsubSpec,lagarray)
+        maxVal = max(crosscor,topInd)
+        lowp = max([0l,topInd - fitsize])
+        highp = min([lagsize-1l,topInd + fitsize])
+        PolyTrend = poly_fit(lagarray[lowp:highp],crosscor[lowp:highp],NpolyF)
+        peak = -PolyTrend[1]/(2E * polyTrend[2])
+;        plot,lagarray,crosscor,ystyle=16
+;        oplot,[peak,peak],!y.crange,color=mycol('yellow')
+        horizDir = peak
+     endif else horizDir = 0
 
      ;; shift the flat field structure
      shiftstruct = s
-     shiftstruct= shift_interp(s,[0,peak],spline=spline)
+     shiftstruct= shift_interp(s,[horizDir,vertDir],spline=spline)
 
      dividedFlat = r * shiftstruct ;; add in the pixel-to-pixel structure
      ;; Trim the flat to the same as the original response
