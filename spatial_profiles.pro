@@ -1,7 +1,9 @@
 pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlayStars,$
                      nProfiles=nProfiles,cumulativeFlux=cumulativeFlux,$
                      customIndex=customIndex,divideOut=divideOut,$
-                     semiLog=semiLog,voigt=voigt,lorentz=lorentz
+                     semiLog=semiLog,voigt=voigt,lorentz=lorentz,$
+                     median=median,fixprofposition=fixprofposition,$
+                     custSpecRange=custSpecRange
 ;; This script looks for any unusual aspects of the spatial background
 ;; profile that might affect one star differently from the other
 ;; psplot - generates a postscript plot
@@ -14,6 +16,10 @@ pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlaySta
 ;; semiLog -- make the y axis semiLog
 ;; voigt - Fit the first profile with a Voigt function
 ;; lorentz - Fit with a Lorentz Profile
+;; median - does median along profile instead of sum
+;; fixprofposition - when looking at profiles, fix the profile
+;;                   position rather then recenter each profile
+;; custSpecRange - specify which spectral pixels to average profiles over
 
 StarHalfRange = 30 ;; half the range to show if zooming in on star
 BackgStart = 17 ;; distance from star to start background estimation
@@ -46,7 +52,7 @@ if n_elements(separation) EQ 0 then separation = 0.03
 
 if keyword_set(customIndex) then begin
    fileIndex = customIndex
-   nProfiles=1
+   nProfiles=n_elements(fileIndex)
 endif else begin
    if n_elements(nProfiles) EQ 0 then nProfiles = 7
    fileIndex = round(findgen(nProfiles)/float(nProfiles) * float(nfiles))
@@ -69,9 +75,12 @@ StyleOpt = [0,2]
 for i=0l,nProfiles-1 do begin
    a = mrdfits(filen[fileIndex[i]],0,header)
    ;; find the profile, excluding 
-;   prof = total(a[0:startTherm-1l,*],1)
-;   prof = median(a[0:startTherm-1l,*],dimension=1)
-   prof = total(a,1)
+   if n_elements(custspecRange) EQ 0 then begin
+      specRange = [0,n_elements(a[*,0])-1l]
+   endif else specRange = custspecRange
+   if keyword_set(median) then begin
+      prof = median(a[specRange[0]:specRange[1],*],dimension=1)
+   endif else prof = total(a[specRange[0]:specRange[1],*],1)
    NormVal = median(Prof)
    normProf = prof/NormVal
    medprof = median(a,dimension=1)
@@ -97,7 +106,11 @@ for i=0l,nProfiles-1 do begin
 ;                     Median(NormProf)- offset - 0.08,linestyle=2
       ;; Ignore the ends (last 4 pixels and first 4)
       profstruct = create_struct('data',[[RowArr[4l:nrows-4l]],[medProf[4l:nrows-4l]]])
-      mc_findpeaks,profstruct,2,1,posit,apsign,/auto
+      if keyword_set(fixprofposition) then begin
+         if i EQ 0 then findstars=1 else findstars=1
+         ;; only find stars first time if trying to fix positions
+      endif else findstars=1
+      if findstars then mc_findpeaks,profstruct,2,1,posit,apsign,/auto
       for j=0l,1l do begin
          Lowp = max([0,posit[j] - StarHalfRange])
          Highp = min([Nrows-1l,posit[j] + StarHalfRange])
