@@ -62,8 +62,8 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 #imcopy response.fits[0] full_response.fits[0][80:878,24:615]
 #imarith full_response.fits[0] + response.fits[0] full_response.fits
 #imcopy response.fits full_response.fits
-#!echo "ev_compile_red & find_flat_structure" | idl
-!echo "ev_compile_red & move_flat_field,/twodir" | idl
+!echo "ev_compile_red & find_flat_structure" | idl
+!echo "ev_compile_red & move_flat_field" | idl
 #Make a list of the customized flat fields
 !ls response_for*.fits > response_list.txt
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
@@ -82,7 +82,7 @@ overscan=no, trim=yes, zerocor=no, darkcor=yes, flatcor=yes, illumcor=no,
 fringecor=no, readcor=no, scancor=no, readaxis="line", 
 fixfile="combined_mask.pl", biassec="",
 trimsec=(s1), zero="", dark="masterdark.fits",
-flat="response.fits", illum="", fringe="", minreplace=0.2,
+flat="full_response.fits", illum="", fringe="", minreplace=0.2,
 scantype="shortscan", nscan=1, interactive=no, function="legendre", order=1,
 sample="*", naverage=1, niterate=1, low_reject=3., high_reject=3., grow=0.)
 
