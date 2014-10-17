@@ -3,7 +3,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             allimages=allimages,showStarshift=showstarshift,$
             showRatioFit=showRatioFit,timing=timing,$
             usemedRatio=usemedRatio,printcentroid=printcentroid,$
-            secondFlat=secondFlat
+            secondFlat=secondFlat,rowExperiment=rowExperiment
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -24,6 +24,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;; printcentroid - a diagnostic test, which prints the
 ;;                 centroid of the first star
 ;; secondFlat - use the second flat to flatten again
+;; rowExperiment - an experiment adjusting a single row
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -38,6 +39,8 @@ close,1
 if keyword_set(secondFlat) then begin
    secondFlat = mrdfits('secondflat.fits',0,secondFlatH)
 endif
+
+ExperiRow = 520 ; row to experiment with if exploring flat field dependence
 
 ;; Get the list of spectrograph images
 readcol,'straight_science_images.txt',$
@@ -142,109 +145,130 @@ for i=0l,lastfile do begin
       ApStart = lonarr(Nap)
       ApEnd = lonarr(Nap)
       
-      ;; Make a mask below the shortest wavelengths and above the longest
-      ProfileMask = fltarr(Xlength)
-      ProfileMask[0l:ApXStart] = 1
-      ProfileMask[ApXEnd:Xlength-1l] = 1
-      ;; Fit the spatial profiles with smooth polynomials
-      for k=0l,Nap-1l do begin
-         ApStart[k] = max([posit[i,k] - apsize,0l])
-         ApEnd[k] = min([posit[i,k] + apsize,Ylength-1l])
-         for j=ApStart[k],ApEnd[k] do begin
-            PPolyFits = ev_robust_poly(colnum,profImage[*,j],Spoly,showplot=showPfit,$
-                                       mask=ProfileMask)
-            fitImage[*,j] = eval_poly(colnum,PPolyFits)
-         endfor
-      endfor
-      for j=SubtractStart,EndSubtract do begin
-         ;; Renormalize row by row
-         fitImage[j,*] = norm_array(transpose(fitimage[j,*]),apsize,posit[i,*])
-      endfor
-      
-      ;; Find the sum extraction
-      for k=0l,Nap-1l do begin
-         sumFlux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]],2)
-      endfor
-      
-      ;; Find the profile-weighted spectrum
-      for k=0l,Nap-1l do begin
-         proflux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]],2) /$
-                        total(fitImage[*,Apstart[k]:ApEnd[k]]^2,2)
-      endfor
-      
-      ;; Find the variance estimator & variance-weighted optimal extraction
-      varImage = rebin(bsigmas^2,xlength,ylength) + readN^2 ;; background & read noise
-      for k=0l,Nap-1l do begin ;; now the source noise from the fitted profile
-         varImage[*,Apstart[k]:ApEnd[k]] = varImage[*,Apstart[k]:ApEnd[k]] + $
-                                              fitImage[*,Apstart[k]:ApEnd[k]] *$
-                                           rebin(proflux[*,k],xlength,ApEnd[k] - Apstart[k]+1l)
-         optflux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]]/$
-                              varImage[*,Apstart[k]:ApEnd[k]],2) /$
-                        total(fitImage[*,Apstart[k]:ApEnd[k]]^2/$
-                              varImage[*,Apstart[k]:ApEnd[k]],2)
-      endfor
+      if keyword_set(rowExperiment) and m EQ CRIter-1l then begin
+         origOutImg = outImage
+         rowMod = 0.04 * findgen(10) + 0.80
+;         rowMod = [0E,0.4E,1.0E,1.5E,3E]
+         nExperiment=n_elements(rowMod)
+         NspecTypes = NspecTypes + nExperiment
+         bandIDs = [bandIds,'Row '+strtrim(experiRow,1)+$
+                    ' Mult Fac '+strtrim(rowMod,1)]
+      endif else nExperiment=1l
 
-
-      ;; Save the wavelength solution (only the first time through)
-      if i EQ 0 and m EQ 0 then begin
-         wavelSol = wavecal() ;; get it from the firstwavecal database file
-         lamgrid = eval_poly(findgen(Xlength),wavelSol)
-      endif
-
-      ;; optimal extraction error
-      for k=0l,Nap-1l do begin
-         variance = total(fitImage[*,Apstart[k]:ApEnd[k]],2)/$
-                    total(fitImage[*,Apstart[k]:ApEnd[k]]^2 / varImage[*,Apstart[k]:ApEnd[k]],2)
-         sigflux[*,k] = sqrt(variance)
-      endfor
-
-      
-      ;; show the residuals
-      resImage = outImage         ;; start with the background-subtracted image
-      NApPixels = ApEnd - ApStart +1l ;; number of aperture pixels
-      
-      for k=0l,Nap-1l do begin
-         resImage[*,ApStart[k]:ApEnd[k]] = outimage[*,Apstart[k]:ApEnd[k]] - $
-                                           rebin(optflux[*,k],Xlength,NApPixels[k]) * fitimage[*,ApStart[k]:ApEnd[k]]
-      endfor
-      ;; Divide by sqrt(variance) for number of sigma away
-      resImage = resImage / sqrt(varImage)
-      ;; Find bad pixels from the residual image
-      ;; for asymmetric distribution (like if there are
-      ;; unsubtracted sources, it is better to use asymmetric sigmas
-;         rsigma = robust_sigma(resImage)
-      pospix = where(resImage GT 0,complement=negpix)
-      highSig = median(resImage[pospix])
-      lowSig = median(resImage[negpix])
-
-      badpix = where(resImage GT CRsigma * highSig OR $
-                     resImage LT CRsigma * lowSig and $
-                     ((yIndex GE Lowp[0] and yIndex LE highp[0]) OR $
-                      (yIndex GE Lowp[1] and yIndex LE highp[1])))
-
-      if keyword_set(showCRplot) then begin
-         plothist,resImage,xrange=[lowSig,highSig] * 5E * CRsigma,/ylog
-         oplot,CRsigma * highSig * [1E,1E],10E^!y.crange,color=mycol('yellow')
-         oplot,CRsigma * lowSig * [1E,1E],10E^!y.crange,color=mycol('yellow')
-         stop
-      endif
-      if badpix NE [-1] then cosImage[badpix]= 1l
-
-      if keyword_set(comparSpec) then begin
-         for k=0l,Nap-1l do begin
-            colorArr = myarraycol(3)
-            plot,sumflux[*,k],xtitle='Spectral pixel',$
-                 ytitle='Flux',color=colorArr[0]
-            oplot,proflux[*,k],color=colorArr[1]
-            oplot,optflux[*,k],color=colorArr[2]
-            al_legend,['Sum','Profile-Weighted','Optimal'],color=colorArr,linestyle=0
-            stop
+      for l=0l,nExperiment-1l do begin
+         if keyword_set(rowExperiment) and m EQ CRIter-1l then begin
+            ;; Experiment by adjusting a row from 0.90 to 1.10 in 0.02
+            ;; sized increments
+            outImage = origOutImg
+            outImage[*,experiRow] = outImage[*,experiRow] * rowMod[l]
+            for j=SubtractStart,EndSubtract do begin
+               profimage[j,*] = norm_array(transpose(outimage[j,*]),apsize,posit[i,*])
             endfor
-      endif
-      
-      if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
-      ;; Find the ratio image. Separate this from the Cosmic Ray
-      ;; iteration loop
+         endif
+
+         ;; Make a mask below the shortest wavelengths and above the longest
+         ProfileMask = fltarr(Xlength)
+         ProfileMask[0l:ApXStart] = 1
+         ProfileMask[ApXEnd:Xlength-1l] = 1
+         ;; Fit the spatial profiles with smooth polynomials
+         for k=0l,Nap-1l do begin
+            ApStart[k] = max([posit[i,k] - apsize,0l])
+            ApEnd[k] = min([posit[i,k] + apsize,Ylength-1l])
+            for j=ApStart[k],ApEnd[k] do begin
+               PPolyFits = ev_robust_poly(colnum,profImage[*,j],Spoly,showplot=showPfit,$
+                                          mask=ProfileMask)
+               fitImage[*,j] = eval_poly(colnum,PPolyFits)
+            endfor
+         endfor
+         for j=SubtractStart,EndSubtract do begin
+            ;; Renormalize row by row
+            fitImage[j,*] = norm_array(transpose(fitimage[j,*]),apsize,posit[i,*])
+         endfor
+         
+         ;; Find the sum extraction
+         for k=0l,Nap-1l do begin
+            sumFlux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]],2)
+         endfor
+         
+         ;; Find the profile-weighted spectrum
+         for k=0l,Nap-1l do begin
+            proflux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]],2) /$
+                           total(fitImage[*,Apstart[k]:ApEnd[k]]^2,2)
+         endfor
+         
+         ;; Find the variance estimator & variance-weighted optimal extraction
+         varImage = rebin(bsigmas^2,xlength,ylength) + readN^2 ;; background & read noise
+         for k=0l,Nap-1l do begin                              ;; now the source noise from the fitted profile
+            varImage[*,Apstart[k]:ApEnd[k]] = varImage[*,Apstart[k]:ApEnd[k]] + $
+                                              fitImage[*,Apstart[k]:ApEnd[k]] *$
+                                              rebin(proflux[*,k],xlength,ApEnd[k] - Apstart[k]+1l)
+            optflux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]]/$
+                                 varImage[*,Apstart[k]:ApEnd[k]],2) /$
+                           total(fitImage[*,Apstart[k]:ApEnd[k]]^2/$
+                                 varImage[*,Apstart[k]:ApEnd[k]],2)
+         endfor
+         
+         
+         ;; Save the wavelength solution (only the first time through)
+         if i EQ 0 and m EQ 0 then begin
+            wavelSol = wavecal() ;; get it from the firstwavecal database file
+            lamgrid = eval_poly(findgen(Xlength),wavelSol)
+         endif
+         
+         ;; optimal extraction error
+         for k=0l,Nap-1l do begin
+            variance = total(fitImage[*,Apstart[k]:ApEnd[k]],2)/$
+                       total(fitImage[*,Apstart[k]:ApEnd[k]]^2 / varImage[*,Apstart[k]:ApEnd[k]],2)
+            sigflux[*,k] = sqrt(variance)
+         endfor
+         
+         
+         ;; show the residuals
+         resImage = outImage          ;; start with the background-subtracted image
+         NApPixels = ApEnd - ApStart +1l ;; number of aperture pixels
+         
+         for k=0l,Nap-1l do begin
+            resImage[*,ApStart[k]:ApEnd[k]] = outimage[*,Apstart[k]:ApEnd[k]] - $
+                                              rebin(optflux[*,k],Xlength,NApPixels[k]) * fitimage[*,ApStart[k]:ApEnd[k]]
+         endfor
+         ;; Divide by sqrt(variance) for number of sigma away
+         resImage = resImage / sqrt(varImage)
+         ;; Find bad pixels from the residual image
+         ;; for asymmetric distribution (like if there are
+         ;; unsubtracted sources, it is better to use asymmetric sigmas
+;         rsigma = robust_sigma(resImage)
+         pospix = where(resImage GT 0,complement=negpix)
+         highSig = median(resImage[pospix])
+         lowSig = median(resImage[negpix])
+         
+         badpix = where(resImage GT CRsigma * highSig OR $
+                        resImage LT CRsigma * lowSig and $
+                        ((yIndex GE Lowp[0] and yIndex LE highp[0]) OR $
+                         (yIndex GE Lowp[1] and yIndex LE highp[1])))
+         
+         if keyword_set(showCRplot) then begin
+            plothist,resImage,xrange=[lowSig,highSig] * 5E * CRsigma,/ylog
+            oplot,CRsigma * highSig * [1E,1E],10E^!y.crange,color=mycol('yellow')
+            oplot,CRsigma * lowSig * [1E,1E],10E^!y.crange,color=mycol('yellow')
+            stop
+         endif
+         if badpix NE [-1] then cosImage[badpix]= 1l
+         
+         if keyword_set(comparSpec) then begin
+            for k=0l,Nap-1l do begin
+               colorArr = myarraycol(3)
+               plot,sumflux[*,k],xtitle='Spectral pixel',$
+                    ytitle='Flux',color=colorArr[0]
+               oplot,proflux[*,k],color=colorArr[1]
+               oplot,optflux[*,k],color=colorArr[2]
+               al_legend,['Sum','Profile-Weighted','Optimal'],color=colorArr,linestyle=0
+               stop
+            endfor
+         endif
+         
+         if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
+         ;; Find the ratio image. Separate this from the Cosmic Ray
+         ;; iteration loop
 ;      if i EQ 0 then begin
          fixApstart = Apstart
          fixApend = ApEnd
@@ -255,66 +279,74 @@ for i=0l,lastfile do begin
          if keyword_set(usemedRatio) and i EQ 0 then begin
             medRat = mrdfits('ratio_median.fits',0,headMedRatio)
          endif
-
-      star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
-      star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
+         
+         star1img = outimage[*,fixApstart[0]:fixApEnd[0]]
+         star2img = outimage[*,fixApstart[1]:fixApEnd[1]]
 ;      star1img = fitimage[*,fixApstart[0]:fixApEnd[0]]
 ;      star2img = fitimage[*,fixApstart[1]:fixApEnd[1]]
-      ;; Find the shift of the two stars, only the first time
+         ;; Find the shift of the two stars, only the first time
 ;      if i EQ 0 then begin
          star1quickProf = total(fitImage[*,fixApstart[0]:fixApEnd[0]],1)
          star2quickProf = total(fitImage[*,fixApstart[1]:fixApEnd[1]],1)
-      ;; shift to match the core and peak, not so much wings
+         ;; shift to match the core and peak, not so much wings
          shiftAmt = cross_cor_find(star1quickProf,star2quickProf,$
                                    nlag=50l,fitsize=3l,showplot=showstarshift)
 ;      midAp = round(apsize)
 ;      corestart = MidAp - round(Apsize/2E)
 ;      coreend = midAp + round(Apsize/2E)
 ;      endif
-
-      star2img = transpose(shift_interp(transpose(star2img),-shiftAmt))
-      nonzeropt = where(star2img NE 0E,complement=zeropt)
-      ratioImg = star1img
-      if nonzeropt NE [-1] then $
-         ratioImg[nonzeropt] = star1img[nonzeropt]/star2img[nonzeropt]
-      if zeropt NE [-1] then $
-         ratioImg[zeropt] = !values.f_nan
-      ;; Find the variance in the ratio
-      star1imgVar = varimage[*,fixApstart[0]:fixApEnd[0]]
-      star2imgVar = varimage[*,fixApstart[1]:fixApEnd[1]]
-      star2imgVar = transpose(shift_interp(transpose(star2imgVar),-shiftAmt))
-      star2imgFErr = sqrt(star1imgVar)/abs(star2img)
-      star1imgFErr = sqrt(star1imgVar)/abs(star1img)
-      ratioImgErr = abs(ratioImg) * sqrt(star1imgFErr^2 + star2imgFErr^2)
+         
+         star2img = transpose(shift_interp(transpose(star2img),-shiftAmt))
+         nonzeropt = where(star2img NE 0E,complement=zeropt)
+         ratioImg = star1img
+         if nonzeropt NE [-1] then $
+            ratioImg[nonzeropt] = star1img[nonzeropt]/star2img[nonzeropt]
+         if zeropt NE [-1] then $
+            ratioImg[zeropt] = !values.f_nan
+         ;; Find the variance in the ratio
+         star1imgVar = varimage[*,fixApstart[0]:fixApEnd[0]]
+         star2imgVar = varimage[*,fixApstart[1]:fixApEnd[1]]
+         star2imgVar = transpose(shift_interp(transpose(star2imgVar),-shiftAmt))
+         star2imgFErr = sqrt(star1imgVar)/abs(star2img)
+         star1imgFErr = sqrt(star1imgVar)/abs(star1img)
+         ratioImgErr = abs(ratioImg) * sqrt(star1imgFErr^2 + star2imgFErr^2)
+         
+         if keyword_set(printcentroid) then begin
+            centroid = total(star1quickProf * ratioYind)/(total(star1quickProf))
+            midPYind = 0.5E * (float(fixApEnd[0]) - float(fixApStart[0]))
+            print,"Star 1 centroid= ",centroid - midPYind
+         endif
+         
+         if keyword_set(usemedRatio) then begin
+            ratioImg = ratioImg/medRat
+            ratioImgErr = ratioImgErr/medRat
+         endif
+         
+         for j=0l,Xlength-1l do begin
+            polyRatioFit = ev_robust_poly(ratioYind,transpose(ratioImg[j,*]),$
+                                          0,showPlot=showRatioFit,$
+                                          yerr=transpose(ratioImgErr[j,*]),$
+                                          custYrange=[-2,2.5],nsig=2E)
+            fluxrat[j,0] = eval_poly(midSubApYarr,polyRatioFit)
+            if keyword_set(showRatioFit) then begin
+               oplot,[midSubApYarr],[fluxrat[j,0]],psym=4,symsize=2,color=mycol('red')
+               oploterr,ratioYind,transpose(ratioImg[j,*]),transpose(ratioImgErr[j,*])
+               print,'Column ',j
+               stop
+            end
+         endfor
       
-      if keyword_set(printcentroid) then begin
-         centroid = total(star1quickProf * ratioYind)/(total(star1quickProf))
-         midPYind = 0.5E * (float(fixApEnd[0]) - float(fixApStart[0]))
-         print,"Star 1 centroid= ",centroid - midPYind
-      endif
-
-      if keyword_set(usemedRatio) then begin
-         ratioImg = ratioImg/medRat
-         ratioImgErr = ratioImgErr/medRat
-      endif
-
-      for j=0l,Xlength-1l do begin
-         polyRatioFit = ev_robust_poly(ratioYind,transpose(ratioImg[j,*]),$
-                                       0,showPlot=showRatioFit,$
-                                       yerr=transpose(ratioImgErr[j,*]),$
-                                      custYrange=[-2,2.5],nsig=2E)
-         fluxrat[j,0] = eval_poly(midSubApYarr,polyRatioFit)
-         if keyword_set(showRatioFit) then begin
-            oplot,[midSubApYarr],[fluxrat[j,0]],psym=4,symsize=2,color=mycol('red')
-            oploterr,ratioYind,transpose(ratioImg[j,*]),transpose(ratioImgErr[j,*])
-            print,'Column ',j
-            stop
-         end
+         if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
+         ;; Save the spectrum
+         if l EQ 0 then finalData = fltarr(Xlength,Nap,NSpecTypes)
+         if keyword_set(rowExperiment) and m EQ CRITer-1l then begin
+            for k=0l,Nap-1l do begin
+               finalData[*,k,6+l+1] = optflux[*,k]
+            endfor
+         endif
+         
       endfor
 
-      if keyword_set(timing) then t2 =  es_timing(t2,'line 229')
-      ;; Save the spectrum
-      finalData = fltarr(Xlength,Nap,NSpecTypes)
       for k=0l,Nap-1l do begin
          finalData[*,k,0] = sumflux[*,k]
          finalData[*,k,1] = optflux[*,k]
@@ -324,24 +356,25 @@ for i=0l,lastfile do begin
          finalData[*,k,5] = lamgrid
          finalData[*,k,6] = fluxrat[*,k]
       endfor
+
       postpos = strpos(straightlist[i],'.fits')
       outprefix = strmid(straightlist[i],0,postpos)
       fluxhead = header
-      
-      sxaddpar,fluxhead,'NAXIS',3
-      sxaddpar,fluxhead,'NAXIS2',Nap
-      sxaddpar,fluxhead,'NAXIS3',NSpecTypes
-      sxaddpar,fluxhead,'Extracted','TRUE','Fluxes are extracted'
-      for l=0l,NSpecTypes-1l do begin
-         sxaddpar,fluxhead,'BANDID'+strtrim(l+1,1),bandIDS[l],"Band explanation"
-      endfor
-      sxaddpar,fluxhead,'APNUM1','1 1 '+strtrim(ApStart[0],1)+' '+strtrim(ApEnd[0],1)
-      writefits,outprefix+'_es_ms.fits',finalData,fluxhead
-      
    endfor
+
+   sxaddpar,fluxhead,'NAXIS',3
+   sxaddpar,fluxhead,'NAXIS2',Nap
+   sxaddpar,fluxhead,'NAXIS3',NSpecTypes
+   sxaddpar,fluxhead,'Extracted','TRUE','Fluxes are extracted'
+   for l=0l,NSpecTypes-1l do begin
+      sxaddpar,fluxhead,'BANDID'+strtrim(l+1,1),bandIDS[l],"Band explanation"
+   endfor
+   sxaddpar,fluxhead,'APNUM1','1 1 '+strtrim(ApStart[0],1)+' '+strtrim(ApEnd[0],1)
+   writefits,outprefix+'_es_ms.fits',finalData,fluxhead
+
    
    
-   if keyword_set(saveSteps) then begin ;; save all steps as FITS images (data intensive)
+   if keyword_set(saveSteps) then begin            ;; save all steps as FITS images (data intensive)
       bheader = header                             ;; header for background
       pheader = header                             ;; header for profile measurement
       fheader = header                             ;; header for the normalized profile fit
