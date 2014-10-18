@@ -19,3 +19,7 @@ delete combined_mask.fits
 delete arclist_orig.txt
 delete science_images_plain.txt
 delete response_for*run*.fits
+delete sky_structure.fits
+delete skymedian.fits
+delete skymedian_untrim.fits
+

@@ -55,15 +55,63 @@ response ("trimflat",
 naverage=1, function="spline3", order=10, low_reject=3., high_reject=3.,
 niterate=3, grow=0., graphics="stdgraph", cursor="")
 
-## Make the response file a full image size b/c it will be trimmed by ccdproc
-#imarith masterflat.fits[0] * 0. full_response.fits
-#imarith full_response.fits[0] + 1. full_response.fits[0]
-#imcopy response.fits[0] full_response.fits[0][510:1024,105:495]
-#imcopy response.fits[0] full_response.fits[0][80:878,24:615]
-#imarith full_response.fits[0] + response.fits[0] full_response.fits
-#imcopy response.fits full_response.fits
-!echo "ev_compile_red & find_flat_structure" | idl
-!echo "ev_compile_red & move_flat_field" | idl
+# Make a sky flat or a lamp flat
+if ((b1) == yes) {
+## Make a median sky frame to use as a flat
+imcombine ("runsky*.fits[0]",
+"skymedian_untrim", headers="", bpmasks="", rejmasks="", nrejmasks="", expmasks="",
+sigmas="", imcmb="$I", logfile="STDOUT", combine="median", reject="none",
+project=no, outtype="real", outlimits="", offsets="none", masktype="none",
+maskvalue="0", blank=0., scale="none", zero="none", weight="none", statsec="",
+expname="", lthreshold=INDEF, hthreshold=INDEF, nlow=1, nhigh=1, nkeep=1,
+mclip=yes, lsigma=3., hsigma=3., rdnoise="0.", gain="1.", snoise="0.",
+sigscale=0.1, pclip=-0.5, grow=0.)
+
+## Trim the median sky for use as flat
+ccdproc ("skymedian_untrim",
+output="skymedian", ccdtype="", max_cache=0, noproc=no, fixpix=no,
+overscan=no, trim=yes, zerocor=no, darkcor=no, flatcor=no, illumcor=no,
+fringecor=no, readcor=no, scancor=no, readaxis="line",
+fixfile="combined_mask.pl", biassec="", trimsec=(s1), zero="",
+dark="masterdark.fits", flat="stripe_sub_image.fits", illum="", fringe="",
+minreplace=0.2, scantype="shortscan", nscan=1, interactive=no,
+function="legendre", order=1, sample="*", naverage=1, niterate=1,
+low_reject=3., high_reject=3., grow=0.)
+
+## get the lamp structure
+!echo "ev_compile_red & make_sky_response,/lampversion" | idl
+## get the pixel-to-pixel response from the lamp flat
+!echo "ev_compile_red & find_flat_structure,nrowpoly=3,custresponse='lamp_response1.fits'" | idl
+
+## Make a sky reponse file
+!echo "ev_compile_red & make_sky_response,/lampversion" | idl
+
+## Remove the pixel-to-pixel structure from the sky flat
+ccdproc ("sky_response2.fits",
+output="sky_structure.fits", ccdtype="", max_cache=0, noproc=no, fixpix=no,
+overscan=no, trim=no, zerocor=no, darkcor=no, flatcor=yes, illumcor=no,
+fringecor=no, readcor=no, scancor=no, readaxis="line",
+fixfile="combined_mask.pl", biassec="", trimsec=(s1), zero="",
+dark="masterdark.fits", flat="stripe_sub_image.fits", illum="", fringe="",
+minreplace=0.2, scantype="shortscan", nscan=1, interactive=no,
+function="legendre", order=1, sample="*", naverage=1, niterate=1,
+low_reject=3., high_reject=3., grow=0.)
+
+## Fix bad pixels in the sky frame
+!echo "ev_compile_red & fix_sky_flattened,'sky_structure.fits'" | idl
+
+## Make this the sky stripes file
+mv stripes_image.fits stripes_from_flat.fits
+cp sky_structure_fixed.fits stripes_image.fits
+
+## Shift the sky structure & add pixel-to-pixel to make custom flat field for each science image
+!echo "ev_compile_red & move_flat_field,/twodir" | idl
+
+} else {
+    !echo "ev_compile_red & find_flat_structure" | idl
+    !echo "ev_compile_red & move_flat_field" | idl
+}
+
 #Make a list of the customized flat fields
 !ls response_for*.fits > response_list.txt
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
