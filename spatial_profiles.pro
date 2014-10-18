@@ -3,7 +3,7 @@ pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlaySta
                      customIndex=customIndex,divideOut=divideOut,$
                      semiLog=semiLog,voigt=voigt,lorentz=lorentz,$
                      median=median,fixprofposition=fixprofposition,$
-                     custSpecRange=custSpecRange
+                     custSpecRange=custSpecRange,backsub=backsub
 ;; This script looks for any unusual aspects of the spatial background
 ;; profile that might affect one star differently from the other
 ;; psplot - generates a postscript plot
@@ -20,6 +20,7 @@ pro spatial_profiles,psplot=psplot,separation=separation,OverlayStars=OverlaySta
 ;; fixprofposition - when looking at profiles, fix the profile
 ;;                   position rather then recenter each profile
 ;; custSpecRange - specify which spectral pixels to average profiles over
+;; backsub - use the background-subtracted images
 
 StarHalfRange = 30 ;; half the range to show if zooming in on star
 BackgStart = 17 ;; distance from star to start background estimation
@@ -44,8 +45,13 @@ if keyword_set(psplot) then begin
    endif else device,xsize=14, ysize=10,decomposed=1,/color
 endif
 
+if keyword_set(backsub) then begin
+   cd,current=currentD
+   filen = file_search(currentD+'/run*backsub.fits')
+endif else begin
+   readcol,'straight_science_images.txt',format='(A)',filen
+endelse
 
-readcol,'straight_science_images.txt',format='(A)',filen
 nfiles = n_elements(filen)
 ;startTherm = 435 ;; Where thermal emission starts to dominate
 if n_elements(separation) EQ 0 then separation = 0.03
@@ -81,8 +87,14 @@ for i=0l,nProfiles-1 do begin
    if keyword_set(median) then begin
       prof = median(a[specRange[0]:specRange[1],*],dimension=1)
    endif else prof = total(a[specRange[0]:specRange[1],*],1)
-   NormVal = median(Prof)
-   normProf = prof/NormVal
+   if keyword_set(backsub) then begin
+      Normval = total(prof)
+      normprof = prof/normval + 1E
+   endif else begin
+      NormVal = median(Prof)
+      normProf = prof/NormVal
+   endelse
+
    medprof = median(a,dimension=1)
    medprof = medprof/median(medprof) ;; normalized median profile
    offset = separation * i
