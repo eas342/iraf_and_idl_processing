@@ -3,7 +3,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
             allimages=allimages,showStarshift=showstarshift,$
             showRatioFit=showRatioFit,timing=timing,$
             usemedRatio=usemedRatio,printcentroid=printcentroid,$
-            secondFlat=secondFlat
+            secondFlat=secondFlat,undoSky=undoSky
 ;; Subtracts the background spectrum for a spectrograph image
 ;; showB -- show a plot of the background subtraction
 ;; also it generates a profile image for generating a point spread
@@ -24,6 +24,7 @@ pro backsub,showB=showB,showPFit=showPFit,saveSteps=saveSteps,$
 ;; printcentroid - a diagnostic test, which prints the
 ;;                 centroid of the first star
 ;; secondFlat - use the second flat to flatten again
+;; undoSky - undoes the sky flat
 
 openr, 1,'es_local_parameters.txt'
 ; Define a string variable:
@@ -137,6 +138,26 @@ for i=0l,lastfile do begin
             plot,profimage[j,*]
          endif
       endfor
+
+      if keyword_set(undoSky) then begin
+         ;; Undo the sky structure. See what happens if we divide by the
+         ;; appropriate flat
+         splitFileN = strsplit(straightlist[i],'.',/extract)
+         beginName = splitFileN[0]
+         skyResp = mrdfits('../edited/response_for_'+beginName+'.fits',0,respHead,/silent)
+         pix2pix = mrdfits('../edited/stripe_sub_image.fits',0,px2pxHead,/silent)
+         InvResponse = pix2pix/skyResp
+         writefits,'inverse_response.fits',InvResponse,respHead
+         straighten_spec,'inverse_response.fits','temp_straight_resp.fits',$
+                         shiftlist='../edited/skymedian_shifts.txt',$
+                         /oneImage,/overWrite,/silent
+         ModFactor = mrdfits('temp_straight_resp.fits',0,tempRHead,/silent)
+         reModImage = outImage/ModFactor
+         writefits,'temp_backsub.fits',outimage
+         writefits,'temp_modimage.fits',reModImage
+         outimage = remodimage
+      endif
+
       if keyword_set(timing) then t2 =  es_timing(t2,'Line 125')
       ;; Fit the spatial profiles
       ApStart = lonarr(Nap)
