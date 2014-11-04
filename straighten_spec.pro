@@ -1,6 +1,6 @@
 pro straighten_spec,inlist,outlist,shiftlist=shiftlist,dodivide=dodivide,$
                     smooth=smooth,reverse=reverse,oneImage=oneImage,$
-                    overWrite=overWrite
+                    overWrite=overWrite,silent=silent
 ;; Straightens the spectra
 ;; inlist is a list of input images
 ;; outlist is a list of output images
@@ -11,7 +11,7 @@ pro straighten_spec,inlist,outlist,shiftlist=shiftlist,dodivide=dodivide,$
 
 if n_elements(shiftlist) EQ 0 then shiftlist='data/shift_data/shift_vals_from_arc.txt'
 ;; Read in the straightening data
-readcol,shiftlist,rowN,shiftMod,format='(F,F)',skipline=1
+readcol,shiftlist,rowN,shiftMod,format='(F,F)',skipline=1,silent=silent
 
 if keyword_set(reverse) then shiftMod = shiftMod * (-1D)
 
@@ -30,7 +30,7 @@ assert,nfiles,'=',n_elements(outfiles),'In/Out file lists are mismatched.'
 for j=0l,nfiles-1l do begin
 ;   img =
 ;   mrdfits('../IRTF_UT2012Jan04/proc/bigdog/bigdog0001.a.fits',0,origHeader)
-   img = mrdfits(infiles[j],0,origHeader)
+   img = mrdfits(infiles[j],0,origHeader,silent=silent)
 
    imgSize = size(img)
    NX = imgSize[1]
