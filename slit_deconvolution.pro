@@ -1,10 +1,12 @@
 function slit_deconvolution,arcNar,arcWide,filter=filter,psplot=psplot,$
-                       useplainArgon=useplainArgon,showplots=showplots
+                       useplainArgon=useplainArgon,showplots=showplots,$
+                            deconvstep=deconvstep
 ;; Deconvolves a arc spectra to find the slit function
 ;; filter - does a low pass filter in Fourier domain
 ;; psplot - saves a postscript plot
 ;; useplainArgon - just use the 0.3x60 argon spectrum (don't
 ;;                 deconvolve it)
+;; deconvstep - Terry wanted to see this intermediate step
 
 ;; set the up the PS plot
 if keyword_set(psplot) then begin
@@ -53,7 +55,7 @@ endif else begin
    for i=0l,300 do Max_Likelihood, narArc, normkern, Narrdeconv,ft_psf=psf_ft
    fulldeltas = Narrdeconv
    if keyword_set(showplots) then begin
-      plot,fulldeltas,title='De-convolved Argon',charsize=2
+      plot,fulldeltas,title='De-convolved Argon (0.3x60)',charsize=2
    endif
 endelse
 ;fulldeltas[midP:(midP+nY-1l)] = yplot
@@ -74,7 +76,7 @@ if keyword_set(filter) then begin
    fftconvolSD[1024-filterAmt:1023+filterAmt] = complex(0E,0E)
 endif
 if keyword_set(showplots) then begin
-   plot,fftconvolSD,title='FFT Shifted Convolution',charsize=2
+   plot,fftconvolSD,title='FFT Shifted Convolution (3x60)',charsize=2
    oplot,imaginary(fftconvolSD),color=mycol('yellow')
 endif
 
@@ -94,7 +96,7 @@ fftDeconvol = complexarr(sz[1])
 if nonz NE [-1] then fftDeconvol[nonz] = fftconvolSD[nonz]/fftDeltas[nonz]
 
 if keyword_set(showplots) then begin
-   plot,fftDeconvol,title='FFT Convolution / FFT Function',charsize=2
+   plot,fftDeconvol,title='FFT Convolution (3x60) / FFT Kernel (0.3x60)',charsize=2
    oplot,imaginary(fftDeconvol),color=mycol('yellow')
 endif
 
@@ -104,7 +106,17 @@ if keyword_set(showplots) then begin
    plot,deconvol,title='De-convolution (to get Kernel)',charsize=2
 endif
 
-
+if keyword_set(deconvstep) then begin
+   ;; Save all deconvolution steps
+   xColumn = fltarr(Np)
+   xColShort = findgen(n_elements(arcWide)) + 1E
+   xColumn[midP:(midP+nY-1l)] = xColShort
+   forprint,xColumn,convolSD,narArc,fulldeltas,real_part(deconvol),$
+            textout='deconv_steps.txt',$
+            comment='Column number in 1 based counting from [65:749,33:617] trim;'+$
+            ' Wide Arc Image 3x60; Narrow Arc Image 0.3x60; De-convolved Arc 0.3x60 Image;'+$
+            ' Slit Image from De-convolved Wide Arc Image'
+endif
 ;save,deconvol,filename='slit_func_estimate.sav'
 
 
@@ -123,7 +135,6 @@ endif
 ;;oplot,square
 if keyword_set(showplots) then begin
    !p.multi = 0
-   stop
 endif
 
 if keyword_set(psplot) then begin
@@ -137,7 +148,9 @@ if keyword_set(psplot) then begin
    !x.thick=1
    !y.thick=1
    
-endif
+endif else begin
+   if keyword_set(showplots) then stop
+endelse
 
 return, deconvol[midP:(midP+nY-1l)]
 
