@@ -71,7 +71,7 @@ endif else begin
 endelse
 
 if n_elements(zoombox) EQ 0 then begin
-   plotimage,a,range=scaleNums,title=Ftitle
+   plotimage,a,range=scaleNums,title=Ftitle,pixel_aspect_ratio=1.0
 endif else begin
    myXrange = fltarr(2)
    myYrange = fltarr(2)
@@ -80,7 +80,8 @@ endif else begin
    myYrange[0] = min(zoombox[1,*])
    myYrange[1] = max(zoombox[1,*])
    plotimage,a,range=scaleNums,title=Ftitle,$
-             xrange=myXrange,yrange=myYrange
+             xrange=myXrange,yrange=myYrange,$
+             pixel_aspect_ratio=1.0
 endelse
 
 
