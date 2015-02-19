@@ -14,9 +14,11 @@ actions = ['(q)uit','(r)ead new file',$
           '(b)ox draw mode','(c)lear previous settings',$
            '(cf) to clear file list',$
            '(fedit) to export filelist to a text file for editing',$
+           '(fread) to read filelist that was made by fedit',$
           '(l)oad another parameter file.',$
           '(z)oom in','(save) EPS of FITS image',$
-          '(asave) to save all images in file list']
+          '(asave) to save all images in file list',$
+          '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -78,7 +80,8 @@ while status NE 'q' and status NE 'Q' do begin
          if slot GT n_elements(filel) -1l then slot=0
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot)
+         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot,$
+                           keyDisp=keyDisp)
       end
       status EQ 'save' OR status EQ 'SAVE': begin
          save_image,fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot
@@ -157,6 +160,18 @@ while status NE 'q' and status NE 'Q' do begin
          endfor
          print,''
       end
+      status EQ 'ckey' OR status EQ 'CKEY': begin
+         keypar = ''
+         temphead = headfits(fileL[slot])
+         nkeys = n_elements(temphead)
+         for i=0l,nkeys-1l do begin
+            print,string(i,format='(I03)'),' ',temphead[i]
+         endfor
+         print,'Choose a FITS keyword to print'
+         read,keypar
+         keyDisp = strtrim(strmid(temphead[keypar],0,7))
+         print,'Will display KEYWORD: ',keyDisp
+      end
       else: print,'Unrecognized Action'
    endcase
    
@@ -165,7 +180,7 @@ while status NE 'q' and status NE 'Q' do begin
 ;   status = get_kbrd()
 
 endwhile
-save,currentS,fileL,slot,lineP,zoomBox,$
+save,currentS,fileL,slot,lineP,zoomBox,keyDisp,$
      filename='ev_local_display_params.sav'
 
 
