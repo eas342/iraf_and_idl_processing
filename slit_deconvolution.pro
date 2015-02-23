@@ -106,17 +106,20 @@ if keyword_set(showplots) then begin
    plot,deconvol,title='De-convolution (to get Kernel)',charsize=2
 endif
 
+
+xColumn = fltarr(Np)
+xColShort = findgen(n_elements(arcWide)) + 1E
+xColumn[midP:(midP+nY-1l)] = xColShort
+save,xColumn,convolSD,narArc,fulldeltas,filename='data/deconv_step_data.sav'
+;; Save all deconvolution steps
 if keyword_set(deconvstep) then begin
-   ;; Save all deconvolution steps
-   xColumn = fltarr(Np)
-   xColShort = findgen(n_elements(arcWide)) + 1E
-   xColumn[midP:(midP+nY-1l)] = xColShort
    forprint,xColumn,convolSD,narArc,fulldeltas,real_part(deconvol),$
             textout='deconv_steps.txt',$
             comment='Column number in 1 based counting from [65:749,33:617] trim;'+$
             ' Wide Arc Image 3x60; Narrow Arc Image 0.3x60; De-convolved Arc 0.3x60 Image;'+$
             ' Slit Image from De-convolved Wide Arc Image'
 endif
+
 ;save,deconvol,filename='slit_func_estimate.sav'
 
 
