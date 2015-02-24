@@ -3,6 +3,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent
 ;; finds puts a section of 0s where the original image was (but only
 ;; in the short direction, since the long direction isn't known)
   a = mrdfits(filen,ext,header,silent=silent)
+  if n_elements(header) EQ 0 then begin
+     print,"No Header found"
+     return,[0]
+  endif
   ttrue = fxpar(header,"TRIM",count=count)
   if count GE 1 then begin ;; was it trimmed?
      ccdsec = fxpar(header,"CCDSEC",count=count2)
