@@ -15,8 +15,9 @@ actions = ['(q)uit','(r)ead new file',$
            '(cf) to clear file list',$
            '(fedit) to export filelist to a text file for editing',$
            '(fread) to read filelist that was made by fedit',$
-          '(l)oad another parameter file.',$
-          '(z)oom in','(save) EPS of FITS image',$
+           '(l)oad another parameter file.',$
+           '(z)oom in','(save) EPS of FITS image',$
+           '(zz)oom in from a zoomed',$
           '(asave) to save all images in file list',$
           '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
@@ -151,6 +152,10 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'z' OR status EQ 'Z': begin
          zoomBox = find_click_box(filel[slot],usescale=currentS)
+      end
+      status EQ 'zz' OR status EQ 'ZZ': begin
+         zoomBox = find_click_box(filel[slot],usescale=currentS,$
+                                 zoombox=zoombox)
       end
       status EQ 'nothing': begin
       end
