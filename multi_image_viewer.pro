@@ -190,7 +190,7 @@ while status NE 'q' and status NE 'Q' do begin
          print,'Will display KEYWORD: ',keyDisp
       end
       status EQ 'fitpsf' OR status EQ 'FITPSF': begin
-         fit_psf,fileL[slot],LineP
+         fit_psf,fileL[slot],LineP,plotp=plotp
       end
       else: print,'Unrecognized Action'
    endcase

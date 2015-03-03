@@ -1,7 +1,8 @@
-pro fit_psf,input,lineP
+pro fit_psf,input,lineP,plotp=plotp
 ;; FITS a PSF to an image given a zoombox
 ;; a - the image
 ;; zoombox - the BOX region to fit
+;; plotp - plot parameters - necessary for rotated images
 
 type = size(input,/type)
 
@@ -9,6 +10,9 @@ if type EQ 7 then begin
    a = mod_rdfits(input,0,header)
 endif else a=input
 
+if ev_tag_exist(plotp,'ROT') then begin
+   a = rotate(a,plotp.rot)
+end
                
 if n_elements(lineP) EQ 0 then begin
    print,'No Line or Box Specified'
