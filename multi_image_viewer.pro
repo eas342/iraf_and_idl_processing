@@ -18,6 +18,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(l)oad another parameter file.',$
            '(z)oom in','(save) EPS of FITS image',$
            '(zz)oom in from a zoomed',$
+           '(rzoom) to reset the zoom',$
+           '(fitpsf) to fit a PSF',$
           '(asave) to save all images in file list',$
           '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
@@ -157,6 +159,9 @@ while status NE 'q' and status NE 'Q' do begin
          zoomBox = find_click_box(filel[slot],usescale=currentS,$
                                  zoombox=zoombox)
       end
+      status EQ 'rzoom' OR status EQ 'RZOOM': begin
+         undefine,zoomBox
+      end
       status EQ 'nothing': begin
       end
       status EQ 'h' OR status EQ 'H': begin
@@ -176,6 +181,9 @@ while status NE 'q' and status NE 'Q' do begin
          read,keypar
          keyDisp = strtrim(strmid(temphead[keypar],0,7))
          print,'Will display KEYWORD: ',keyDisp
+      end
+      status EQ 'fitpsf' OR status EQ 'FITPSF': begin
+         fit_psf,fileL[slot],LineP
       end
       else: print,'Unrecognized Action'
    endcase
