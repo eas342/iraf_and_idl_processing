@@ -1,6 +1,6 @@
 function find_click_box,filen,bcolor=bcolor,$
                         get_direction=get_direction,$
-                        usescale=usescale,zoombox=zoombox
+                        plotp=plotp
 ;; This function takes user input and draws a box
 ;; filen - an optional input to display the file
 ;; bcolor - an option to specify the color of the box
@@ -10,7 +10,7 @@ function find_click_box,filen,bcolor=bcolor,$
 ;;                 the output is a structure, direction, xcoor/ycoor etc.
 
   if n_elements(filen) NE 0 then begin
-     fits_display,filen,usescale=usescale,zoombox=zoombox
+     fits_display,filen,plotp=plotp
   endif
 
   if n_elements(bcolor) EQ 0 then bcolor=mycol('green')
@@ -41,7 +41,7 @@ function find_click_box,filen,bcolor=bcolor,$
         if outarray.direction EQ 'x' then outarray.direction = 'y' else begin
            outarray.direction = 'x'
         endelse
-        fits_display,filen,usescale=usescale,lineP=outarray,zoombox=zoombox
+        fits_display,filen,plotp=plotp,lineP=outarray
 ;        plots,boxArrX,boxarrY,color=bcolor,thick=1.8
 ;        box_display,outarray
         cursor,xjunk,yjunk,/down,/normal

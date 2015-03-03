@@ -53,7 +53,7 @@ while status NE 'q' and status NE 'Q' do begin
             end
             else: filen = dialog_pickfile(/read,filter='*.fits')
          endcase
-         fits_display,filen,usescale=currentS,lineP=lineP,zoombox=zoombox
+         fits_display,filen,plotp=plotp,lineP=lineP
          if n_elements(fileL) EQ 0 then begin
             fileL = filen
          endif else fileL = [fileL,filen]
@@ -67,11 +67,11 @@ while status NE 'q' and status NE 'Q' do begin
          fileL = choose_file(filter=filter,/all)
          if fileL EQ [''] then fileL = prevFileL else begin
             slot = n_elements(fileL)-1l
-            fits_display,filel[slot],usescale=currentS,lineP=lineP,zoombox=zoombox
+            fits_display,filel[slot],plotp=plotp,lineP=lineP
          endelse
       end
       status EQ 's' OR status EQ 'S': begin
-         fits_display,filel[slot],/findscale,outscale=CurrentS,lineP=lineP,zoombox=zoombox
+         fits_display,filel[slot],/findscale,plotp=plotp,lineP=lineP
       end
       status EQ 'fedit' OR status EQ 'FEDIT': begin
          forprint,filel,textout='ev_local_display_filelist.txt',/silent,$
@@ -83,16 +83,16 @@ while status NE 'q' and status NE 'Q' do begin
          if slot GT n_elements(filel) -1l then slot=0
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot,$
+         slot = toggle_fits(fileL,plotp=plotp,lineP=lineP,startslot=slot,$
                            keyDisp=keyDisp)
       end
       status EQ 'save' OR status EQ 'SAVE': begin
-         save_image,fileL,usescale=currentS,lineP=lineP,zoombox=zoombox,startslot=slot
+         save_image,fileL,plotp=plotp,lineP=lineP,startslot=slot
       end
       status EQ 'asave' OR status EQ 'ASAVE': begin
          for i=0l,n_elements(fileL)-1l do begin
-            save_image,fileL,usescale=currentS,lineP=lineP,$
-                       zoombox=zoombox,startslot=i
+            save_image,fileL,plotp=plotp,lineP=lineP,$
+                       startslot=i
          endfor
       end
       status EQ 'c' OR status EQ 'C': begin
@@ -102,10 +102,9 @@ while status NE 'q' and status NE 'Q' do begin
          if confirm EQ 'y' or confirm EQ 'Y' or confirm EQ 'yes' $
             or confirm EQ 'Yes' then begin
             undefine,fileL
-            undefine,currentS
             undefine,slot
             undefine,lineP
-            undefine,zoombox
+            undefine,plotp
             status = 'o'
             skipaction=1
          endif
@@ -138,11 +137,11 @@ while status NE 'q' and status NE 'Q' do begin
          slot = fits_line_plot(fileL,lineP=lineP,current=slot,/makestop)
       end
       status EQ 'd' OR status EQ 'D': begin
-         lineP = fits_line_draw(fileL[slot],useScale=currentS,zoombox=zoombox)
+         lineP = fits_line_draw(fileL[slot],plotp=plotp)
       end
       status EQ 'b' OR status EQ 'B': begin
-         lineP = find_click_box(filel[slot],usescale=currentS,$
-                               /get_direction,zoombox=zoombox)
+         lineP = find_click_box(filel[slot],plotp=plotp,$
+                               /get_direction)
       end
       status EQ 'bp' OR status EQ 'Bp': begin
          slot = fits_line_plot(fileL,boxP=boxC,current=slot)
@@ -153,14 +152,13 @@ while status NE 'q' and status NE 'Q' do begin
          restore,paramfile
       end
       status EQ 'z' OR status EQ 'Z': begin
-         zoomBox = find_click_box(filel[slot],usescale=currentS)
+         get_zoom,filel[slot],plot=plotp,/restart
       end
       status EQ 'zz' OR status EQ 'ZZ': begin
-         zoomBox = find_click_box(filel[slot],usescale=currentS,$
-                                 zoombox=zoombox)
+         get_zoom,filel[slot],plot=plotp
       end
       status EQ 'rzoom' OR status EQ 'RZOOM': begin
-         undefine,zoomBox
+         get_zoom,filel[slot],plot=plotp,/rzoom
       end
       status EQ 'nothing': begin
       end
@@ -193,7 +191,7 @@ while status NE 'q' and status NE 'Q' do begin
 ;   status = get_kbrd()
 
 endwhile
-save,currentS,fileL,slot,lineP,zoomBox,keyDisp,$
+save,fileL,slot,lineP,plotp,keyDisp,$
      filename='ev_local_display_params.sav'
 
 

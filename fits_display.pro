@@ -1,17 +1,19 @@
 pro fits_display,input,findscale=findscale,$
-                 usescale=usescale,outscale=outscale,$
-                 message=message,lineP=lineP,zoomBox=zoomBox
+                 plotp=plotp,$
+                 message=message,lineP=lineP
 ;; This script displays a fits image and allows you to set the scaling
 ;; If the input is a data array, it uses that
 ;; if the input is a string, it reads the file
 ;; with right right mouse click and exit the scaling with a left click
 ;; findscale - directs fits_display to find a scaling
-;; usescale - directs fits_display to use a specific histogram
+;; plotp - plot parameters including the scaling
+;;           plotp.scaling - directs fits_display to use a specific histogram
 ;;            scaling. It is a 6 element array. [xbL,xtR,ybL,ytL,low,high]
-;; outscale  - a user variable to store the scale found with the mouse
+;;           plotp.zoomBox - a region to zoom in on the image
+;;           plotp.rot - the rotation of the image
 ;; message - a message to the display in the title
 ;; lineP - load in and display previous line and box parameters
-;; zoomBox - a region to zoom in on the image
+;; rot - the rotation of an image
 
 type = size(input,/type)
 
@@ -31,17 +33,18 @@ if keyword_set(findscale) then begin
    xcur = 0.3
    ycur = 0.8
    message = 'Click lower left corner of box for scaling and then right'
-   if n_elements(zoombox) EQ 0 then begin
+   if ev_tag_exist(plotp,'ZOOMBOX') then begin
+      myXrange = fltarr(2)
+      myYrange = fltarr(2)
+      myXrange[0] = min(plotp.zoombox[0,*])
+      myXrange[1] = max(plotp.zoombox[0,*])
+      myYrange[0] = min(plotp.zoombox[1,*])
+      myYrange[1] = max(plotp.zoombox[1,*])
+      maxImgRange = 0
+   endif else begin
       asize = size(a)
       myYrange = [0,asize[2] - 1l]
       myXrange = [0,asize[1] - 1l]
-   endif else begin
-      myXrange = fltarr(2)
-      myYrange = fltarr(2)
-      myXrange[0] = min(zoombox[0,*])
-      myXrange[1] = max(zoombox[0,*])
-      myYrange[0] = min(zoombox[1,*])
-      myYrange[1] = max(zoombox[1,*])
    endelse
 
    plotimage,a,range=threshold(a,low=xcur,high=ycur),$
@@ -71,37 +74,37 @@ if keyword_set(findscale) then begin
                 pixel_aspect_ratio=1.0
       plots,boxArrX,boxarrY,color=mycol('green'),thick=1.8
       cursor,xcur,ycur,/normal,/down
-      outscale = usescale
+      ev_add_tag,plotp,'scale',usescale
    endwhile
    !MOUSE.button=1
 endif
-if n_elements(usescale) EQ 0 then begin
-   scaleNums = threshold(a,low=0.3,high=0.7)
-endif else begin
+if ev_tag_exist(plotp,'scale') then begin
    maxX = n_elements(a[*,0]) - 1l
    maxY = n_elements(a[0,*]) - 1l
-   if maxX LT usescale[0] then usescale[0] =maxX
-   if maxX LT usescale[1] then usescale[1] =maxX
-   if maxY LT usescale[2] then usescale[2] =maxY
-   if maxY LT usescale[3] then usescale[3] =maxY
+   if maxX LT plotp.scale[0] then plotp.scale[0] =maxX
+   if maxX LT plotp.scale[1] then plotp.scale[1] =maxX
+   if maxY LT plotp.scale[2] then plotp.scale[2] =maxY
+   if maxY LT plotp.scale[3] then plotp.scale[3] =maxY
    
-   scaleNums = threshold(a[usescale[0]:usescale[1],$
-                          usescale[2]:usescale[3]],$
-                         low=usescale[4],high=usescale[5])
+   scaleNums = threshold(a[plotp.scale[0]:plotp.scale[1],$
+                          plotp.scale[2]:plotp.scale[3]],$
+                         low=plotp.scale[4],high=plotp.scale[5])
+endif else begin
+   scaleNums = threshold(a,low=0.3,high=0.7)
 endelse
 
-if n_elements(zoombox) EQ 0 then begin
-   plotimage,a,range=scaleNums,title=Ftitle,pixel_aspect_ratio=1.0
-endif else begin
+if ev_tag_exist(plotp,'zoombox') then begin
    myXrange = fltarr(2)
    myYrange = fltarr(2)
-   myXrange[0] = min(zoombox[0,*])
-   myXrange[1] = max(zoombox[0,*])
-   myYrange[0] = min(zoombox[1,*])
-   myYrange[1] = max(zoombox[1,*])
+   myXrange[0] = min(plotp.zoombox[0,*])
+   myXrange[1] = max(plotp.zoombox[0,*])
+   myYrange[0] = min(plotp.zoombox[1,*])
+   myYrange[1] = max(plotp.zoombox[1,*])
    plotimage,a,range=scaleNums,title=Ftitle,$
              xrange=myXrange,yrange=myYrange,$
              pixel_aspect_ratio=1.0
+endif else begin
+   plotimage,a,range=scaleNums,title=Ftitle,pixel_aspect_ratio=1.0
 endelse
 
 

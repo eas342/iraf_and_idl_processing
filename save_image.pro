@@ -1,4 +1,4 @@
-pro save_image,fileL,usescale=usescale,lineP=lineP,zoombox=zoombox,$
+pro save_image,fileL,lineP=lineP,plotp=plotp,$
                      startslot=startslot,all=all
 ;; Saves a FITS images of the current slot as an EPS file
 ;; It returns the last index the user stopped with
@@ -40,7 +40,7 @@ namePrefix = splitPrefix[0]
    end
    device,xsize=psXs, ysize=psYs,decomposed=1,/color
 
-   fits_display,fileL[i],usescale=usescale,lineP=lineP,zoombox=zoombox,$
+   fits_display,fileL[i],plotp=plotp,lineP=lineP,$
                 message=namePrefix+'.fits'
 
 
