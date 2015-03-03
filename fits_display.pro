@@ -21,6 +21,11 @@ if type EQ 7 then begin
    a = mod_rdfits(input,0,header)
 endif else a=input
 
+if ev_tag_exist(plotp,'ROT') then begin
+   a = rotate(a,plotp.rot)
+end
+
+
 case 1 of
    n_elements(message) NE 0: Ftitle=message 
    type EQ 7: Ftitle = input
@@ -47,12 +52,17 @@ if keyword_set(findscale) then begin
       myXrange = [0,asize[1] - 1l]
    endelse
 
-   plotimage,a,range=threshold(a,low=xcur,high=ycur),$
+   if ev_tag_exist(plotp,'FULLSCALE') then begin
+      myPrange=[min(a),max(a)]
+   endif else myPrange=threshold(a,low=xcur,high=ycur)
+
+
+   plotimage,a,range=myPrange,$
              xrange=myXrange,yrange=myYrange,$
              title='Draw lower Left corner of box for scaling and left click',$
              pixel_aspect_ratio=1.0
    cursor,xboxBL,yboxBL,/down
-   plotimage,a,range=threshold(a,low=xcur,high=ycur),$
+   plotimage,a,range=myPrange,$
              xrange=myXrange,yrange=myYrange,$
              title='Draw Upper Right corner of box for scaling and left click',$
              pixel_aspect_ratio=1.0
@@ -75,22 +85,28 @@ if keyword_set(findscale) then begin
       plots,boxArrX,boxarrY,color=mycol('green'),thick=1.8
       cursor,xcur,ycur,/normal,/down
       ev_add_tag,plotp,'scale',usescale
+      ev_undefine_tag,plotp,'FULLSCALE'
    endwhile
    !MOUSE.button=1
 endif
-if ev_tag_exist(plotp,'scale') then begin
-   maxX = n_elements(a[*,0]) - 1l
-   maxY = n_elements(a[0,*]) - 1l
-   if maxX LT plotp.scale[0] then plotp.scale[0] =maxX
-   if maxX LT plotp.scale[1] then plotp.scale[1] =maxX
-   if maxY LT plotp.scale[2] then plotp.scale[2] =maxY
-   if maxY LT plotp.scale[3] then plotp.scale[3] =maxY
-   
-   scaleNums = threshold(a[plotp.scale[0]:plotp.scale[1],$
-                          plotp.scale[2]:plotp.scale[3]],$
-                         low=plotp.scale[4],high=plotp.scale[5])
+
+if ev_tag_exist(plotp,'FULLSCALE') then begin
+   scaleNums = [min(a),max(a)]
 endif else begin
-   scaleNums = threshold(a,low=0.3,high=0.7)
+   if ev_tag_exist(plotp,'scale') then begin
+      maxX = n_elements(a[*,0]) - 1l
+      maxY = n_elements(a[0,*]) - 1l
+      if maxX LT plotp.scale[0] then plotp.scale[0] =maxX
+      if maxX LT plotp.scale[1] then plotp.scale[1] =maxX
+      if maxY LT plotp.scale[2] then plotp.scale[2] =maxY
+      if maxY LT plotp.scale[3] then plotp.scale[3] =maxY
+      
+      scaleNums = threshold(a[plotp.scale[0]:plotp.scale[1],$
+                              plotp.scale[2]:plotp.scale[3]],$
+                            low=plotp.scale[4],high=plotp.scale[5])
+   endif else begin
+      scaleNums = threshold(a,low=0.3,high=0.7)
+   endelse
 endelse
 
 if ev_tag_exist(plotp,'zoombox') then begin

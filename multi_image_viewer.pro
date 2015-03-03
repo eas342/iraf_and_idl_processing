@@ -5,13 +5,14 @@ actions = ['(q)uit','(r)ead new file',$
            '(rf) read a file with filter',$
            '(rfa) read a set of files with a filter',$
            '(o)pen new file w/ browser','set (s)cale',$
+           '(fullscale) to use min/max for scaling',$
            '(h)elp prints the commands',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
            '(op) overplot line or box mode',$
            '(opd) overplot and divide by median',$
            '(ps) to plot and stop',$
-          '(b)ox draw mode','(c)lear previous settings',$
+           '(b)ox draw mode','(c)lear previous settings',$
            '(cf) to clear file list',$
            '(fedit) to export filelist to a text file for editing',$
            '(fread) to read filelist that was made by fedit',$
@@ -21,6 +22,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rzoom) to reset the zoom',$
            '(fitpsf) to fit a PSF',$
           '(asave) to save all images in file list',$
+           '(rot)ation change',$
           '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
 
@@ -159,6 +161,13 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'rzoom' OR status EQ 'RZOOM': begin
          get_zoom,filel[slot],plot=plotp,/rzoom
+      end
+      status EQ 'rot' OR status EQ 'ROT': begin
+         get_rotation,filel[slot],plotp=plotp,linep=linep
+      end
+      status EQ 'fullscale' OR status EQ 'FULLSCALE':begin
+         ev_add_tag,plotp,'FULLSCALE',1
+         fits_display,filel[slot],linep=linep,plotp=plotp
       end
       status EQ 'nothing': begin
       end
