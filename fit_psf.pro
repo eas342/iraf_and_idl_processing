@@ -18,12 +18,18 @@ if n_elements(lineP) EQ 0 then begin
    print,'No Line or Box Specified'
    return
 endif
+
+sz = size(a)
 if LineP.type NE 'box' then begin
    print,'Box not specified'
    return
-endif
+endif else begin
+   xstart = max([lineP.Xcoor[0],0])
+   xend = min([lineP.Xcoor[1],sz[1]-1l])
+   ystart = max([lineP.Ycoor[0],0])
+   yend = min([lineP.Ycoor[1],sz[2]-1l])
+endelse
 
-sz = size(a)
 
 if keyword_set(usefunc) then begin
    sz = sz
@@ -31,10 +37,6 @@ endif else begin
 ;      winsize = 11
 ;      refX = 65
 ;      refY = 66
-   xstart = max([lineP.Xcoor[0],0])
-   xend = min([lineP.Xcoor[1],sz[1]-1l])
-   ystart = max([lineP.Ycoor[0],0])
-   yend = min([lineP.Ycoor[1],sz[2]-1l])
    a2fit = a[xstart:xend,ystart:yend]
 
    result = gauss2dfit(a2fit,fitp,/tilt)
