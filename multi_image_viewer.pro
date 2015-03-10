@@ -21,6 +21,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(zz)oom in from a zoomed',$
            '(rzoom) to reset the zoom',$
            '(fitpsf) to fit a PSF',$
+           '(mfit) to fit many PSFs',$
           '(asave) to save all images in file list',$
            '(rot)ation change',$
           '(ckey) to choose a FITS keyword to print']
@@ -191,6 +192,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'fitpsf' OR status EQ 'FITPSF': begin
          fit_psf,fileL[slot],LineP,plotp=plotp
+      end
+      status EQ 'mfit' OR status EQ 'MFIT': begin
+         multi_fit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
       end
       else: print,'Unrecognized Action'
    endcase

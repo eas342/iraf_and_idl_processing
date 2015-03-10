@@ -1,4 +1,4 @@
-pro fit_psf,input,lineP,plotp=plotp
+pro fit_psf,input,lineP,plotp=plotp,custbox=custbox
 ;; FITS a PSF to an image given a zoombox
 ;; a - the image
 ;; zoombox - the BOX region to fit
@@ -14,20 +14,27 @@ if ev_tag_exist(plotp,'ROT') then begin
    a = rotate(a,plotp.rot)
 end
                
-if n_elements(lineP) EQ 0 then begin
-   print,'No Line or Box Specified'
-   return
-endif
 
 sz = size(a)
-if LineP.type NE 'box' then begin
-   print,'Box not specified'
-   return
+if n_elements(custbox) NE 0 then begin
+   xstart = max([custbox.Xcoor[0],0])
+   xend = min([custbox.Xcoor[1],sz[1]-1l])
+   ystart = max([custbox.Ycoor[0],0])
+   yend = min([custbox.Ycoor[1],sz[2]-1l])
 endif else begin
-   xstart = max([lineP.Xcoor[0],0])
-   xend = min([lineP.Xcoor[1],sz[1]-1l])
-   ystart = max([lineP.Ycoor[0],0])
-   yend = min([lineP.Ycoor[1],sz[2]-1l])
+   if n_elements(lineP) EQ 0 then begin
+      print,'No Line or Box Specified'
+      return
+   endif
+   if LineP.type NE 'box' then begin
+      print,'Box not specified'
+      return
+   endif else begin
+      xstart = max([lineP.Xcoor[0],0])
+      xend = min([lineP.Xcoor[1],sz[1]-1l])
+      ystart = max([lineP.Ycoor[0],0])
+      yend = min([lineP.Ycoor[1],sz[2]-1l])
+   endelse
 endelse
 
 
@@ -77,7 +84,7 @@ endif else begin
                               'MaFWHM',majorF,$
                               'MiFWHM',minorF,$
                               'XCEN',fitp[4],$
-                              'YCEN',fitp[5],'THETA',fitp[6])
+                              'YCEN',fitp[5],'THETA',cortheta)
    prevFile = file_search('ev_phot_data.sav')
    if prevFile NE '' then begin
       restore,'ev_phot_data.sav'
