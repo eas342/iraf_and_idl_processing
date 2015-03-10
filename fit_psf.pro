@@ -53,13 +53,37 @@ endif else begin
    if not keyword_set(noplot) then begin
       sig = fitp[3]
 ;            print,flist[i]
-      print,"Constant, scale factor, X width, Y width, X cen, Y cen, Theta (CCW)"
-      print,"Fit Param = ",fitp
+      corTheta = fitp[6] * 57.2958E ;; (180E/!pi)
+      majorF = max(abs(fitp[2:3])) * 2.35482E ;; convert to FWHM and choose larger one
+      minorF = min(abs(fitp[2:3])) * 2.35482E ;; convert to FWHM
+      if abs(fitp[3]) GT abs(fitp[2]) then corTheta = corTheta + 90E
+      if corTheta GT 90E then corTheta = corTheta - 180E ;; using rot symmetry
+      if corTheta LT -90E then corTheta = corTheta + 180E ;; using rot symmetry
+      descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$
+               "X cen","Y cen","Rot CW,d"]
+      print,descrip,format='(2A15,5A9)'
+      print,fitp[0],fitp[1],majorF,minorF,Fitp[4],fitp[5],corTheta,$
+            format='(2G15,5F9.2)'
 ;            plotimage,a,range=[min(a),max(a)],pixel_aspect_ratio=1.0
-      contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=[0.5 * fitp[1]]
+      contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=[0.2,0.5,0.8] * fitp[1]
 ;      print,"Fit Sigma = ",fitp[2]
 ;         c = contour(ymodel,/overplot,c_thick=[4],color='red')
    endif
+
+   singlephot = create_struct('BACKG',fitp[0],$
+                              'PEAK',fitp[1],$
+                              'MaFWHM',majorF,$
+                              'MiFWHM',minorF,$
+                              'XCEN',fitp[4],$
+                              'YCEN',fitp[5],'THETA',fitp[6])
+   prevFile = file_search('ev_phot_data.sav')
+   if prevFile NE '' then begin
+      restore,'ev_phot_data.sav'
+      photdat = [photDat,singlePhot]
+   endif else begin
+      photdat = singlePhot
+   endelse
+   save,photdat,filename='ev_phot_data.sav'
 
 endelse
    
