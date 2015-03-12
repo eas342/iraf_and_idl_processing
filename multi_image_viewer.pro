@@ -168,7 +168,7 @@ while status NE 'q' and status NE 'Q' do begin
          get_rotation,filel[slot],plotp=plotp,linep=linep
       end
       status EQ 'fullscale' OR status EQ 'FULLSCALE':begin
-         ev_add_tag2,plotp,'FULLSCALE',1
+         ev_add_tag,plotp,'FULLSCALE',1
          fits_display,filel[slot],linep=linep,plotp=plotp
       end
       status EQ 'nothing': begin

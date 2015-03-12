@@ -84,7 +84,7 @@ if keyword_set(findscale) then begin
                 pixel_aspect_ratio=1.0
       plots,boxArrX,boxarrY,color=mycol('green'),thick=1.8
       cursor,xcur,ycur,/normal,/down
-      ev_add_tag2,plotp,'scale',usescale
+      ev_add_tag,plotp,'scale',usescale
       ev_undefine_tag,plotp,'FULLSCALE'
    endwhile
    !MOUSE.button=1

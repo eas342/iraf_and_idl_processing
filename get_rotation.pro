@@ -4,7 +4,7 @@ pro get_rotation,filen,plotp=plotp,linep=linep
   inrot = 0
   read,inrot
   if inrot LE 7 then begin
-     ev_add_tag2,plotp2,'ROT',inrot
+     ev_add_tag,plotp2,'ROT',inrot
      fits_display,filen,plotp=plotp,linep=linep
   endif else print,'Invalid rotation number'
   
