@@ -46,20 +46,28 @@ if n_elements(Nsig) EQ 0 then Nsig=4
         endelse
      endelse
      if goodp NE [-1] then begin
-        if keyword_set(customfunc) then begin
-           if n_elements(yerr) EQ 0 then begin
-              useyerr = fltarr(n_elements(goodp)) + rsigma
-           endif else useyerr = yerr[goodp]
-           polyMod = mpfitexpr(customfunc,x[goodp],y[goodp],useyerr,start,/quiet)
-           modelY = expression_eval(customfunc,x,polyMod)
+        if array_equal(x[goodp],x[goodp[0]]) then begin
+           ;; Give up if all x points are the same
+           polyMod = fltarr(Npoly+1l)
+           modelY = fltarr(Xlength)
+           break
         endif else begin
-           if keyword_set(yerr) then begin
-              polyMod = poly_fit(x[goodp],y[goodp],Npoly,measure_errors=yerr[goodp],status=status)
+           
+           if keyword_set(customfunc) then begin
+              if n_elements(yerr) EQ 0 then begin
+                 useyerr = fltarr(n_elements(goodp)) + rsigma
+              endif else useyerr = yerr[goodp]
+              polyMod = mpfitexpr(customfunc,x[goodp],y[goodp],useyerr,start,/quiet)
+              modelY = expression_eval(customfunc,x,polyMod)
            endif else begin
-              polyMod = poly_fit(x[goodp],y[goodp],Npoly,status=status)
+              if keyword_set(yerr) then begin
+                 polyMod = poly_fit(x[goodp],y[goodp],Npoly,measure_errors=yerr[goodp],status=status)
+              endif else begin
+                 polyMod = poly_fit(x[goodp],y[goodp],Npoly,status=status)
+              endelse
+              modelY = eval_poly(x,polyMod)
+              
            endelse
-           modelY = eval_poly(x,polyMod)
-
         endelse
      endif else begin
         ;; Give up if no good points
