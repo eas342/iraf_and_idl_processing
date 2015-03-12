@@ -22,6 +22,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rzoom) to reset the zoom',$
            '(fitpsf) to fit a PSF',$
            '(mfit) to fit many PSFs',$
+           '(refit) to fit many PSFs from previous file',$
           '(asave) to save all images in file list',$
            '(rot)ation change',$
           '(ckey) to choose a FITS keyword to print']
@@ -167,7 +168,7 @@ while status NE 'q' and status NE 'Q' do begin
          get_rotation,filel[slot],plotp=plotp,linep=linep
       end
       status EQ 'fullscale' OR status EQ 'FULLSCALE':begin
-         ev_add_tag,plotp,'FULLSCALE',1
+         ev_add_tag2,plotp,'FULLSCALE',1
          fits_display,filel[slot],linep=linep,plotp=plotp
       end
       status EQ 'nothing': begin
@@ -195,6 +196,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'mfit' OR status EQ 'MFIT': begin
          multi_fit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
+      end
+      status EQ 'refit' OR status EQ 'REFIT': begin
+         refit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
       end
       else: print,'Unrecognized Action'
    endcase

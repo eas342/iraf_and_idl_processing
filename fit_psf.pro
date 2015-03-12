@@ -4,6 +4,7 @@ pro fit_psf,input,lineP,plotp=plotp,custbox=custbox
 ;; zoombox - the BOX region to fit
 ;; plotp - plot parameters - necessary for rotated images
 
+minsize=2 ;; minimum size for PSF fitting (below this there is not enough data to fit)
 type = size(input,/type)
 
 if type EQ 7 then begin
@@ -16,6 +17,7 @@ end
                
 
 sz = size(a)
+
 if n_elements(custbox) NE 0 then begin
    xstart = max([custbox.Xcoor[0],0])
    xend = min([custbox.Xcoor[1],sz[1]-1l])
@@ -37,13 +39,16 @@ endif else begin
    endelse
 endelse
 
+if yend - ystart LT minsize OR xend - xstart LT minsize then begin
+   print,'Not enough image data around location'
+   return
+endif
 
 if keyword_set(usefunc) then begin
    sz = sz
 endif else begin
-;      winsize = 11
-;      refX = 65
-;      refY = 66
+
+   
    a2fit = a[xstart:xend,ystart:yend]
 
    result = gauss2dfit(a2fit,fitp,/tilt)
@@ -74,7 +79,10 @@ endif else begin
       print,fitp[0],fitp[1],majorF,minorF,Fitp[4],fitp[5],corTheta,$
             format='(2G15,5F9.2)'
 ;            plotimage,a,range=[min(a),max(a)],pixel_aspect_ratio=1.0
-      contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=[0.2,0.5,0.8] * fitp[1]
+      myLevelsUnsort = [0.2,0.5,0.8] * fitp[1]
+      lsort = sort(myLevelsUnsort)
+      mylevels = myLevelsUnsort[lsort]
+      contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=mylevels
 ;      print,"Fit Sigma = ",fitp[2]
 ;         c = contour(ymodel,/overplot,c_thick=[4],color='red')
    endif
