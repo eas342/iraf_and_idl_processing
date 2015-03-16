@@ -1,6 +1,7 @@
 function fits_line_plot,fileL,lineP=lineP,current=current,$
-                   median=median,makestop=makestop,$
-                   overplot=overplot,normalize=normalize
+                        median=median,makestop=makestop,$
+                        overplot=overplot,normalize=normalize,$
+                        plotp=plotp
 ;; This plots a line or box depending on input
 ;; lineP - a structure of line coordinates
 ;; boxC - a structure of box coordinates
@@ -29,6 +30,12 @@ while (!mouse.button NE 4) do begin
       a=filel[0]
       Ftitle = ''
    endelse
+   if ev_tag_exist(plotp,'ROT') then begin
+      a = rotate(a,plotp.rot)
+   end
+
+
+
    ;; Get the plot abscissa axis
    if LineP.direction EQ 'x' then begin
       xplot = min(Linep.xcoor) + lindgen(abs(LineP.xcoor[1] - LineP.xcoor[0]))
