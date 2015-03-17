@@ -126,22 +126,23 @@ while status NE 'q' and status NE 'Q' do begin
          endif
       end
       status EQ 'p' OR status EQ 'P': begin
-         slot = fits_line_plot(fileL,lineP=lineP,current=slot)
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,plotp=plotp)
       end
       status EQ 'op' OR status EQ 'OP': begin
-         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot)
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,plotp=plotp)
       end
       status EQ 'opd' OR status EQ 'OPD': begin
-         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,/normalize)
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,$
+                               /normalize,plotp=plotp)
       end
       status EQ 'pm' OR status EQ 'PM': begin
-         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/median)
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/median,plotp=plotp)
       end
       status EQ 'ps' OR status EQ 'PS': begin
-         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/makestop)
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/makestop,plotp=plotp)
       end
       status EQ 'd' OR status EQ 'D': begin
-         lineP = fits_line_draw(fileL[slot],plotp=plotp)
+         lineP = fits_line_draw(fileL[slot])
       end
       status EQ 'b' OR status EQ 'B': begin
          lineP = find_click_box(filel[slot],plotp=plotp,$
@@ -188,7 +189,7 @@ while status NE 'q' and status NE 'Q' do begin
          endfor
          print,'Choose a FITS keyword to print'
          read,keypar
-         keyDisp = strtrim(strmid(temphead[keypar],0,7))
+         keyDisp = strtrim(gettok(temphead[keypar],'='),1)
          print,'Will display KEYWORD: ',keyDisp
       end
       status EQ 'fitpsf' OR status EQ 'FITPSF': begin
