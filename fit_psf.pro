@@ -87,12 +87,18 @@ endif else begin
 ;         c = contour(ymodel,/overplot,c_thick=[4],color='red')
    endif
 
+   if type EQ 7 then begin
+      fileDescrip = input
+   endif else fileDescrip = 'NONE'
+
+
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
                               'MaFWHM',majorF,$
                               'MiFWHM',minorF,$
                               'XCEN',fitp[4],$
-                              'YCEN',fitp[5],'THETA',cortheta)
+                              'YCEN',fitp[5],'THETA',cortheta,$
+                              'FILEN',fileDescrip)
    prevFile = file_search('ev_phot_data.sav')
    if prevFile NE '' then begin
       restore,'ev_phot_data.sav'
