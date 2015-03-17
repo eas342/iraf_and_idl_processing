@@ -22,6 +22,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rzoom) to reset the zoom',$
            '(fitpsf) to fit a PSF',$
            '(mfit) to fit many PSFs',$
+           '(sphot) to save the photomery',$
            '(refit) to fit many PSFs from previous file',$
           '(asave) to save all images in file list',$
            '(rot)ation change',$
@@ -197,6 +198,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'mfit' OR status EQ 'MFIT': begin
          multi_fit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
+      end
+      status EQ 'sphot' OR status EQ 'SPHOT': begin
+         save_phot
       end
       status EQ 'refit' OR status EQ 'REFIT': begin
          refit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
