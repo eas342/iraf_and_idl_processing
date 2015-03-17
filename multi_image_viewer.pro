@@ -176,8 +176,12 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'nothing': begin
       end
       status EQ 'h' OR status EQ 'H': begin
-         for i=0l,naction-1l do begin
-            print,actions[i]+' ',format='(A,$)'
+         midP = ceil(float(naction)/2E)
+         for i=0l,midp-1l do begin
+            print,actions[i],format='(A-40," ",$)'
+            if i + midp LE naction-1l then begin
+               print,actions[i + midp],format='(A-40)'
+            endif
          endfor
          print,''
       end
