@@ -79,17 +79,14 @@ while status NE 'q' and status NE 'Q' do begin
          fits_display,filel[slot],/findscale,plotp=plotp,lineP=lineP
       end
       status EQ 'fedit' OR status EQ 'FEDIT': begin
-         forprint,filel,textout='ev_local_display_filelist.txt',/silent,$
-                  /nocomment
-         spawn,'open ev_local_display_filelist.txt'
+         fedit,filel,plotp=plotp
       end
       status EQ 'fread' OR status EQ 'FREAD': begin
          readcol,'ev_local_display_filelist.txt',filel,format='(A)'
          if slot GT n_elements(filel) -1l then slot=0
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,plotp=plotp,lineP=lineP,startslot=slot,$
-                           keyDisp=keyDisp)
+         slot = toggle_fits(fileL,plotp=plotp,lineP=lineP,startslot=slot)
       end
       status EQ 'save' OR status EQ 'SAVE': begin
          save_image,fileL,plotp=plotp,lineP=lineP,startslot=slot
@@ -190,12 +187,12 @@ while status NE 'q' and status NE 'Q' do begin
          temphead = headfits(fileL[slot])
          nkeys = n_elements(temphead)
          for i=0l,nkeys-1l do begin
-            print,string(i,format='(I03)'),' ',temphead[i]
+            print,nkeys-1l - i,temphead[nkeys-1l - i],format='(I03," ",A70)'
          endfor
          print,'Choose a FITS keyword to print'
          read,keypar
-         keyDisp = strtrim(gettok(temphead[keypar],'='),1)
-         print,'Will display KEYWORD: ',keyDisp
+         ev_add_tag,plotp,'KEYDISP',strtrim(gettok(temphead[keypar],'='),1)
+         print,'Will display KEYWORD: ',plotp.keyDisp
       end
       status EQ 'fitpsf' OR status EQ 'FITPSF': begin
          fit_psf,fileL[slot],LineP,plotp=plotp
@@ -217,7 +214,7 @@ while status NE 'q' and status NE 'Q' do begin
 ;   status = get_kbrd()
 
 endwhile
-save,fileL,slot,lineP,plotp,keyDisp,$
+save,fileL,slot,lineP,plotp,$
      filename='ev_local_display_params.sav'
 
 

@@ -1,5 +1,5 @@
 function toggle_fits,fileL,plotp=plotp,lineP=lineP,$
-                     startslot=startslot,keyDisp=keyDisp
+                     startslot=startslot
 ;; Toggles between FITS files with clicks
 ;; It returns the last index the user stopped with
 
@@ -7,9 +7,9 @@ function toggle_fits,fileL,plotp=plotp,lineP=lineP,$
   nFile = n_elements(fileL)
   while (!mouse.button NE 4) do begin
      fits_display,fileL[i],plotp=plotp,lineP=lineP
-     if n_elements(keyDisp) NE 0 then begin
+     if ev_tag_exist(plotp,'KEYDISP') then begin
         temphead = headfits(fileL[i])
-        print,fxpar(temphead,keyDisp)
+        print,fxpar(temphead,plotp.keyDisp)
      endif
      slot = i
 
