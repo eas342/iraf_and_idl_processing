@@ -24,6 +24,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(mfit) to fit many PSFs',$
            '(sphot) to save the photomery',$
            '(refit) to fit many PSFs from previous file',$
+           '(allfit) to fit many PSFs in all FITs files',$
           '(asave) to save all images in file list',$
            '(rot)ation change',$
           '(ckey) to choose a FITS keyword to print']
@@ -140,7 +141,7 @@ while status NE 'q' and status NE 'Q' do begin
          slot = fits_line_plot(fileL,lineP=lineP,current=slot,/makestop,plotp=plotp)
       end
       status EQ 'd' OR status EQ 'D': begin
-         lineP = fits_line_draw(fileL[slot])
+         lineP = fits_line_draw(fileL[slot],plotp=plotp)
       end
       status EQ 'b' OR status EQ 'B': begin
          lineP = find_click_box(filel[slot],plotp=plotp,$
@@ -175,9 +176,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'h' OR status EQ 'H': begin
          midP = ceil(float(naction)/2E)
          for i=0l,midp-1l do begin
-            print,actions[i],format='(A-40," ",$)'
+            print,actions[i],format='(A-38," ",$)'
             if i + midp LE naction-1l then begin
-               print,actions[i + midp],format='(A-40)'
+               print,actions[i + midp],format='(A-38)'
             endif
          endfor
          print,''
@@ -205,6 +206,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'refit' OR status EQ 'REFIT': begin
          refit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
+      end
+      status EQ 'allfit' OR status EQ 'ALLFIT': begin
+         refit_psf,fileL,LineP,plotp=plotp,bsize=6
       end
       else: print,'Unrecognized Action'
    endcase
