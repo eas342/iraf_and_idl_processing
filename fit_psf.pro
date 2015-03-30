@@ -59,20 +59,41 @@ endif else begin
    X = FINDGEN(sz[1]) # REPLICATE(1.0, sz[2])
    Y = REPLICATE(1.0, sz[1]) # FINDGEN(sz[2])
    
-   xprime = (X - fitp[4])*cos(fitp[6]) - (Y - fitp[5])*sin(fitp[6])
-   yprime = (X - fitp[4])*sin(fitp[6]) + (Y - fitp[5])*cos(fitp[6])
-   Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
-   Ymodel = fitp[0] + fitp[1] * EXP(-Ufit/2)
+   corTheta = fitp[6] * 57.2958E              ;; (180E/!pi)
+   if abs(fitp[3]) GT abs(fitp[2]) then corTheta = corTheta + 90E
+   if corTheta GT 90E then corTheta = corTheta - 180E     ;; using rot symmetry
+   if corTheta LT -90E then corTheta = corTheta + 180E    ;; using rot symmetry
+   majorF = max(abs(fitp[2:3])) * 2.35482E    ;; convert to FWHM and choose larger one
+   minorF = min(abs(fitp[2:3])) * 2.35482E    ;; convert to FWHM
+
+
+   if type EQ 7 then begin
+      fileDescrip = input
+   endif else fileDescrip = 'NONE'
+   if ev_tag_exist(plotp,'KEYDISP') then begin
+      KeyVal = fxpar(header,plotp.KEYDISP)
+      KeyPar = strtrim(plotp.KEYDISP,1)
+   endif else begin
+      KeyPar = 'NONE'
+      KeyVal = 'NONE'
+   endelse
+
+   singlephot = create_struct('BACKG',fitp[0],$
+                              'PEAK',fitp[1],$
+                              'MaFWHM',majorF,$
+                              'MiFWHM',minorF,$
+                              'XCEN',fitp[4],$
+                              'YCEN',fitp[5],'THETA',cortheta,$
+                              'KEY',KEYPAR,'VAL',KeyVal,$
+                              'FILEN',fileDescrip)
 
    if not keyword_set(noplot) then begin
+      xprime = (X - fitp[4])*cos(fitp[6]) - (Y - fitp[5])*sin(fitp[6])
+      yprime = (X - fitp[4])*sin(fitp[6]) + (Y - fitp[5])*cos(fitp[6])
+      Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
+      Ymodel = fitp[0] + fitp[1] * EXP(-Ufit/2)
       sig = fitp[3]
 ;            print,flist[i]
-      corTheta = fitp[6] * 57.2958E ;; (180E/!pi)
-      majorF = max(abs(fitp[2:3])) * 2.35482E ;; convert to FWHM and choose larger one
-      minorF = min(abs(fitp[2:3])) * 2.35482E ;; convert to FWHM
-      if abs(fitp[3]) GT abs(fitp[2]) then corTheta = corTheta + 90E
-      if corTheta GT 90E then corTheta = corTheta - 180E ;; using rot symmetry
-      if corTheta LT -90E then corTheta = corTheta + 180E ;; using rot symmetry
       descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$
                "X cen","Y cen","Rot CW,d"]
       print,descrip,format='(2A15,5A9)'
@@ -87,18 +108,8 @@ endif else begin
 ;         c = contour(ymodel,/overplot,c_thick=[4],color='red')
    endif
 
-   if type EQ 7 then begin
-      fileDescrip = input
-   endif else fileDescrip = 'NONE'
 
 
-   singlephot = create_struct('BACKG',fitp[0],$
-                              'PEAK',fitp[1],$
-                              'MaFWHM',majorF,$
-                              'MiFWHM',minorF,$
-                              'XCEN',fitp[4],$
-                              'YCEN',fitp[5],'THETA',cortheta,$
-                              'FILEN',fileDescrip)
    prevFile = file_search('ev_phot_data.sav')
    if prevFile NE '' then begin
       restore,'ev_phot_data.sav'
