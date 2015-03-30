@@ -16,15 +16,7 @@ pro fits_display,input,findscale=findscale,$
 ;; rot - the rotation of an image
 
 type = size(input,/type)
-
-if type EQ 7 then begin
-   a = mod_rdfits(input,0,header)
-endif else a=input
-
-if ev_tag_exist(plotp,'ROT') then begin
-   a = rotate(a,plotp.rot)
-end
-
+a = mod_rdfits(input,0,header,plotp=plotp)
 
 case 1 of
    n_elements(message) NE 0: Ftitle=message 
