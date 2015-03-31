@@ -18,11 +18,12 @@ if n_elements(y) NE 0 then begin
    dat = replicate(oneSt,npt)
    dat.x = X
    dat.Y = Y
+   ev_add_tag,gparam,'PKEYS',['X','Y']
 endif else dat = x
 tags = tag_names(dat)
 
 if not ev_tag_exist(gparam,'PKEYS') then begin
-   ev_add_tag,gparam,'PKEYS',['X','Y']
+   ev_add_tag,gparam,'PKEYS',[tags[0],tags[1]]
    ;; plot keys to describe tags to plot
 endif
 if not ev_tag_exist(gparam,'TITLES') then begin
