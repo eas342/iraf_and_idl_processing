@@ -30,6 +30,28 @@ if not ev_tag_exist(gparam,'TITLES') then begin
    ev_add_tag,gparam,'TITLES',[gparam.PKEYS,'']
 endif
 
+if not ev_tag_exist(gparam,'PS') then begin
+   ev_add_tag,gparam,'PS',0
+endif
+
+;; Set up postscript, PDF and PNG plots
+if gparam.PS EQ 1 then begin
+   set_plot,'ps'
+   !p.font=0
+   if not ev_tag_exist(gparam,'FILENAME') then begin
+      plotprenm='unnamed_genplot'
+   endif else begin
+      plotprenm=gparam.filename
+   endelse
+   device,encapsulated=1, /helvetica,$
+          filename=plotprenm+'.eps'
+   device,xsize=20, ysize=9,decomposed=1,/color
+   thick=2
+   xmargin = [11,24]
+endif else begin
+   thick=1
+   xmargin = [15,30]
+endelse
 
 XInd = where(gparam.PKEYS[0] EQ tags)
 YInd = where(gParam.PKEYS[1] EQ tags)
@@ -63,41 +85,57 @@ plot,dat.(Xind),dat.(Yind),$
      title=gparam.TITLES[2],$
      xrange=myXrange,$
      yrange=myYrange,/nodata,$
-     xmargin=[15,30]
+     xmargin=xmargin,thick=thick,$
+     xthick=thick,ythick=thick
 
 if not ev_tag_exist(gparam,'SERIES') then begin
-   ev_add_tag,dat,'SERIES',intarr(npt) + 1
-   ev_add_tag,gparam,'SERIES','SERIES'
-   ;; if no series specified, create a series part of array for
-   ;; plotting
+   ;; if no series specified, use all points
+   ev_add_tag,gparam,'SERIES','ALLPT'
+endif
+if gparam.series EQ 'ALLPT' then begin
+;; If all points then make a series description for all points
+   ev_add_tag,dat,'ALLPT',intarr(npt) + 1
    tags = tag_names(dat)
 endif
 serTag = where(gParam.SERIES EQ tags)
+if serTag EQ [-1] then begin
+   print,'********Series tag not found**********'
+   return
+endif
 nser = max(dat.(serTag)) - min(dat.(serTag)) + 1;; number of series
 serArr = indgen(nser + 1) + min(dat.(serTag))
 ;; later I may have it specified differently for non-integers
 
-if not ev_tag_exist(gparam,'PS') then begin
-   ev_add_tag,gparam,'PS',0
-endif
 colArr = myarraycol(nser,psversion=gparam.ps)
 
+;; Plot the data as a function of series
 for i=0l,nser-1l do begin
    serInd = where(dat.(serTag) GE serArr[i] and $
                   dat.(serTag) LT serArr[i+1])
    if serInd NE [-1] then begin
       oplot,dat[serInd].(Xind),dat[serInd].(Yind),$
-           color=colArr[i]
+           color=colArr[i],thick=thick
    endif
 endfor
+
+;; Make a legend for the series of plots
 if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    if not ev_tag_exist(gparam,'SLABEL') then begin
       ev_add_tag,gparam,'SLABEL',''
    endif
-   al_legend,gparam.slabel+' '+strtrim(serArr[0:nser-2l],1),$
-             linestyle=0,$
+   al_legend,gparam.slabel+' '+strtrim(serArr[0:nser-1l],1),$
+             linestyle=0,thick=thick,bthick=thick,$
              color=colArr,$
              position=[!x.crange[1],!y.crange[1]]
 endif
 
+
+if gparam.PS EQ 1 then begin
+   device, /close
+   cgPS2PDF,plotprenm+'.eps'
+   spawn,'convert -density 300% '+plotprenm+'.pdf '+plotprenm+'.png'
+   device,decomposed=0
+   set_plot,'x'
+   !p.font=-1
+endif
 end

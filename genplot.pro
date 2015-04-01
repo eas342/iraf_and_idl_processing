@@ -17,7 +17,11 @@ widget_control, idY, get_uvalue= Y
 
 CASE uval of
     'REPLOT':  disp_plot,dat,y,gparam=gparam
-    'PS'    :  disp_plot,dat,y,gparam=gparam,/psplot
+    'PS'    :  begin
+       ev_add_tag,gparam,'PS',1
+       disp_plot,dat,y,gparam=gparam
+       gparam.ps = 0
+    end
     'ZOOM'  :  get_zoom,dat,y,plotp=gparam,/plotmode
     'RZOOM' :  get_zoom,dat,y,plotp=gparam,/plotmode,/rzoom
     'SCALE' : begin
@@ -49,8 +53,8 @@ END
 
 PRO genplot,data,y,gparam=gparam
   base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
-  cntl = widget_base(base, /column) ;; another layer within the big base?
-  paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
+  cntl = widget_base(base, /column,/frame) ;; another layer within the big base?
+  paramw = widget_base(base,uname='paramw',/frame) ;; widget for storing parameters
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   zoomW = widget_base(base,/column,yoffset=20) ;; base for zoom parameters
 
@@ -68,10 +72,10 @@ PRO genplot,data,y,gparam=gparam
   ;; A radio button to choose the plot scale Type
   wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
                        /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
-                      uvalue='XZTYPE',set_value=0,label_top='X Default')
+                      uvalue='XZTYPE',set_value=0,label_top='X Default',/frame)
   wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
                        /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
-                      uvalue='YZTYPE',set_value=0,label_top='Y Default')
+                      uvalue='YZTYPE',set_value=0,label_top='Y Default',/frame)
   ;; Quit button
 
   WIDGET_CONTROL, base, /REALIZE
