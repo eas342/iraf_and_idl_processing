@@ -9,7 +9,6 @@ function fits_line_plot,fileL,lineP=lineP,current=current,$
 ;; overplot - makes an over-plot
 ;; normalize - normalize the plot by the median
 
-
 nfile = n_elements(filel)
 type = size(filel[0],/type)
 if n_elements(current) EQ 0 then i=0l else i = current
@@ -23,18 +22,7 @@ firsttime = 1
 counter=0
 while (!mouse.button NE 4) do begin
    slot = i ;; current image slot number
-   if type EQ 7 then begin
-      a = mod_rdfits(fileL[i],0,header)
-      Ftitle = filel[i]
-   endif else begin 
-      a=filel[0]
-      Ftitle = ''
-   endelse
-   if ev_tag_exist(plotp,'ROT') then begin
-      a = rotate(a,plotp.rot)
-   end
-
-
+   a = mod_rdfits(fileL[i],0,header,plotp=plotp)
 
    ;; Get the plot abscissa axis
    if LineP.direction EQ 'x' then begin
@@ -72,9 +60,13 @@ while (!mouse.button NE 4) do begin
       oplot,xplot,yplot,color=colorArr[counter],psym=10
       al_legend,fileL[plottedInd],color=colorArr,linestyle=0
    endif else begin
-      plot,xplot,yplot,ystyle=16,$
-           title=Ftitle,$
-           xtitle=lineP.direction+' coordinate',psym=10
+      gparam = create_struct('TITLES',[lineP.direction+ 'coordinate',$
+                                       'Counts',''],$
+                            'FILENAME',clobber_dir(filel[i],/exten))
+      genplot,xplot,yplot,gparam=gparam
+;      plot,xplot,yplot,ystyle=16,$
+;           title=Ftitle,$
+;           xtitle=lineP.direction+' coordinate',psym=10
       plottedInd = i
    endelse
    if keyword_set(makestop) then stop
