@@ -44,20 +44,22 @@ endif
 
 dat = dat[gInd]
 
-if not ev_tag_exist(gparam,'XRANGE') then begin
-   ev_add_tag,gparam,'XRANGE',[min(dat.(Xind)),max(dat.(Xind))]
-endif
-if not ev_tag_exist(gparam,'YRANGE') then begin
-   ev_add_tag,gparam,'YRANGE',[min(dat.(Yind)),max(dat.(Yind))]
-endif
+if ev_tag_exist(gparam,'ZOOMBOX') then begin
+   myXrange = transpose(gparam.zoombox[0,0:1])
+   myYrange = transpose(gparam.zoombox[1,0:1])
+endif else begin
+   myXrange = [min(dat.(Xind)),max(dat.(Xind))]
+   myYrange = [min(dat.(Yind)),max(dat.(Yind))]
+endelse
+
 
 plot,dat.(Xind),dat.(Yind),$
      ystyle=1,xstyle=1,$
      xtitle=gparam.TITLES[0],$
      ytitle=gparam.TITLES[1],$
      title=gparam.TITLES[2],$
-     xrange=gparam.xrange,$
-     yrange=gparam.yrange,/nodata,$
+     xrange=myXrange,$
+     yrange=myYrange,/nodata,$
      xmargin=[15,30]
 
 if not ev_tag_exist(gparam,'SERIES') then begin
