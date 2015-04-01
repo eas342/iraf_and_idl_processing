@@ -11,8 +11,8 @@ pro disp_plot,X,Y,gparam=gparam
 ;; will plot spectra colored by series
 
 npt = n_elements(X)
-
-if n_elements(y) NE 0 then begin
+type = size(X,/type)
+if type NE 8 then begin
    ;; Make a structure if X and y are input
    oneSt = create_struct('X',X[0],'Y',Y[0])
    dat = replicate(oneSt,npt)
@@ -48,10 +48,13 @@ if ev_tag_exist(gparam,'ZOOMBOX') then begin
    myXrange = transpose(gparam.zoombox[0,0:1])
    myYrange = transpose(gparam.zoombox[1,0:1])
 endif else begin
-   myXrange = [min(dat.(Xind)),max(dat.(Xind))]
-   myYrange = [min(dat.(Yind)),max(dat.(Yind))]
+   if ev_tag_exist(gparam,'XTHRESH') then begin
+      myXrange = threshold(dat.(Xind))
+   endif else myXrange = [min(dat.(Xind)),max(dat.(Xind))]
+   if ev_tag_exist(gparam,'YTHRESH') then begin
+      myYrange = threshold(dat.(Yind))
+   endif else myYrange = [min(dat.(Yind)),max(dat.(Yind))]
 endelse
-
 
 plot,dat.(Xind),dat.(Yind),$
      ystyle=1,xstyle=1,$
