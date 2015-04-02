@@ -37,6 +37,12 @@ CASE uval of
           ev_add_tag,gparam,'YTHRESH',1
        endif else ev_undefine_tag,gparam,'YTHRESH'
     end
+    'SQUIT': begin
+       ev_add_tag,gparam,'QUIT',1
+       save,gparam,filename='ev_local_pparams.sav'
+       WIDGET_CONTROL, ev.TOP, /DESTROY
+       return
+    end
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -61,9 +67,10 @@ PRO genplot,data,y,gparam=gparam
   ;; Save the general plotting parameters ( I can't figure out how 
   
   ;; Sets up the control buttons
-  button0 = WIDGET_BUTTON(cntl, VALUE='Plot', UVALUE='REPLOT')
+  donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
+  button0 = WIDGET_BUTTON(cntl, VALUE='Re-Plot', UVALUE='REPLOT')
   button1 = WIDGET_BUTTON(cntl, VALUE='Postscript Plot', UVALUE='PS')
-  button2 = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
+  qlbutton = WIDGET_BUTTON(cntl, VALUE='Quit Loop', UVALUE='SQUIT')
 
   button3 = WIDGET_BUTTON(zoomW, VALUE='Set Scale', UVALUE='SCALE')
   button4 = WIDGET_BUTTON(zoomW, VALUE='Click Zoom', UVALUE='ZOOM')
@@ -76,10 +83,12 @@ PRO genplot,data,y,gparam=gparam
   wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
                        /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
                       uvalue='YZTYPE',set_value=0,label_top='Y Default',/frame)
-  ;; Quit button
 
   WIDGET_CONTROL, base, /REALIZE
+
 ;  widget_control, base, set_uvalue = {reftype:'references',weight:1}
+  disp_plot,data,y,gparam=gparam
+
   widget_control, paramw, set_uvalue = gparam ;; save the plot parameters
   widget_control, base, set_uvalue = data
   widget_control, ywidget, set_uvalue = y ;; save the y data
