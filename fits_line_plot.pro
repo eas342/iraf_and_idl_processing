@@ -20,7 +20,8 @@ endif
 
 firsttime = 1
 counter=0
-while (!mouse.button NE 4) do begin
+maxCounter = 100
+while counter LT maxCounter do begin
    slot = i ;; current image slot number
    a = mod_rdfits(fileL[i],0,header,plotp=plotp)
 
@@ -55,30 +56,37 @@ while (!mouse.button NE 4) do begin
    endif
 
    if counter GT 0 and keyword_set(overplot) then begin
-      colorArr = myarraycol(counter+1)
       plottedInd = [plottedInd,i]
-      oplot,xplot,yplot,color=colorArr[counter],psym=10
-      al_legend,fileL[plottedInd],color=colorArr,linestyle=0
+      ev_oplot,data,xplot,yplot,gparam=gparam
+      newslabel = [gparam.slabel,clobber_dir(filel[i],/exten)]
+      ev_undefine_tag,gparam,'slabel'
+      gparam = create_struct(gparam,'slabel',newslabel)
+      genplot,data,gparam=gparam
    endif else begin
       gparam = create_struct('TITLES',[lineP.direction+ 'coordinate',$
                                        'Counts',''],$
-                            'FILENAME',clobber_dir(filel[i],/exten))
-      genplot,xplot,yplot,gparam=gparam
+                            'FILENAME',clobber_dir(filel[i],/exten),$
+                            'SLABEL',clobber_dir(filel[i],/exten))
+      data = struct_arrays(create_struct('X',xplot,'Y',yplot))
+      genplot,data,gparam=gparam
 ;      plot,xplot,yplot,ystyle=16,$
 ;           title=Ftitle,$
 ;           xtitle=lineP.direction+' coordinate',psym=10
       plottedInd = i
    endelse
    if keyword_set(makestop) then stop
-   cursor,xcur,ycur,/normal,/down
-   if xcur LT 0.5 then begin
-      i = wrap_mod((i - 1l),nfile)
-   endif else begin
+   if quit_caught() then return,slot
+
+;   cursor,xcur,ycur,/normal;,/down
+;   if xcur LT 0.5 then begin
+;      i = wrap_mod((i - 1l),nfile)
+;   endif else begin
       i = wrap_mod((i + 1l),nfile)
-   endelse
+;   endelse
    counter = counter + 1
+
 endwhile
-!Mouse.button=1
+;!Mouse.button=1
 
 return,slot
 

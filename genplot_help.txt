@@ -39,8 +39,10 @@ gparam.series = ['Order'] will make Order 3, Order 4, ...
 if it's equal to the number of series, it will label each series
 gparam.series = ['Order 3','Order 4','Model spectrum']
 
-
-
+********* Overplotting ********
+To over plot, you can add data to the data structure:
+ev_oplot,dat,x,y,gparam=gparam
+Later you can plot with genplot or disp_plot
 
 ********* Stopping in a Loop  ********
 An easy way to stop in a loop is to call genplot and test the quit keyword
