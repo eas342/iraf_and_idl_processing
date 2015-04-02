@@ -156,13 +156,13 @@ while status NE 'q' and status NE 'Q' do begin
          restore,paramfile
       end
       status EQ 'z' OR status EQ 'Z': begin
-         get_zoom,filel[slot],plot=plotp,/restart
+         get_zoom,filel[slot],plotp=plotp,/restart
       end
       status EQ 'zz' OR status EQ 'ZZ': begin
-         get_zoom,filel[slot],plot=plotp
+         get_zoom,filel[slot],plotp=plotp
       end
       status EQ 'rzoom' OR status EQ 'RZOOM': begin
-         get_zoom,filel[slot],plot=plotp,/rzoom
+         get_zoom,filel[slot],plotp=plotp,/rzoom
       end
       status EQ 'rot' OR status EQ 'ROT': begin
          get_rotation,filel[slot],plotp=plotp,linep=linep
