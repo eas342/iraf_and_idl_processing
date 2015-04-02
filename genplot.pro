@@ -57,7 +57,12 @@ CASE uval of
 
 END
 
-PRO genplot,data,y,gparam=gparam
+PRO genplot,data,y,gparam=gparam,help=help
+  if keyword_set(help) then begin
+     spawn,'open /Users/bokonon/triplespec/iraf_scripts/genplot_help.txt'
+     return
+  endif
+  
   base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
   cntl = widget_base(base, /column,/frame) ;; another layer within the big base?
   paramw = widget_base(base,uname='paramw',/frame) ;; widget for storing parameters
