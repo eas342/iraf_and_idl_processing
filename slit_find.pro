@@ -5,13 +5,13 @@ function slit_find,a,slitbox,yfunc=yfunc,showplot=showplot
 ;; and ending points in the search
 ;; showplot shows fits to the slit
 
-startp = round(min(slitbox[1,*]))
-endP = round(max(slitbox[1,*]))
+startp = round(min(slitbox[*,1]))
+endP = round(max(slitbox[*,1]))
 
 nx = n_elements(a[*,0])
 xplot = findgen(nx)
-leftGuess = [min(slitbox[0,*])]
-rightGuess = [max(slitbox[0,*])]
+leftGuess = [min(slitbox[*,0])]
+rightGuess = [max(slitbox[*,0])]
 
 
 ;; It takes too long to fit each row, so it's better to do

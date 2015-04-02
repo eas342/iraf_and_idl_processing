@@ -52,7 +52,7 @@ function find_click_box,filen,bcolor=bcolor,$
      plots,boxArrX,boxarrY,color=bcolor,thick=1.8
      print,'Click again to exit'
      cursor,xjunk,yjunk,/down
-     outArray = [[xboxBL,yboxBL],[xboxTR,yboxTR]]
+     outArray = [[xboxBL,xboxTR],[yboxBL,yboxTR]]
   endelse
 
   return,outArray

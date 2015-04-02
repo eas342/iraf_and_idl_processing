@@ -22,8 +22,8 @@ namePrefix = splitPrefix[0]
           filename=plotprenm+'.eps'
 
    if n_elements(zoombox) NE 0 then begin
-      psXlength = max(zoombox[0,*]) - min(zoombox[0,*])
-      psYlength = max(zoombox[1,*]) - min(zoombox[1,*])
+      psXlength = max(zoombox[*,0]) - min(zoombox[*,0])
+      psYlength = max(zoombox[*,1]) - min(zoombox[*,1])
       if psXlength GT psYlength then begin
          psXs = 14
          psYs = 14E * float(psYlength)/float(psXlength)

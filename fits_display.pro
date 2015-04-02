@@ -33,10 +33,10 @@ if keyword_set(findscale) then begin
    if ev_tag_exist(plotp,'ZOOMBOX') then begin
       myXrange = fltarr(2)
       myYrange = fltarr(2)
-      myXrange[0] = min(plotp.zoombox[0,*])
-      myXrange[1] = max(plotp.zoombox[0,*])
-      myYrange[0] = min(plotp.zoombox[1,*])
-      myYrange[1] = max(plotp.zoombox[1,*])
+      myXrange[0] = min(plotp.zoombox[*,0])
+      myXrange[1] = max(plotp.zoombox[*,0])
+      myYrange[0] = min(plotp.zoombox[*,1])
+      myYrange[1] = max(plotp.zoombox[*,1])
       maxImgRange = 0
    endif else begin
       asize = size(a)
@@ -104,10 +104,10 @@ endelse
 if ev_tag_exist(plotp,'zoombox') then begin
    myXrange = fltarr(2)
    myYrange = fltarr(2)
-   myXrange[0] = min(plotp.zoombox[0,*])
-   myXrange[1] = max(plotp.zoombox[0,*])
-   myYrange[0] = min(plotp.zoombox[1,*])
-   myYrange[1] = max(plotp.zoombox[1,*])
+   myXrange[0] = min(plotp.zoombox[*,0])
+   myXrange[1] = max(plotp.zoombox[*,0])
+   myYrange[0] = min(plotp.zoombox[*,1])
+   myYrange[1] = max(plotp.zoombox[*,1])
    plotimage,a,range=scaleNums,title=Ftitle,$
              xrange=myXrange,yrange=myYrange,$
              pixel_aspect_ratio=1.0
