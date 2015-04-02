@@ -1,0 +1,51 @@
+********* OVERVIEW ************
+genplot is a general purpose plotter
+genplot is a GUI that calls and modifies parameters for disp_plot
+
+********* INPUT   ************
+It can take an input like genplot,x,y, but prefers and input like:
+genplot,data,gparam=gparam
+
+********* DATA Prep **********
+Data should be an array of structures with 1 element per tag with the data
+A simple way to create the data array is 
+dat = struct_arrays(create_struct('WAV',X,'FLUX',y,'Flux_err',yerr))
+
+********* Parameters ********
+gparam is a structure containing all the plot parameters
+You can make it with something like:
+gparam = create_struct('YTHRESH',1,'YERR','FLUX_ERR','XTHRESH',1,$
+       'PKEYS',['WAV','FLUX'],'SLABEL',legNames)
+
+YTHRESH - use threshold scaling (by histogram 10/90% etc for Y axis)
+XTHRESH - use threshold scaling (by histogram 10/90% etc for X axis)
+PS - if true, saves a postscript plot instead of the X windows display
+FILENAME - file name for the postscript plot
+PKEYS - a 2 element array describe the keyword parameters for plotting
+the first element is x and second element is Y
+TITLES - a 3 element array with X axis, Y axis and overall plot title
+GFLAG - an array (must be length of data) that says whether to show the points
+For example, if you will exclude an outlier, set that point to 0
+ZOOMBOX - a 2 X 2 array of the plot ranges
+[[0,0] [1,0]   =    [[x left  pt,  x right pt]
+ [0,1] [1,1]]        [y bot pt  ,  y top pt]]
+[[xleft,xright],[ybot,ytop]]
+SERIES - the name of a tag to split up series. For example, a spectrum
+with multiple orders would have gparam.series = 'ORDER'
+XERR - the name of a tag describing the x errors
+YERR - the name of a tag describing the y errors
+SLABEl - if it's one element, it will be a prefix in front of the series values
+gparam.series = ['Order'] will make Order 3, Order 4, ...
+if it's equal to the number of series, it will label each series
+gparam.series = ['Order 3','Order 4','Model spectrum']
+
+
+
+
+********* Stopping in a Loop  ********
+An easy way to stop in a loop is to call genplot and test the quit keyword
+for i=0l, ntot-1l do begin
+    genplot,dat,gparam=gparam
+    if quit_caught() then return
+endfor
+
