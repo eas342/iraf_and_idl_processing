@@ -76,8 +76,8 @@ endif
 dat = dat[gInd]
 
 if ev_tag_exist(gparam,'ZOOMBOX') then begin
-   myXrange = gparam.zoombox[0:1,0])
-   myYrange = gparam.zoombox[0:1,1])
+   myXrange = gparam.zoombox[0:1,0]
+   myYrange = gparam.zoombox[0:1,1]
 endif else begin
    if ev_tag_exist(gparam,'XTHRESH') then begin
       myXrange = threshold(dat.(Xind),mult=0.1)

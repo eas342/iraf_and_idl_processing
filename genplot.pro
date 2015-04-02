@@ -91,7 +91,6 @@ PRO genplot,data,y,gparam=gparam,help=help
 
   WIDGET_CONTROL, base, /REALIZE
 
-;  widget_control, base, set_uvalue = {reftype:'references',weight:1}
   disp_plot,data,y,gparam=gparam
 
   widget_control, paramw, set_uvalue = gparam ;; save the plot parameters
