@@ -10,8 +10,34 @@ pro disp_plot,X,Y,gparam=gparam
 ;;disp_plot,yp,gparam=gparam
 ;; will plot spectra colored by series
 
+
+if not ev_tag_exist(gparam,'PS') then begin
+   ev_add_tag,gparam,'PS',0
+endif
+;; Set up postscript, PDF and PNG plots
+if gparam.PS EQ 1 then begin
+   set_plot,'ps'
+   !p.font=0
+   if not ev_tag_exist(gparam,'FILENAME') then begin
+      plotprenm='unnamed_genplot'
+   endif else begin
+      plotprenm=gparam.filename
+   endelse
+   device,encapsulated=1, /helvetica,$
+          filename=plotprenm+'.eps'
+   device,xsize=20, ysize=9,decomposed=1,/color
+   thick=2
+   xmargin = [11,24]
+   legCharsize =0.7
+endif else begin
+   thick=1
+   xmargin = [15,30]
+   legCharsize =1
+endelse
+
 npt = n_elements(X)
 type = size(X,/type)
+
 if type NE 8 then begin
    ;; Make a structure if X and y are input
    oneSt = create_struct('X',X[0],'Y',Y[0])
@@ -30,31 +56,14 @@ if not ev_tag_exist(gparam,'TITLES') then begin
    ev_add_tag,gparam,'TITLES',[gparam.PKEYS,'']
 endif
 
-if not ev_tag_exist(gparam,'PS') then begin
-   ev_add_tag,gparam,'PS',0
-endif
-
-;; Set up postscript, PDF and PNG plots
-if gparam.PS EQ 1 then begin
-   set_plot,'ps'
-   !p.font=0
-   if not ev_tag_exist(gparam,'FILENAME') then begin
-      plotprenm='unnamed_genplot'
-   endif else begin
-      plotprenm=gparam.filename
-   endelse
-   device,encapsulated=1, /helvetica,$
-          filename=plotprenm+'.eps'
-   device,xsize=20, ysize=9,decomposed=1,/color
-   thick=2
-   xmargin = [11,24]
-endif else begin
-   thick=1
-   xmargin = [15,30]
-endelse
-
 XInd = where(gparam.PKEYS[0] EQ tags)
 YInd = where(gParam.PKEYS[1] EQ tags)
+if ev_tag_exist(gparam,'YERR') then begin
+   YerrInd = where(gparam.yerr EQ tags)
+endif
+if ev_tag_exist(gparam,'XERR') then begin
+   XerrInd = where(gparam.xerr EQ tags)
+endif
 
 if not ev_tag_exist(gparam,'GFLAG') then begin
    ev_add_tag,gparam,'GFLAG',intarr(npt) + 1
@@ -71,7 +80,7 @@ if ev_tag_exist(gparam,'ZOOMBOX') then begin
    myYrange = transpose(gparam.zoombox[1,0:1])
 endif else begin
    if ev_tag_exist(gparam,'XTHRESH') then begin
-      myXrange = threshold(dat.(Xind))
+      myXrange = threshold(dat.(Xind),mult=0.1)
    endif else myXrange = [min(dat.(Xind)),max(dat.(Xind))]
    if ev_tag_exist(gparam,'YTHRESH') then begin
       myYrange = threshold(dat.(Yind))
@@ -112,9 +121,21 @@ colArr = myarraycol(nser,psversion=gparam.ps)
 for i=0l,nser-1l do begin
    serInd = where(dat.(serTag) GE serArr[i] and $
                   dat.(serTag) LT serArr[i+1])
+   nserInd = n_elements(serInd)
    if serInd NE [-1] then begin
       oplot,dat[serInd].(Xind),dat[serInd].(Yind),$
            color=colArr[i],thick=thick
+      if ev_tag_exist(gparam,'YERR') OR ev_tag_exist(gparam,'XERR') then begin
+         if not ev_tag_exist(gparam,'XERR') then begin
+            xerr = fltarr(nserInd)
+         endif else xerr = dat[serInd].(XerrInd)
+         if not ev_tag_exist(gparam,'YERR') then begin
+            yerr = fltarr(nserInd)
+         endif else yerr = dat[serInd].(YerrInd)
+         oploterror,dat[serInd].(Xind),dat[serInd].(Yind),$
+                    xerr,yerr,$
+               color=colArr[i],thick=thick
+      endif
    endif
 endfor
 
@@ -123,9 +144,12 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    if not ev_tag_exist(gparam,'SLABEL') then begin
       ev_add_tag,gparam,'SLABEL',''
    endif
-   al_legend,gparam.slabel+' '+strtrim(serArr[0:nser-1l],1),$
+   if n_elements(gparam.slabel) EQ 1 then begin
+      serLab = gparam.slabel+' '+strtrim(serArr[0:nser-1l],1)
+   endif else serLab = gparam.slabel
+   al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
-             color=colArr,$
+             color=colArr,charsize=LegCharsize,$
              position=[!x.crange[1],!y.crange[1]]
 endif
 
