@@ -17,7 +17,7 @@ if ev_tag_exist(gparam,'PKEYS') then begin
    YInd = where(gParam.PKEYS[1] EQ tags)
 endif else begin
    Xind = 0
-   Yind = 0
+   Yind = 1
 endelse
 addStruct.(Xind) = x
 addStruct.(Yind) = y
