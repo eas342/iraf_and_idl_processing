@@ -38,6 +38,8 @@ SLABEl - if it's one element, it will be a prefix in front of the series values
 gparam.series = ['Order'] will make Order 3, Order 4, ...
 if it's equal to the number of series, it will label each series
 gparam.series = ['Order 3','Order 4','Model spectrum']
+XLOG - if it exists, x axis will be logarithmic
+YLOG - if it exists, y axis will be logarithmic
 
 ********* Overplotting ********
 To over plot, you can add data to the data structure:

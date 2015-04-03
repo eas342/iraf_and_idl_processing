@@ -87,6 +87,9 @@ endif else begin
    endif else myYrange = [min(dat.(Yind)),max(dat.(Yind))]
 endelse
 
+if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
+if ev_tag_exist(gparam,'YLOG') then Ylog=1 else Ylog=0
+
 plot,dat.(Xind),dat.(Yind),$
      ystyle=1,xstyle=1,$
      xtitle=gparam.TITLES[0],$
@@ -95,7 +98,8 @@ plot,dat.(Xind),dat.(Yind),$
      xrange=myXrange,$
      yrange=myYrange,/nodata,$
      xmargin=xmargin,thick=thick,$
-     xthick=thick,ythick=thick
+     xthick=thick,ythick=thick,$
+     xlog=xlog,ylog=ylog
 
 if not ev_tag_exist(gparam,'SERIES') then begin
    ;; if no series specified, use all points
@@ -147,10 +151,13 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    if n_elements(gparam.slabel) EQ 1 then begin
       serLab = gparam.slabel+' '+strtrim(serArr[0:nser-1l],1)
    endif else serLab = gparam.slabel
+   topRpt = [!x.crange[1],!y.crange[1]]
+   if xlog then topRpt[0] = 10E^(topRpt[0])
+   if ylog then topRpt[1] = 10E^(topRpt[1])
    al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
              color=colArr,charsize=LegCharsize,$
-             position=[!x.crange[1],!y.crange[1]]
+             position=topRpt
 endif
 
 
