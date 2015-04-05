@@ -20,6 +20,10 @@ gparam = create_struct('YTHRESH',1,'YERR','FLUX_ERR','XTHRESH',1,$
 YTHRESH - use threshold scaling (by histogram 10/90% etc for Y axis)
 XTHRESH - use threshold scaling (by histogram 10/90% etc for X axis)
 PS - if true, saves a postscript plot instead of the X windows display
+PSSMALL - if true, it saves a smaller size postscript plot (good for presentations and papers)
+NOMARGLEG - if false/undefined, it makes an extra wide margin for the legend,
+if true, it leaves little on the right margin and will probably require
+moving the legend somewhere with a click button, but has less whitespace
 FILENAME - file name for the postscript plot
 PKEYS - a 2 element array describe the keyword parameters for plotting
 the first element is x and second element is Y
