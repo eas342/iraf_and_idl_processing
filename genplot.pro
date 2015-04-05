@@ -43,6 +43,10 @@ CASE uval of
        WIDGET_CONTROL, ev.TOP, /DESTROY
        return
     end
+    'MOVELEG': cmove_legend,dat,gparam=gparam
+    'MARGLEG': begin
+       ev_add_tag,gparam,'NOMARGLEG',1 - ev.value
+    end
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -68,8 +72,8 @@ PRO genplot,data,y,gparam=gparam,help=help
   paramw = widget_base(base,uname='paramw',/frame) ;; widget for storing parameters
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   zoomW = widget_base(base,/column,yoffset=20) ;; base for zoom parameters
+  legW = widget_base(base,/column,yoffset=20) ;; base for zoom parameters
 
-  ;; Save the general plotting parameters ( I can't figure out how 
   
   ;; Sets up the control buttons
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
@@ -88,6 +92,13 @@ PRO genplot,data,y,gparam=gparam,help=help
   wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
                        /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
                       uvalue='YZTYPE',set_value=0,label_top='Y Default',/frame)
+
+  ;; Adjust the legend with the legend widgets
+  ;; Margin legend widget
+  mLTog = cw_bgroup(legW,label_top='Margin for Legend?',$
+                    ['YES','NO'],button_uvalue=[1,0],$
+                    /exclusive, /return_name,uvalue='MARGLEG',set_value=[0])
+  mLegButton = widget_button(legW,value='Move Legend',uvalue='MOVELEG')
 
   WIDGET_CONTROL, base, /REALIZE
 

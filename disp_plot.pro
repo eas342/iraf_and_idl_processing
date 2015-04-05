@@ -27,13 +27,19 @@ if gparam.PS EQ 1 then begin
           filename=plotprenm+'.eps'
    device,xsize=20, ysize=9,decomposed=1,/color
    thick=2
-   xmargin = [11,24]
+   xmarginLeg = [11,24]
+   xmarginSimp = [11,4]
    legCharsize =0.7
 endif else begin
    thick=1
-   xmargin = [15,30]
+   xmarginLeg = [15,30]
+   xmarginSimp = [15,4]
    legCharsize =1
 endelse
+
+if ev_tag_true(gparam,'NOMARGLEG') then begin
+   xmargin = xmarginSimp
+endif else xmargin = xmarginLeg
 
 npt = n_elements(X)
 type = size(X,/type)
@@ -151,13 +157,22 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    if n_elements(gparam.slabel) EQ 1 then begin
       serLab = gparam.slabel+' '+strtrim(serArr[0:nser-1l],1)
    endif else serLab = gparam.slabel
-   topRpt = [!x.crange[1],!y.crange[1]]
-   if xlog then topRpt[0] = 10E^(topRpt[0])
-   if ylog then topRpt[1] = 10E^(topRpt[1])
+   if ev_tag_exist(gparam,'LEGLOC') then begin
+      legPos = gparam.legloc
+   endif else begin
+      ;; Default on the top right, unless margin is shrunk
+      if ev_tag_true(gparam,'NOMARGLEG') then begin
+         legPos = [!x.crange[0],!y.crange[1]]
+      endif else begin
+         legPos = [!x.crange[1],!y.crange[1]]
+      endelse
+      if xlog then topRpt[0] = 10E^(topRpt[0])
+      if ylog then topRpt[1] = 10E^(topRpt[1])
+   endelse
    al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
              color=colArr,charsize=LegCharsize,$
-             position=topRpt
+             position=legPos
 endif
 
 
