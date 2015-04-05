@@ -82,11 +82,12 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore
   
   base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
   cntl = widget_base(base, /column,/frame) ;; Plot control widget
-  paramw = widget_base(base,uname='paramw',/frame) ;; widget for storing parameters
+  zoomW = widget_base(base,/column,/frame) ;; base for zoom parameters
+  legW = widget_base(base,/column,/frame) ;; base for legend parameters
+  psW = widget_base(base,/column,/frame) ;; base for postscript/png output options
+
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
-  zoomW = widget_base(base,/column) ;; base for zoom parameters
-  legW = widget_base(base,/column) ;; base for legend parameters
-  psW = widget_base(base,/column) ;; base for postscript/png output options
+  paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
 
   
   ;; Sets up the control buttons
