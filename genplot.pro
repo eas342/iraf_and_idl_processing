@@ -22,6 +22,7 @@ CASE uval of
        disp_plot,dat,y,gparam=gparam
        gparam.ps = 0
     end
+    'PSSIZE':  ev_add_tag,gparam,'PSSMALL',ev.value
     'ZOOM'  :  get_zoom,dat,y,plotp=gparam,/plotmode
     'RZOOM' :  get_zoom,dat,y,plotp=gparam,/plotmode,/rzoom
     'SCALE' : begin
@@ -61,24 +62,36 @@ CASE uval of
 
 END
 
-PRO genplot,data,y,gparam=gparam,help=help
+PRO genplot,data,y,gparam=gparam,help=help,restore=restore
+;; General plotter
+;; gparam contains all the general plotting parameters
+;; help - calls up the help file
+;; restore - restores the previous parameter settings
+
   if keyword_set(help) then begin
      spawn,'open /Users/bokonon/triplespec/iraf_scripts/genplot_help.txt'
      return
   endif
+
+  if keyword_set(restore) then begin
+     fileList = file_search('ev_local_pparams.sav')
+     if fileList NE '' then begin
+        restore,'ev_local_pparams.sav'
+     endif
+  endif
   
   base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
-  cntl = widget_base(base, /column,/frame) ;; another layer within the big base?
+  cntl = widget_base(base, /column,/frame) ;; Plot control widget
   paramw = widget_base(base,uname='paramw',/frame) ;; widget for storing parameters
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
-  zoomW = widget_base(base,/column,yoffset=20) ;; base for zoom parameters
-  legW = widget_base(base,/column,yoffset=20) ;; base for zoom parameters
+  zoomW = widget_base(base,/column) ;; base for zoom parameters
+  legW = widget_base(base,/column) ;; base for legend parameters
+  psW = widget_base(base,/column) ;; base for postscript/png output options
 
   
   ;; Sets up the control buttons
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
   button0 = WIDGET_BUTTON(cntl, VALUE='Re-Plot', UVALUE='REPLOT')
-  button1 = WIDGET_BUTTON(cntl, VALUE='Postscript Plot', UVALUE='PS')
   qlbutton = WIDGET_BUTTON(cntl, VALUE='Quit Loop', UVALUE='SQUIT')
 
   button3 = WIDGET_BUTTON(zoomW, VALUE='Set Scale', UVALUE='SCALE')
@@ -97,8 +110,16 @@ PRO genplot,data,y,gparam=gparam,help=help
   ;; Margin legend widget
   mLTog = cw_bgroup(legW,label_top='Margin for Legend?',$
                     ['YES','NO'],button_uvalue=[1,0],$
-                    /exclusive, /return_name,uvalue='MARGLEG',set_value=[0])
+                    /exclusive, /return_name,uvalue='MARGLEG',$
+                    set_value=[ev_tag_true(gparam,'MARGLEG')])
   mLegButton = widget_button(legW,value='Move Legend',uvalue='MOVELEG')
+
+  ;; Buttons for saving postscript plots
+  psSizeB = CW_BGROUP(psW, ['Small','Medium'], button_uvalue = [1,0],$
+                       /ROW, /EXCLUSIVE, /NO_RELEASE, $
+                      uvalue='PSSIZE',set_value=1 - ev_tag_true(gparam,'PSSMALL'),$
+                      label_top='Export Size',/frame)
+  psPlot = WIDGET_BUTTON(psW, VALUE='Postscript Plot', UVALUE='PS')
 
   WIDGET_CONTROL, base, /REALIZE
 
