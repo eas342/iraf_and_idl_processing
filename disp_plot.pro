@@ -10,12 +10,8 @@ pro disp_plot,X,Y,gparam=gparam
 ;;disp_plot,yp,gparam=gparam
 ;; will plot spectra colored by series
 
-
-if not ev_tag_exist(gparam,'PS') then begin
-   ev_add_tag,gparam,'PS',0
-endif
 ;; Set up postscript, PDF and PNG plots
-if gparam.PS EQ 1 then begin
+if ev_tag_true(gparam,'PS')then begin
    set_plot,'ps'
    !p.font=0
    if not ev_tag_exist(gparam,'FILENAME') then begin
@@ -23,9 +19,18 @@ if gparam.PS EQ 1 then begin
    endif else begin
       plotprenm=gparam.filename
    endelse
+   if ev_tag_true(gparam,'PSSMALL') then begin
+      PSxsize=14.2
+      PSysize=10
+;      PSxsize=10
+;      PSysize=7 ;; extra small - good for presentations
+   endif else begin
+      PSxsize=20
+      PSysize=9
+   endelse
    device,encapsulated=1, /helvetica,$
           filename=plotprenm+'.eps'
-   device,xsize=20, ysize=9,decomposed=1,/color
+   device,xsize=PSxsize, ysize=PSysize,decomposed=1,/color
    thick=2
    xmarginLeg = [11,24]
    xmarginSimp = [11,4]
@@ -125,7 +130,7 @@ nser = max(dat.(serTag)) - min(dat.(serTag)) + 1;; number of series
 serArr = indgen(nser + 1) + min(dat.(serTag))
 ;; later I may have it specified differently for non-integers
 
-colArr = myarraycol(nser,psversion=gparam.ps)
+colArr = myarraycol(nser,psversion=ev_tag_true(gparam,'PS'))
 
 ;; Plot the data as a function of series
 for i=0l,nser-1l do begin
@@ -176,7 +181,7 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
 endif
 
 
-if gparam.PS EQ 1 then begin
+if ev_tag_true(gparam,'PS') then begin
    device, /close
    cgPS2PDF,plotprenm+'.eps'
    spawn,'convert -density 300% '+plotprenm+'.pdf '+plotprenm+'.png'
