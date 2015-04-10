@@ -1,4 +1,4 @@
-pro disp_plot,X,Y,gparam=gparam
+pro disp_plot,X,Y,gparam=gparam,restore=restore
 ;; Generalized plotter that is flexible and doesn't require
 ;; re-writing code
 ;; Ideally everything is in a structure data and all plot parameters
@@ -9,6 +9,15 @@ pro disp_plot,X,Y,gparam=gparam
 ;;                       'SERIES','ORD','SLABEL','Order')
 ;;disp_plot,yp,gparam=gparam
 ;; will plot spectra colored by series
+
+;; If asked to restore previous settings
+if keyword_set(restore) then begin
+   fileList = file_search('ev_local_pparams.sav')
+   if fileList NE '' then begin
+      restore,'ev_local_pparams.sav'
+   endif
+endif
+
 
 ;; Set up postscript, PDF and PNG plots
 if ev_tag_true(gparam,'PS')then begin
@@ -77,9 +86,9 @@ if ev_tag_exist(gparam,'XERR') then begin
 endif
 
 if not ev_tag_exist(gparam,'GFLAG') then begin
-   ev_add_tag,gparam,'GFLAG',intarr(npt) + 1
-endif
-gInd = where(gparam.gflag EQ 1);; good indices
+   gflag = intarr(npt) + 1
+endif else gflag = gparam.gflag
+gInd = where(gflag EQ 1);; good indices
 if gInd EQ [-1] then begin
    print,'No valid points to plot'
 endif
