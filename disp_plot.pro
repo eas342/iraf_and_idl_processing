@@ -60,11 +60,15 @@ type = size(X,/type)
 
 if type NE 8 then begin
    ;; Make a structure if X and y are input
-   oneSt = create_struct('X',X[0],'Y',Y[0])
-   dat = replicate(oneSt,npt)
-   dat.x = X
-   dat.Y = Y
-   ev_add_tag,gparam,'PKEYS',['X','Y']
+   if n_elements(Y) EQ 0 then begin
+      ;; if only one array is input, assume that x is an index array
+      ;; and y is the input array
+      dat = struct_arrays(create_struct('INDEX',findgen(npt),'ARR',X))
+      ev_add_tag,gparam,'PKEYS',['INDEX','ARR']
+   endif else begin
+      dat = struct_arrays(create_struct('X',X,'Y',Y))
+      ev_add_tag,gparam,'PKEYS',['X','Y']
+   endelse
 endif else dat = x
 tags = tag_names(dat)
 
