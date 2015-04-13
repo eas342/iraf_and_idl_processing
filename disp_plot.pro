@@ -69,7 +69,10 @@ if type NE 8 then begin
       dat = struct_arrays(create_struct('X',X,'Y',Y))
       ev_add_tag,gparam,'PKEYS',['X','Y']
    endelse
-endif else dat = x
+endif else begin
+   dat = x
+   if n_elements(Y) NE 0 then edat = Y
+endelse
 tags = tag_names(dat)
 
 if not ev_tag_exist(gparam,'PKEYS') then begin
@@ -192,6 +195,37 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
              color=colArr,charsize=LegCharsize,$
              position=legPos
 endif
+
+;; Draw extra lines from the edat (extra data structure)
+for j=0l,1l do begin
+   if j EQ 0 then begin
+      linetag = 'VERTLINES' 
+      lstyletag = 'VERTSTYLES'
+   endif else begin
+      linetag='HORLINES'
+      lstyletag='HORSTYLES'
+   endelse
+   if ev_tag_exist(edat,linetag,index=lineindex) then begin
+      nline = n_elements(edat.(lineindex))
+      lineCols = myarraycol(nline,psversion=ev_tag_true(gparam,'PS'))
+      if ev_tag_exist(edat,lstyletag,index=styleindex) then begin
+         mylstyle = edat.(styleindex)
+      endif else mylstyle = lonarr(nline)
+      for i=0l,nline-1l do begin
+         if j EQ 0 then begin
+            xdraw = edat.(lineindex)[i] * [1D,1D]
+            ydraw = !y.crange
+         endif else begin
+            xdraw = !x.crange
+            ydraw = edat.(lineindex)[i] * [1D,1D]
+         endelse
+         if xlog then xdraw = 10E^(xdraw)
+         if ylog then ydraw = 10E^(ydraw)
+         oplot,xdraw,ydraw,color=linecols[i],$
+            linestyle=mylstyle[i]
+      endfor
+   endif
+endfor
 
 
 if ev_tag_true(gparam,'PS') then begin
