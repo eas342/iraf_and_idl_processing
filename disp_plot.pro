@@ -172,12 +172,9 @@ endfor
 
 ;; Make a legend for the series of plots
 if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
-   if not ev_tag_exist(gparam,'SLABEL') then begin
-      ev_add_tag,gparam,'SLABEL',''
-   endif
-   if n_elements(gparam.slabel) EQ 1 then begin
-      serLab = gparam.slabel+' '+strtrim(serArr[0:nser-1l],1)
-   endif else serLab = gparam.slabel
+   if ev_tag_exist(gparam,'SLABEL') then begin
+      serLab = gparam.slabel
+   endif else serLab = strtrim(serArr[0:nser-1l],1)
    if ev_tag_exist(gparam,'LEGLOC') then begin
       legPos = gparam.legloc
    endif else begin
