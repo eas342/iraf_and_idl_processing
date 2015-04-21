@@ -24,7 +24,7 @@ hsigma=30., ngood=3, linterp=2, cinterp=3, eqinterp=2)
 ## Merge this pixel mask with the known bad diagonals
 imcopy ("mask_from_masterdark.pl",
 "mask_from_masterdark.fits", verbose=yes)
-!echo "ev_compile_red & combine_masks,'mask_from_masterdark.fits','/Users/bokonon/triplespec/iraf_scripts/diagonal_mask.fits'" | idl
+!echo "combine_masks,'mask_from_masterdark.fits','/Users/bokonon/triplespec/iraf_scripts/diagonal_mask.fits'" | idl
 imcopy ("combined_mask.fits[0]",
 "combined_mask.pl", verbose=yes)
 
@@ -79,12 +79,12 @@ function="legendre", order=1, sample="*", naverage=1, niterate=1,
 low_reject=3., high_reject=3., grow=0.)
 
 ## get the lamp structure
-!echo "ev_compile_red & make_sky_response,/lampversion" | idl
+!echo "make_sky_response,/lampversion" | idl
 ## get the pixel-to-pixel response from the lamp flat
-!echo "ev_compile_red & find_flat_structure,nrowpoly=3,custresponse='lamp_response1.fits'" | idl
+!echo "find_flat_structure,nrowpoly=3,custresponse='lamp_response1.fits'" | idl
 
 ## Make a sky reponse file
-!echo "ev_compile_red & make_sky_response,/lampversion" | idl
+!echo "make_sky_response" | idl
 
 ## Remove the pixel-to-pixel structure from the sky flat
 ccdproc ("sky_response2.fits",
@@ -98,25 +98,25 @@ function="legendre", order=1, sample="*", naverage=1, niterate=1,
 low_reject=3., high_reject=3., grow=0.)
 
 ## Fix bad pixels in the sky frame
-!echo "ev_compile_red & fix_sky_flattened,'sky_structure.fits'" | idl
+!echo "fix_sky_flattened,'sky_structure.fits'" | idl
 
 ## Make this the sky stripes file
 mv stripes_image.fits stripes_from_flat.fits
 cp sky_structure_fixed.fits stripes_image.fits
 
 ## Shift the sky structure & add pixel-to-pixel to make custom flat field for each science image
-!echo "ev_compile_red & move_flat_field,/twodir" | idl
+!echo "move_flat_field,/twodir" | idl
 
 } else {
-    !echo "ev_compile_red & find_flat_structure" | idl
-    !echo "ev_compile_red & move_flat_field" | idl
+    !echo "find_flat_structure" | idl
+    !echo "move_flat_field" | idl
 }
 
 #Make a list of the customized flat fields
 !ls response_for*.fits > response_list.txt
 ## Do this with an IDL script instead. Got frustrated trying to use CL variables
 ## Reads in the s1 parameter from local_red
-#!echo "ev_compile_red & copy_response" | idl ## this is now an obsolete task
+#!echo "copy_response" | idl ## this is now an obsolete task
 
 # Make a list of all arc images and output images
 ls *arc*.fits > arclist_orig.txt
