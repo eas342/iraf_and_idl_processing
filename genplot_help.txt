@@ -1,3 +1,4 @@
+
 ********* OVERVIEW ************
 genplot is a general purpose plotter
 genplot is a GUI that calls and modifies parameters for disp_plot
@@ -56,4 +57,11 @@ for i=0l, ntot-1l do begin
     genplot,dat,gparam=gparam
     if quit_caught() then return
 endfor
+
+********* Drawing Lines       ********
+Use a second structure in call to genplot (edat)
+VERTLINES - the x values of vertical lines
+HORLINES - the y values of horizontal lines
+LSTYLETAG - an array of line styles for an array of vertical lines or an array of horizontal lines
+
 
