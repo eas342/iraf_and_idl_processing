@@ -184,8 +184,8 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
       endif else begin
          legPos = [!x.crange[1],!y.crange[1]]
       endelse
-      if xlog then topRpt[0] = 10E^(topRpt[0])
-      if ylog then topRpt[1] = 10E^(topRpt[1])
+      if xlog then legPos[0] = 10E^(legPos[0])
+      if ylog then legPos[1] = 10E^(legPos[1])
    endelse
    al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
