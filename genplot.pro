@@ -44,6 +44,8 @@ CASE uval of
        WIDGET_CONTROL, ev.TOP, /DESTROY
        return
     end
+    'SAVEDAT': check_idlsave,dat,y,gparam,filename='es_plot_data.save',$
+                            varnames=['dat','y','gparam']
     'MOVELEG': cmove_legend,dat,gparam=gparam
     'MARGLEG': begin
        ev_add_tag,gparam,'NOMARGLEG',1 - ev.value
@@ -93,9 +95,9 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore
   ;; Sets up the control buttons
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
   button0 = WIDGET_BUTTON(cntl, VALUE='Re-Plot', UVALUE='REPLOT')
+  dsavebutton = WIDGET_BUTTON(cntl, VALUE='Save Data', UVALUE='SAVEDAT')
   qlbutton = WIDGET_BUTTON(cntl, VALUE='Quit Loop', UVALUE='SQUIT')
 
-  button3 = WIDGET_BUTTON(zoomW, VALUE='Set Scale', UVALUE='SCALE')
   button4 = WIDGET_BUTTON(zoomW, VALUE='Click Zoom', UVALUE='ZOOM')
   button5 = WIDGET_BUTTON(zoomW, VALUE='Default Ranges',UVALUE='RZOOM')
 
