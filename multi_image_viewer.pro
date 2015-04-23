@@ -27,8 +27,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
-           '(rot)ation change',$
-          '(ckey) to choose a FITS keyword to print']
+           '(rot)ation change','(maskedit) mask edit',$
+           '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -99,6 +99,8 @@ while status NE 'q' and status NE 'Q' do begin
                        startslot=i
          endfor
       end
+      status EQ 'maskedit' OR status EQ 'MASKEDIT': $
+         maskedit,filel[slot],lineP,plotp
       status EQ 'sparam' OR status EQ 'SPARAM': check_idlsave,fileL,slot,lineP,plotp,$
          varnames=['fileL','slot','lineP','plotp']
       status EQ 'c' OR status EQ 'C': begin
