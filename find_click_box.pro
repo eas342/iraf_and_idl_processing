@@ -1,6 +1,6 @@
 function find_click_box,filen,bcolor=bcolor,$
                         get_direction=get_direction,$
-                        plotp=plotp
+                        plotp=plotp,struct=struct
 ;; This function takes user input and draws a box
 ;; filen - an optional input to display the file
 ;; bcolor - an option to specify the color of the box
@@ -8,6 +8,7 @@ function find_click_box,filen,bcolor=bcolor,$
 ;; [[xBL,yBL],[xTR,yTR]] for x,y bottom left and top right
 ;; get_direction - find out an X or Y direction for plotting. Then,
 ;;                 the output is a structure, direction, xcoor/ycoor etc.
+;; struct - keyword that specifies whether to output an array or structure
 
   if n_elements(filen) NE 0 then begin
      fits_display,filen,plotp=plotp
@@ -30,14 +31,14 @@ function find_click_box,filen,bcolor=bcolor,$
   boxArrX = [xboxBL,xboxBL,xboxTR,xboxTR,xboxBL]
   boxArrY = [yboxBL,yboxTR,yboxTR,yboxBL,yboxBL]
 
-  if keyword_set(get_direction) then begin
+  if keyword_set(get_direction) or keyword_set(struct) then begin
      print,'Change direction w/ left mouse click. Right click when done'
      direction = 'x'
      outArray = create_struct('direction',direction,$
                               'Xcoor',[min(boxArrX),max(boxArrX)],$
                               'Ycoor',[min(boxArrY),max(boxArrY)],$
                               'type','box')
-     while  (!mouse.button NE 4) do begin
+     while  (!mouse.button NE 4) and keyword_set(get_direction) do begin
         if outarray.direction EQ 'x' then outarray.direction = 'y' else begin
            outarray.direction = 'x'
         endelse
