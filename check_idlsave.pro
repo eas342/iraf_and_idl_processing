@@ -5,16 +5,19 @@ varlist = ['a','b','c','d','e','f','g','h','i','j','k','l','m',$
 
 
 if n_elements(filename) EQ 0 then begin
-   message,'No default File Name',/continue
-   return
-endif
+   doChoose = 1
+endif else begin
 ;; Check if there's a previous file
-fs = file_search(filename)
-if fs EQ [''] then begin
-   outName = filename
-   print,'Saving variables/structures as ',outname
-endif else outName=dialog_pickfile(/write,filter='*.sav',$
-                                       default_extension='.sav')
+   fs = file_search(filename)
+   if fs EQ [''] then begin
+      outName = filename
+      print,'Saving variables/structures as ',filename
+   endif else doChoose=1
+endelse
+if doChoose then begin
+   outName=dialog_pickfile(/write,filter='*.sav',$
+                           default_extension='.sav')
+endif
 
 nvar = n_elements(varnames)
 varFlags = fltarr(nvar)
