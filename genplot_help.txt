@@ -62,6 +62,7 @@ endfor
 Use a second structure in call to genplot (edat)
 VERTLINES - the x values of vertical lines
 HORLINES - the y values of horizontal lines
-LSTYLETAG - an array of line styles for an array of vertical lines or an array of horizontal lines
+VERTSTYLES - an array of line styles for an array of vertical lines
+HORSTYLES - an array of line styles for an array of horizontal lines
 
 
