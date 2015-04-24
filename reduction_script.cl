@@ -2,7 +2,7 @@
 !for f in flat*.fits; do echo "$f[0]"; done > flatlist.txt
 
 # Make a list of all the science images and output for the processed versions
-!for f in *run*.fits; do echo "$f[0]"; done > science_images.txt
+!for f in run*.fits; do echo "$f[0]"; done > science_images.txt
 ## PUT back in *run*lincor.fits eventually when doing linearity corrections!!!
 ls run*.fits > science_images_plain.txt
 !awk -F, '{$1="../proc/" $1;}1' science_images_plain.txt > proc_science_images.txt
@@ -58,7 +58,7 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 # Make a sky flat or a lamp flat
 if ((b1) == yes) {
 ## Make a median sky frame to use as a flat
-!echo "imcombine,'sky_choices.txt',outname='skycombine_untrim.fits'
+!echo "imcombine,'sky_choices.txt',outname='skycombine_untrim.fits'" | idl
 
 ## Trim the median sky for use as flat
 ccdproc ("skycombine_untrim",

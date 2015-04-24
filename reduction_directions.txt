@@ -72,3 +72,7 @@ F: If Needing to reset
 reset_reduction
 reset_extraction
 
+
+************************
+G: ERRORS
+Error in image section specification - usually it happens when I haven’t loaded the local parameters in (either cl < local_red_parameters in the “edited” directory or cl < local_parameters in the “processed” directory)
