@@ -25,12 +25,7 @@ CASE uval of
        delete_maskb,maskp
     end
     'DONE': begin
-;       save,gparam,filename='ev_local_pparams.sav'
-       maskFile = clobber_exten(filen)+'_mask.fits'
-       fileFind = file_search(maskFile)
-       if fileFind NE '' then begin
-          maskImg = mod_rdfits(fileFind,0,head,plotp=plotp)
-       endif else maskImg = fileFind[0]
+       savemask_fits,filen,maskp
        WIDGET_CONTROL, ev.TOP, /DESTROY
        return
     end
