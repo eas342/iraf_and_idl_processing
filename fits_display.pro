@@ -129,4 +129,16 @@ if n_elements(lineP) NE 0 then begin
    endelse
 endif
 
+;; Show the mask
+if type EQ 7 then begin
+   filenInside = clobber_dir(input,/exten,dir=dir)
+   maskFile = 'mask_for_'+filenInside+'.fits'
+   fileFind = file_search(maskFile)
+   if fileFind NE '' then begin
+      b = mod_rdfits(fileFind,0,maskhead)
+      contour,b,/overplot,color=mycol('blue'),levels=[0,1]
+   endif
+
+endif
+
 end
