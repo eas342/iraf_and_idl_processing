@@ -58,18 +58,11 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 # Make a sky flat or a lamp flat
 if ((b1) == yes) {
 ## Make a median sky frame to use as a flat
-imcombine ("runsky*.fits[0]",
-"skymedian_untrim", headers="", bpmasks="", rejmasks="", nrejmasks="", expmasks="",
-sigmas="", imcmb="$I", logfile="STDOUT", combine="median", reject="none",
-project=no, outtype="real", outlimits="", offsets="none", masktype="none",
-maskvalue="0", blank=0., scale="none", zero="none", weight="none", statsec="",
-expname="", lthreshold=INDEF, hthreshold=INDEF, nlow=1, nhigh=1, nkeep=1,
-mclip=yes, lsigma=3., hsigma=3., rdnoise="0.", gain="1.", snoise="0.",
-sigscale=0.1, pclip=-0.5, grow=0.)
+!echo "imcombine,'sky_choices.txt',outname='skycombine_untrim.fits'
 
 ## Trim the median sky for use as flat
-ccdproc ("skymedian_untrim",
-output="skymedian", ccdtype="", max_cache=0, noproc=no, fixpix=no,
+ccdproc ("skycombine_untrim",
+output="skycombine", ccdtype="", max_cache=0, noproc=no, fixpix=no,
 overscan=no, trim=yes, zerocor=no, darkcor=no, flatcor=no, illumcor=no,
 fringecor=no, readcor=no, scancor=no, readaxis="line",
 fixfile="combined_mask.pl", biassec="", trimsec=(s1), zero="",

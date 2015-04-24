@@ -149,7 +149,7 @@ for i=0l,lastfile do begin
          InvResponse = pix2pix/skyResp
          writefits,'inverse_response.fits',InvResponse,respHead
          straighten_spec,'inverse_response.fits','temp_straight_resp.fits',$
-                         shiftlist='../edited/skymedian_shifts.txt',$
+                         shiftlist='../edited/skycombine_shifts.txt',$
                          /oneImage,/overWrite,/silent
          ModFactor = mrdfits('temp_straight_resp.fits',0,tempRHead,/silent)
          reModImage = outImage/ModFactor

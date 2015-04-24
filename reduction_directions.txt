@@ -47,6 +47,7 @@ cl < local_red_params.cl
 #Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
 # Requires a file local_red_params.cl that defines b1=yes/no and s1 = "[65:749,33:607]" (or whatever trim region)
 #Change to the edited directory and run
+# If you have local red_params b1 = true, it will use the sky flats. You’ll need to select a set of sky images to combine. You can also have mask_for_runsky005.fits files to specify where to mask out sources
 reduction_script
 
 E: Extract Spectra. Navigate the “proc” directory

@@ -30,7 +30,7 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
   end else breg = parse_iraf_regions(varvalue[0])
   if keyword_set(twoDir) then begin
      sB = parse_iraf_regions(varvalue[1]) ;; background spectrum
-     medSky = mod_rdfits('skymedian_untrim.fits',0,skyMedHead)
+     medSky = mod_rdfits('skycombine_untrim.fits',0,skyMedHead)
      medSubSpec = median(medSky[sB[0]:sB[1],sB[2]:sB[3]],dimension=2)
      fmsubspec = convol(medsubspec,digital_filter(0.15,0.3,50,10))
   endif
