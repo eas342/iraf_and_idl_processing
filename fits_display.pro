@@ -18,6 +18,12 @@ pro fits_display,input,findscale=findscale,$
 type = size(input,/type)
 a = mod_rdfits(input,0,header,plotp=plotp)
 
+if n_elements(a) LT 2 then begin
+   print,"Less than 2 pixels in image!"
+   if type EQ 7 then print,'(For image ',input,')'
+   return
+endif
+
 case 1 of
    n_elements(message) NE 0: Ftitle=message 
    type EQ 7: Ftitle = input
