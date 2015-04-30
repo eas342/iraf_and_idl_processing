@@ -19,6 +19,7 @@ All dark images should be dark*.fits
 All arc images (with relevant (0.3 x 60) slit) should be arc*.fits
 All sky flat images (if using them) should be listed in 
 Make a "proc" directory adjacent to the edited folder
+All sky files (if using) should be listed in sky_choices.txt
 
 C: Load all IRAF scripts
 #(If necessary)
@@ -47,7 +48,7 @@ cl < local_red_params.cl
 #Including flat field, linearity correction, bad pixel mask, dark subtraction etc.
 # Requires a file local_red_params.cl that defines b1=yes/no and s1 = "[65:749,33:607]" (or whatever trim region)
 #Change to the edited directory and run
-# If you have local red_params b1 = true, it will use the sky flats. You’ll need to select a set of sky images to combine. You can also have mask_for_runsky005.fits files to specify where to mask out sources
+# If you have local red_params b1 = yes, it will use the sky flats. You’ll need to select a set of sky images to combine (called sky_choices.txt). You can also have optional mask_for_runsky005.fits files to specify where to mask out sources
 reduction_script
 
 E: Extract Spectra. Navigate the “proc” directory
