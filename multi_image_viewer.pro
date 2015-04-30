@@ -28,6 +28,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
            '(rot)ation change','(maskedit) mask edit',$
+           '(imcombine) image combine','(aedit) Edit Action List',$
            '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
 
@@ -83,6 +84,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'fedit' OR status EQ 'FEDIT': begin
          fedit,filel,plotp=plotp
       end
+      status EQ 'aedit' OR status EQ 'AEDIT': begin
+         fedit,filel,plotp=plotp,/action
+      end
       status EQ 'fread' OR status EQ 'FREAD': begin
          readcol,'ev_local_display_filelist.txt',filel,format='(A)'
          if slot GT n_elements(filel) -1l then slot=0
@@ -101,6 +105,8 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'maskedit' OR status EQ 'MASKEDIT': $
          maskedit,filel[slot],lineP,plotp
+      status EQ 'imcombine' OR status EQ 'IMCOMBINE': $
+         imcombine,'action_list.txt'
       status EQ 'sparam' OR status EQ 'SPARAM': check_idlsave,fileL,slot,lineP,plotp,$
          varnames=['fileL','slot','lineP','plotp']
       status EQ 'c' OR status EQ 'C': begin
