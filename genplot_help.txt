@@ -45,6 +45,7 @@ if it's equal to the number of series, it will label each series
 gparam.series = ['Order 3','Order 4','Model spectrum']
 XLOG - if it exists, x axis will be logarithmic
 YLOG - if it exists, y axis will be logarithmic
+PSYM - if it exists, it will do circular plot symbols, otherwise lines
 
 ********* Overplotting ********
 To over plot, you can add data to the data structure:

@@ -148,6 +148,11 @@ serArr = indgen(nser + 1) + min(dat.(serTag))
 
 colArr = myarraycol(nser,psversion=ev_tag_true(gparam,'PS'))
 
+if ev_tag_exist(gparam,'PSYM') then begin
+   plotsym,0
+   mypsym=8
+endif else mypsym=0
+
 ;; Plot the data as a function of series
 for i=0l,nser-1l do begin
    serInd = where(dat.(serTag) GE serArr[i] and $
@@ -155,7 +160,7 @@ for i=0l,nser-1l do begin
    nserInd = n_elements(serInd)
    if serInd NE [-1] then begin
       oplot,dat[serInd].(Xind),dat[serInd].(Yind),$
-           color=colArr[i],thick=thick
+           color=colArr[i],thick=thick,psym=mypsym
       if ev_tag_exist(gparam,'YERR') OR ev_tag_exist(gparam,'XERR') then begin
          if not ev_tag_exist(gparam,'XERR') then begin
             xerr = fltarr(nserInd)
