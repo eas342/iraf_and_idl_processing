@@ -16,7 +16,9 @@ pro fits_display,input,findscale=findscale,$
 ;; rot - the rotation of an image
 
 type = size(input,/type)
-a = mod_rdfits(input,0,header,plotp=plotp)
+if type EQ 7 then begin
+   a = mod_rdfits(input,0,header,plotp=plotp)
+endif
 
 if n_elements(a) LT 2 then begin
    print,"Less than 2 pixels in image!"
@@ -30,6 +32,14 @@ case 1 of
    else: Fitle = ''
 endcase
 
+
+if ev_tag_exist(plotp,'FLATFILE') then begin
+   f = mod_rdfits(plotp.flatfile,0,flathead,plotp=plotp)
+   nonz = where(f NE 0)
+   if nonz NE [-1] then begin
+      a[nonz] = a[nonz] / f[nonz]
+   endif
+endif
 
 if keyword_set(findscale) then begin
 ;; start cursor

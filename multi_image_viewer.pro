@@ -20,6 +20,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(z)oom in','(save) EPS of FITS image',$
            '(zz)oom in from a zoomed',$
            '(rzoom) to reset the zoom',$
+           '(cflat) to choose a flat','(qflat) to cancel a flat',$
            '(fitpsf) to fit a PSF',$
            '(mfit) to fit many PSFs',$
            '(sphot) to save the photomery',$
@@ -224,6 +225,12 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'qspec' OR status EQ 'QSPEC': begin
          quick_specsum,filel[slot]
+      end
+      status EQ 'cflat' OR status EQ 'CFLAT': begin
+         choose_flat,plotp
+      end
+      status EQ 'qflat' OR status EQ 'QFLAT': begin
+         ev_undefine_tag,plotp,'FLATFILE'
       end
       else: print,'Unrecognized Action'
    endcase
