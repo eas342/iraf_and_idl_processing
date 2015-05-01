@@ -9,6 +9,7 @@ nfile = n_elements(filel)
 
 for j=0l,nfile-1l do begin
    for i=0l,npt-1l do begin
+      fits_display,filel[j],plotp=plotp,linep=linep
       custbox = create_struct('Xcoor',photdat[i].XCEN + [-bsize,bsize],$
                               'Ycoor',photdat[i].YCEN + [-bsize,bsize])
       xlist = custBox.Xcoor[[0,1,1,0,0]]
