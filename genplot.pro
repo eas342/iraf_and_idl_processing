@@ -64,7 +64,8 @@ CASE uval of
 
 END
 
-PRO genplot,data,y,gparam=gparam,help=help,restore=restore
+PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
+            noinit=noinit
 ;; General plotter
 ;; gparam contains all the general plotting parameters
 ;; help - calls up the help file
@@ -109,6 +110,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore
                        /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
                       uvalue='YZTYPE',set_value=0,label_top='Y Default',/frame)
 
+
   ;; Adjust the legend with the legend widgets
   ;; Margin legend widget
   mLTog = cw_bgroup(legW,label_top='Margin for Legend?',$
@@ -126,7 +128,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore
 
   WIDGET_CONTROL, base, /REALIZE
 
-  disp_plot,data,y,gparam=gparam
+  if not keyword_set(noinit) then disp_plot,data,y,gparam=gparam
 
   widget_control, paramw, set_uvalue = gparam ;; save the plot parameters
   widget_control, base, set_uvalue = data
