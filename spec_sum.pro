@@ -22,7 +22,7 @@ ymod = fltarr(oArr.nord,oArr.xsize)
 xArr = findgen(oArr.xsize)
 
 for i=0l,oArr.nord-1l do begin
-   ymod[i,*] = poly(xArr,oArr.mc[i,*])
+   ymod[i,*] = poly(xArr,oArr.mc[i,*]) + pos
    startp = checkrange(ymod[i,*] - ap,0,oArr.ysize-1l)
    endp = checkrange(ymod[i,*] + ap,0,oArr.ysize-1l)
    if keyword_set(showAp) then begin
