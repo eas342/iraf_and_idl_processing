@@ -50,6 +50,7 @@ CASE uval of
     'MARGLEG': begin
        ev_add_tag,gparam,'NOMARGLEG',1 - ev.value
     end
+    'CFOLDER': spawn,'open .'
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -125,6 +126,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
                       uvalue='PSSIZE',set_value=1 - ev_tag_true(gparam,'PSSMALL'),$
                       label_top='Export Size',/frame)
   psPlot = WIDGET_BUTTON(psW, VALUE='Postscript Plot', UVALUE='PS')
+  psFold = WIDGET_BUTTON(psW, VALUE='Open in Finder', UVALUE='CFOLDER')
 
   WIDGET_CONTROL, base, /REALIZE
 

@@ -14,6 +14,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(ps) to plot and stop',$
            '(b)ox draw mode','(c)lear previous settings',$
            '(cf) to clear file list',$
+           '(cfolder) to open the current folder in finder',$
            '(fedit) to export filelist to a text file for editing',$
            '(fread) to read filelist that was made by fedit',$
            '(l)oad another parameter file.',$
@@ -139,6 +140,9 @@ while status NE 'q' and status NE 'Q' do begin
             status = 'o'
             skipaction=1
          endif
+      end
+      status EQ 'cfolder' OR status EQ 'CFOLDER': begin
+         spawn,'open .'
       end
       status EQ 'p' OR status EQ 'P': begin
          slot = fits_line_plot(fileL,lineP=lineP,current=slot,plotp=plotp)
