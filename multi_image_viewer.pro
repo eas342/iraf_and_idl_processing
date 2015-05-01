@@ -31,6 +31,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(sparam) to save the display parameters as custom filename',$
            '(rot)ation change','(maskedit) mask edit',$
            '(imcombine) image combine','(aedit) Edit Action List',$
+           '(nodsub) nod subtract image w/ next',$
            '(ckey) to choose a FITS keyword to print']
 naction = n_elements(actions)
 
@@ -105,6 +106,8 @@ while status NE 'q' and status NE 'Q' do begin
                        startslot=i
          endfor
       end
+      status EQ 'nodsub' Or status EQ 'NODSUB': $
+         nodsub,filel,plotp,lineP,slot
       status EQ 'maskedit' OR status EQ 'MASKEDIT': $
          maskedit,filel[slot],lineP,plotp
       status EQ 'imcombine' OR status EQ 'IMCOMBINE': $
