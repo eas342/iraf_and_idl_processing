@@ -33,13 +33,6 @@ case 1 of
 endcase
 
 
-if ev_tag_exist(plotp,'FLATFILE') then begin
-   f = mod_rdfits(plotp.flatfile,0,flathead,plotp=plotp)
-   nonz = where(f NE 0)
-   if nonz NE [-1] then begin
-      a[nonz] = a[nonz] / f[nonz]
-   endif
-endif
 
 if keyword_set(findscale) then begin
 ;; start cursor
