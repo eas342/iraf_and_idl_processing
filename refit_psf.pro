@@ -2,6 +2,12 @@ pro refit_psf,filel,linep,plotp=plotp,bsize=bsize
 ;; Runs the fit_psf script over all previous photometry points
 ;; bsize - contains the box size
 
+if ev_tag_exist(plotp,'BSIZE') then begin
+   bsize = plotp.bsize
+endif else begin
+   choose_bsize,plotp
+endelse
+
 restore,'ev_phot_data.sav'
 spawn,'mv ev_phot_data.sav ev_phot_data_backupfromRe.sav'
 npt = n_elements(photdat)

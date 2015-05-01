@@ -4,6 +4,12 @@ pro multi_fit_psf,filel,linep,plotp=plotp,bsize=bsize
 
 print,'Click on points to find PSF fits'
 
+if not ev_tag_exist(plotp,'BSIZE') then begin
+   choose_bsize,plotp
+endif
+bsize = plotp.bsize
+
+
 ;start cursor
 xcur = 0.3
 ycur = 0.8

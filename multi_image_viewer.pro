@@ -215,20 +215,23 @@ while status NE 'q' and status NE 'Q' do begin
          ev_add_tag,plotp,'KEYDISP',strtrim(gettok(temphead[keypar],'='),1)
          print,'Will display KEYWORD: ',plotp.keyDisp
       end
+      status EQ 'bsize' OR status EQ 'BSIZE': begin
+         choose_bsize,plotp
+      end
       status EQ 'fitpsf' OR status EQ 'FITPSF': begin
          fit_psf,fileL[slot],LineP,plotp=plotp
       end
       status EQ 'mfit' OR status EQ 'MFIT': begin
-         multi_fit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
+         multi_fit_psf,fileL[slot],LineP,plotp=plotp
       end
       status EQ 'sphot' OR status EQ 'SPHOT': begin
          save_phot
       end
       status EQ 'refit' OR status EQ 'REFIT': begin
-         refit_psf,fileL[slot],LineP,plotp=plotp,bsize=6
+         refit_psf,fileL[slot],LineP,plotp=plotp
       end
       status EQ 'allfit' OR status EQ 'ALLFIT': begin
-         refit_psf,fileL,LineP,plotp=plotp,bsize=6
+         refit_psf,fileL,LineP,plotp=plotp
       end
       status EQ 'qspec' OR status EQ 'QSPEC': begin
          quick_specsum,filel[slot]
