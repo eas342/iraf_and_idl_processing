@@ -12,6 +12,7 @@ endif else begin
    if fs EQ [''] then begin
       outName = filename
       print,'Saving variables/structures as ',filename
+      doChoose=0
    endif else doChoose=1
 endelse
 if doChoose then begin
