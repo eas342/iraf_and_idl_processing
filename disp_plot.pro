@@ -149,7 +149,7 @@ serArr = indgen(nser + 1) + min(dat.(serTag))
 colArr = myarraycol(nser,psversion=ev_tag_true(gparam,'PS'))
 
 if ev_tag_exist(gparam,'PSYM') then begin
-   plotsym,0
+   plotsym,0,thick=thick
    if gparam.psym[0] EQ 1 then begin
       mypsym=8 + fltarr(nser)
    endif else begin
