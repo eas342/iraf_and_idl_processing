@@ -10,7 +10,11 @@ function toggle_fits,fileL,plotp=plotp,lineP=lineP,$
      if ev_tag_exist(plotp,'KEYDISP') then begin
         temphead = headfits(fileL[i])
         if n_elements(temphead) GT 1 then begin
-           print,fxpar(temphead,plotp.keyDisp)
+           nkey = n_elements(plotp.keyDisp)
+           for i=0l,nkey-1l do begin
+              if i EQ nkey-1l then fmt='(A)' else fmt='(A," ",$)'
+              print,fxpar(temphead,plotp.keyDisp[i]),format=fmt
+           endfor
         endif else begin
            print,"Invalid header found"
         endelse

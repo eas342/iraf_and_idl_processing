@@ -6,13 +6,18 @@ if keyword_set(action) then txtnm='action_list.txt' else begin
 endelse
   if ev_tag_exist(plotp,'KEYDISP') then begin
      nfile = n_elements(filel)
-     HeadArr = strarr(nfile)
      openw,1,txtnm
+     nkeys = n_elements(plotp.keydisp)
+     nameLength = max(strlen(filel))
      for i=0l,nfile-1l do begin
         temphead = headfits(filel[i])
+        printf,1,filel[i],format='(A'+strtrim(nameLength,1)+'," ",$)'
         if n_elements(temphead) GT 1 then begin
-           HeadArr[i] = string(fxpar(temphead,plotp.keydisp))
-           printf,1,filel[i],headArr[i],format='(A," ",A)'
+           for j=0l,nkeys-1l do begin
+              if j EQ nkeys-1l then fmt='(A)' else fmt='(A,$)'
+              HeadVal = string(fxpar(temphead,plotp.keydisp[j]))
+              printf,1,headVal,format=fmt
+           endfor
         endif else begin
            print,'Bad header found'
            printf,1,filel[i]
