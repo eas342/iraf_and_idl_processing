@@ -56,7 +56,7 @@ Later you can plot with genplot or disp_plot
 An easy way to stop in a loop is to call genplot and test the quit keyword
 for i=0l, ntot-1l do begin
     genplot,dat,gparam=gparam
-    if quit_caught() then return
+    	
 endfor
 
 ********* Drawing Lines       ********
