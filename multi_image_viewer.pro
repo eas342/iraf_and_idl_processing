@@ -204,16 +204,7 @@ while status NE 'q' and status NE 'Q' do begin
          print,''
       end
       status EQ 'ckey' OR status EQ 'CKEY': begin
-         keypar = ''
-         temphead = headfits(fileL[slot])
-         nkeys = n_elements(temphead)
-         for i=0l,nkeys-1l do begin
-            print,nkeys-1l - i,temphead[nkeys-1l - i],format='(I03," ",A70)'
-         endfor
-         print,'Choose a FITS keyword to print'
-         read,keypar
-         ev_add_tag,plotp,'KEYDISP',strtrim(gettok(temphead[keypar],'='),1)
-         print,'Will display KEYWORD: ',plotp.keyDisp
+         choose_key,fileL[slot],plotp
       end
       status EQ 'bsize' OR status EQ 'BSIZE': begin
          choose_bsize,plotp
