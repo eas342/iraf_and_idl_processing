@@ -45,7 +45,7 @@ if n_elements(Nsig) EQ 0 then Nsig=4
                          mask EQ 0,complement=badp)
         endelse
      endelse
-     if goodp NE [-1] then begin
+     if n_elements(goodp) GT Npoly + 1l then begin
         if array_equal(x[goodp],x[goodp[0]]) then begin
            ;; Give up if all x points are the same
            polyMod = fltarr(Npoly+1l)
