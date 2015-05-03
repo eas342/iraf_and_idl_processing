@@ -6,6 +6,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rfa) read a set of files with a filter',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(fullscale) to use min/max for scaling',$
+           '(ref #) to refesh the last #',$
            '(h)elp prints the commands',$
            '(t)oggle image mode','(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
@@ -50,6 +51,7 @@ while status NE 'q' and status NE 'Q' do begin
    nfile = n_elements(fileL)
    skipaction = 0
    if n_elements(slot) EQ 0 then slot = nfile-1l
+   splitStatus = strsplit(status,' ',/extract)
    case 1 of
       status EQ 'r' OR status EQ 'R' OR $
          status EQ 'o' OR status EQ 'O' OR $
@@ -83,6 +85,9 @@ while status NE 'q' and status NE 'Q' do begin
             slot = n_elements(fileL)-1l
             fits_display,filel[slot],plotp=plotp,lineP=lineP
          endelse
+      end
+      splitstatus[0] EQ 'ref': begin
+         refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot
       end
       status EQ 's' OR status EQ 'S': begin
          fits_display,filel[slot],/findscale,plotp=plotp,lineP=lineP
