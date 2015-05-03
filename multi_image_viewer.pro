@@ -29,7 +29,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
-           '(qspec) to extract a quick spectrum',$
+           '(qspec # #) to extract a quick spectrum with #ap #pos',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
            '(rot)ation change','(maskedit) mask edit',$
@@ -239,8 +239,9 @@ while status NE 'q' and status NE 'Q' do begin
          refit_psf,fileL,LineP,plotp=plotp
       end
       status EQ 'cphot' OR status EQ 'CPHOT': clear_phot
-      status EQ 'qspec' OR status EQ 'QSPEC': begin
-         quick_specsum,filel[slot]
+      splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
+         quick_specsum,filel[slot],float(splitstatus[1]),$
+                       float(splitstatus[2]),plotp=plotp
       end
       status EQ 'cflat' OR status EQ 'CFLAT': begin
          choose_flat,plotp

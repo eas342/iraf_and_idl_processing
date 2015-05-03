@@ -1,4 +1,4 @@
-pro quick_specsum,filen,ap,pos,hydr=hydr
+pro quick_specsum,filen,ap,pos,hydr=hydr,plotp=plotp
 ;; Quickly extracts a spectrum for a given aperature size and position
 ;; hydr - show the hydrogen lines
 
@@ -7,7 +7,6 @@ if n_elements(pos) EQ 0 then pos=0E
 
 restore,reduction_dir()+'/data/ts4_order_coeff.sav'
 
-plotp = create_struct('ROT',1)
 yp = spec_sum(filen,ap,pos,plotp=plotp,/showap)
 
 np = n_elements(yp)
