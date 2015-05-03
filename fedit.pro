@@ -1,9 +1,13 @@
-pro fedit,filel,plotp=plotp,action=action
+pro fedit,filel,plotp=plotp,action=action,$
+          custnm=custnm
 ;; Opens a file list for viewing
 
-if keyword_set(action) then txtnm='action_list.txt' else begin
-   txtnm = 'ev_local_display_filelist.txt'
-endelse
+case 1 of
+   n_elements(custnm) GT 0: txtnm=custnm
+   keyword_set(action): txtnm='action_list.txt'
+   else: txtnm = 'ev_local_display_filelist.txt'
+endcase
+
   if ev_tag_exist(plotp,'KEYDISP') then begin
      nfile = n_elements(filel)
      openw,1,txtnm
