@@ -70,13 +70,6 @@ endif else begin
    if type EQ 7 then begin
       fileDescrip = input
    endif else fileDescrip = 'NONE'
-   if ev_tag_exist(plotp,'KEYDISP') then begin
-      KeyVal = fxpar(header,plotp.KEYDISP)
-      KeyPar = strtrim(plotp.KEYDISP,1)
-   endif else begin
-      KeyPar = 'NONE'
-      KeyVal = 'NONE'
-   endelse
 
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
@@ -84,8 +77,14 @@ endif else begin
                               'MiFWHM',minorF,$
                               'XCEN',fitp[4],$
                               'YCEN',fitp[5],'THETA',cortheta,$
-                              'KEY',KEYPAR,'VAL',KeyVal,$
                               'FILEN',fileDescrip)
+   if ev_tag_exist(plotp,'KEYDISP') then begin
+      nkey = n_elements(plotp.KEYDISP)
+      for i=0l,nkey-1l do begin
+         ev_add_tag,singlephot,$
+                    strtrim(plotp.KEYDISP[i],1),fxpar(header,plotp.KEYDISP[i])
+      endfor
+   endif
 
    if not keyword_set(noplot) then begin
       xprime = (X - fitp[4])*cos(fitp[6]) - (Y - fitp[5])*sin(fitp[6])
