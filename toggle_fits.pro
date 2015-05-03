@@ -11,9 +11,9 @@ function toggle_fits,fileL,plotp=plotp,lineP=lineP,$
         temphead = headfits(fileL[i])
         if n_elements(temphead) GT 1 then begin
            nkey = n_elements(plotp.keyDisp)
-           for i=0l,nkey-1l do begin
-              if i EQ nkey-1l then fmt='(A)' else fmt='(A," ",$)'
-              print,fxpar(temphead,plotp.keyDisp[i]),format=fmt
+           for j=0l,nkey-1l do begin
+              if j EQ nkey-1l then fmt='(A)' else fmt='(A," ",$)'
+              print,fxpar(temphead,plotp.keyDisp[j]),format=fmt
            endfor
         endif else begin
            print,"Invalid header found"
