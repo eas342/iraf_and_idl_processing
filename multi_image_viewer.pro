@@ -88,7 +88,7 @@ while status NE 'q' and status NE 'Q' do begin
          endelse
       end
       splitstatus[0] EQ 'ref': begin
-         refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot
+         refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot,/display
       end
       status EQ 's' OR status EQ 'S': begin
          fits_display,filel[slot],/findscale,plotp=plotp,lineP=lineP
