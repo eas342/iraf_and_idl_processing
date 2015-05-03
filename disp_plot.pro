@@ -163,7 +163,7 @@ for i=0l,nser-1l do begin
                   dat.(serTag) LT serArr[i+1])
    nserInd = n_elements(serInd)
    if serInd NE [-1] then begin
-      oplot,dat[serInd].(Xind),dat[serInd].(Yind),$
+      oplot,[dat[serInd].(Xind)],[dat[serInd].(Yind)],$
            color=colArr[i],thick=thick,psym=mypsym[i]
       if ev_tag_exist(gparam,'YERR') OR ev_tag_exist(gparam,'XERR') then begin
          if not ev_tag_exist(gparam,'XERR') then begin
@@ -199,7 +199,7 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
              color=colArr,charsize=LegCharsize,$
-             position=legPos
+             position=legPos,psym=mypsym
 endif
 
 ;; Draw extra lines from the edat (extra data structure)
