@@ -33,7 +33,9 @@ actions = ['(q)uit','(r)ead new file',$
            '(rot)ation change','(maskedit) mask edit',$
            '(imcombine) image combine','(aedit) Edit Action List',$
            '(nodsub) nod subtract image w/ next',$
-           '(ckey) to choose a FITS keyword to print']
+           '(ckey) to choose a FITS keyword to print',$
+           '(keyedit) to edit the FITS keywords',$
+           '(keyread) to read the FITS keyword list']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -203,8 +205,14 @@ while status NE 'q' and status NE 'Q' do begin
          endfor
          print,''
       end
-      status EQ 'ckey' OR status EQ 'CKEY': begin
+      status EQ 'ckey' OR status EQ 'CKEY': $
          choose_key,fileL[slot],plotp
+      status EQ 'keyedit' OR status EQ 'KEYEDIT': $
+         if ev_tag_exist(plotp,'KEYDISP') then $
+            fedit,plotp.keydisp,custnm='keyword_list.txt'
+      status EQ 'keyread' OR status EQ 'KEYREAD': begin
+         readcol,'keyword_list.txt',quickkey,format='(A)'
+         ev_add_tag,plotp,'KEYDISP',quickkey
       end
       status EQ 'bsize' OR status EQ 'BSIZE': begin
          choose_bsize,plotp
