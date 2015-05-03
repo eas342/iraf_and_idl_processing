@@ -28,6 +28,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(sphot) to save the photomery',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
+           '(cphot) to clear photometry',$
            '(qspec) to extract a quick spectrum',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
@@ -237,6 +238,7 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'allfit' OR status EQ 'ALLFIT': begin
          refit_psf,fileL,LineP,plotp=plotp
       end
+      status EQ 'cphot' OR status EQ 'CPHOT': clear_phot
       status EQ 'qspec' OR status EQ 'QSPEC': begin
          quick_specsum,filel[slot]
       end

@@ -9,7 +9,7 @@ endif else begin
 endelse
 
 restore,'ev_phot_data.sav'
-spawn,'mv ev_phot_data.sav ev_phot_data_backupfromRe.sav'
+clear_phot
 npt = n_elements(photdat)
 nfile = n_elements(filel)
 
