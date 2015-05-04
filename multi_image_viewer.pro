@@ -35,6 +35,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rot)ation change','(maskedit) mask edit',$
            '(imcombine) image combine','(aedit) Edit Action List',$
            '(nodsub) nod subtract image w/ next',$
+           '(head) to show FITS header',$
            '(ckey) to choose a FITS keyword to print',$
            '(keyedit) to edit the FITS keywords',$
            '(keyread) to read the FITS keyword list']
@@ -211,6 +212,7 @@ while status NE 'q' and status NE 'Q' do begin
          endfor
          print,''
       end
+      status EQ 'head' OR status EQ 'HEAD': showhead,fileL[slot]
       status EQ 'ckey' OR status EQ 'CKEY': $
          choose_key,fileL[slot],plotp
       status EQ 'keyedit' OR status EQ 'KEYEDIT': $
