@@ -18,7 +18,7 @@ endcase
         printf,1,filel[i],format='(A'+strtrim(nameLength,1)+'," ",$)'
         if n_elements(temphead) GT 1 then begin
            for j=0l,nkeys-1l do begin
-              if j EQ nkeys-1l then fmt='(A)' else fmt='(A,$)'
+              if j EQ nkeys-1l then fmt='(A)' else fmt='(A," ",$)'
               HeadVal = string(fxpar(temphead,plotp.keydisp[j]))
               printf,1,headVal,format=fmt
            endfor
