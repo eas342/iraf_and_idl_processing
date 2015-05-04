@@ -32,6 +32,7 @@ function toggle_fits,fileL,plotp=plotp,lineP=lineP,$
   !MOUSE.button=1
   ;; make sure slot is defined, otherwise it produces an IDl error
   if n_elements(slot) EQ 0 then slot=0 
+  spawn,'open -a Terminal'
 return,slot
 
 end
