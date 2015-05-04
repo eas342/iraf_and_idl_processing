@@ -212,7 +212,9 @@ while status NE 'q' and status NE 'Q' do begin
          endfor
          print,''
       end
-      status EQ 'head' OR status EQ 'HEAD': showhead,fileL[slot]
+      status EQ 'head' OR status EQ 'HEAD': begin
+         showhead,fileL[slot]
+      end
       status EQ 'ckey' OR status EQ 'CKEY': $
          choose_key,fileL[slot],plotp
       status EQ 'keyedit' OR status EQ 'KEYEDIT': $

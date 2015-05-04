@@ -5,6 +5,7 @@ widget_control, ev.top, get_uvalue= filen ;; retrieve the filename
 CASE uval of
     'DONE': begin
        WIDGET_CONTROL, ev.TOP, /DESTROY
+       spawn,'open -a Terminal'
        return
     end
  ENDCASE
@@ -31,5 +32,5 @@ outL = [filen,hd]
   WIDGET_CONTROL, base, /REALIZE
 
 ;  widget_control, paramw, set_uvalue = plotp ;; save the plot parameters
-  XMANAGER, 'showhead', base,/no_block
+  XMANAGER, 'showhead', base;,/no_block
 END
