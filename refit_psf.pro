@@ -8,7 +8,11 @@ endif else begin
    choose_bsize,plotp
 endelse
 
-restore,'ev_phot_data.sav'
+fn = 'ev_phot_data.sav'
+if file_exists(fn) then restore,fn else begin
+   print,'no previous phot file found'
+   return
+endelse
 clear_phot
 npt = n_elements(photdat)
 nfile = n_elements(filel)
