@@ -236,6 +236,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'sphot' OR status EQ 'SPHOT': begin
          save_phot
       end
+      status EQ 'qfoc' OR status EQ 'QFOC': begin
+         quick_foc,filel,plotp,linep,slot
+      end
       status EQ 'refit' OR status EQ 'REFIT': begin
          refit_psf,fileL[slot],LineP,plotp=plotp
       end
