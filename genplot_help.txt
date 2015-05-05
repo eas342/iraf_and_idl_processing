@@ -67,3 +67,15 @@ VERTSTYLES - an array of line styles for an array of vertical lines
 HORSTYLES - an array of line styles for an array of horizontal lines
 
 
+********* Adding Text         ********
+Use a second structure in call to genplot (edat)
+TEXT - an array of strings
+XYTEXT - the fractional positions (from top/bottom) of the text
+print,'Best FWHM= ',outdat.bestFWHM
+print,'Best Focus= ',outdat.bestfoc
+ftext = ['Best Focus = '+strtrim(outdat.bestfoc,1),$
+        'Best FWHM = '+strtrim(outdat.bestFWHM,1)]
+edat = create_struct('TEXT',ftext,'XYTEXT',$
+                     [[0.5,0.9],[0.5,0.8]])
+
+genplot,dat,edat,gparam=gparam

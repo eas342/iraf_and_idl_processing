@@ -202,6 +202,12 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
              position=legPos,psym=mypsym
 endif
 
+;; Find the !x.cranges corrected for log scales
+
+if xlog then myXcrange=10E^(!x.crange) else myXcrange=!x.crange
+if ylog then myYcrange=10E^(!y.crange) else myYcrange=!y.crange
+
+
 ;; Draw extra lines from the edat (extra data structure)
 for j=0l,1l do begin
    if j EQ 0 then begin
@@ -220,19 +226,29 @@ for j=0l,1l do begin
       for i=0l,nline-1l do begin
          if j EQ 0 then begin
             xdraw = edat.(lineindex)[i] * [1D,1D]
-            ydraw = !y.crange
+            ydraw = myYcrange
          endif else begin
-            xdraw = !x.crange
+            xdraw = myXcrange
             ydraw = edat.(lineindex)[i] * [1D,1D]
          endelse
-         if xlog then xdraw = 10E^(xdraw)
-         if ylog then ydraw = 10E^(ydraw)
          oplot,xdraw,ydraw,color=linecols[i],$
             linestyle=mylstyle[i]
       endfor
    endif
 endfor
 
+if ev_tag_exist(edat,'TEXT') then begin
+   ntexts = n_elements(edat.text)
+   if ev_tag_exist(edat,'XYTEXT') then begin
+      if ntexts * 2 EQ n_elements(edat.xytext) then begin
+         xtxt = (myXcrange[1] - myXcrange[0]) * edat.xytext[0,*] + myXcrange[0]
+         ytxt = (myYcrange[1] - myYcrange[0]) * edat.xytext[1,*] + myYcrange[0]
+         for i=0l,ntexts-1l do begin
+            xyouts,xtxt,ytxt,edat.text
+         endfor
+      endif
+   endif
+endif
 
 if ev_tag_true(gparam,'PS') then begin
    device, /close
