@@ -1,4 +1,5 @@
-pro disp_plot,X,Y,gparam=gparam,restore=restore
+pro disp_plot,X,Y,gparam=gparam,restore=restore,$
+              preponly=preponly,dat=dat,edat=edat
 ;; Generalized plotter that is flexible and doesn't require
 ;; re-writing code
 ;; Ideally everything is in a structure data and all plot parameters
@@ -9,6 +10,8 @@ pro disp_plot,X,Y,gparam=gparam,restore=restore
 ;;                       'SERIES','ORD','SLABEL','Order')
 ;;disp_plot,yp,gparam=gparam
 ;; will plot spectra colored by series
+;; Preponly will prepare the gparam and data correctly but do no
+;; plotting
 
 ;; If asked to restore previous settings
 if keyword_set(restore) then begin
@@ -64,16 +67,17 @@ if type NE 8 then begin
       ;; if only one array is input, assume that x is an index array
       ;; and y is the input array
       dat = struct_arrays(create_struct('INDEX',findgen(npt),'ARR',X))
-      ev_add_tag,gparam,'PKEYS',['INDEX','ARR']
+      ev_add_tag,gparam,'PKEYS',['INDEX','ARR'],/noerase
    endif else begin
       dat = struct_arrays(create_struct('X',X,'Y',Y))
-      ev_add_tag,gparam,'PKEYS',['X','Y']
+      ev_add_tag,gparam,'PKEYS',['X','Y'],/noerase
    endelse
 endif else begin
    dat = x
    if n_elements(Y) NE 0 then edat = Y
 endelse
 tags = tag_names(dat)
+
 
 if not ev_tag_exist(gparam,'PKEYS') then begin
    ev_add_tag,gparam,'PKEYS',[tags[0],tags[1]]
@@ -83,14 +87,27 @@ if not ev_tag_exist(gparam,'TITLES') then begin
    ev_add_tag,gparam,'TITLES',[gparam.PKEYS,'']
 endif
 
-XInd = where(gparam.PKEYS[0] EQ tags)
-YInd = where(gParam.PKEYS[1] EQ tags)
+DataInd = key_indices(dat,gparam)
 if ev_tag_exist(gparam,'YERR') then begin
    YerrInd = where(gparam.yerr EQ tags)
 endif
 if ev_tag_exist(gparam,'XERR') then begin
    XerrInd = where(gparam.xerr EQ tags)
 endif
+; Check if the arrays are strings and if so convert them to floats
+for i=0l,1l do begin
+   if size(dat.(dataInd[i]),/type) EQ 7 then begin
+      newArr = float(dat.(dataInd[i]))
+      ev_undefine_tag,dat,gparam.pkeys[i]
+      ev_add_tag,dat,gparam.pkeys[i],newArr 
+      ;; the undefining and re-adding the field will re-order the
+      ;; indices so you need to redo them
+      ;; find the new indices
+      DataInd = key_indices(dat,gparam)
+      tags = tag_names(dat)
+   endif
+endfor
+
 
 if not ev_tag_exist(gparam,'GFLAG') then begin
    gflag = intarr(npt) + 1
@@ -107,26 +124,15 @@ if ev_tag_exist(gparam,'ZOOMBOX') then begin
    myYrange = gparam.zoombox[0:1,1]
 endif else begin
    if ev_tag_exist(gparam,'XTHRESH') then begin
-      myXrange = threshold(dat.(Xind),mult=0.1)
-   endif else myXrange = [min(dat.(Xind)),max(dat.(Xind))]
+      myXrange = threshold(dat.(DataInd[0]),mult=0.1)
+   endif else myXrange = [min(dat.(DataInd[0])),max(dat.(DataInd[0]))]
    if ev_tag_exist(gparam,'YTHRESH') then begin
-      myYrange = threshold(dat.(Yind))
-   endif else myYrange = [min(dat.(Yind)),max(dat.(Yind))]
+      myYrange = threshold(dat.(DataInd[1]))
+   endif else myYrange = [min(dat.(DataInd[1])),max(dat.(DataInd[1]))]
 endelse
 
 if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
 if ev_tag_exist(gparam,'YLOG') then Ylog=1 else Ylog=0
-
-plot,dat.(Xind),dat.(Yind),$
-     ystyle=1,xstyle=1,$
-     xtitle=gparam.TITLES[0],$
-     ytitle=gparam.TITLES[1],$
-     title=gparam.TITLES[2],$
-     xrange=myXrange,$
-     yrange=myYrange,/nodata,$
-     xmargin=xmargin,thick=thick,$
-     xthick=thick,ythick=thick,$
-     xlog=xlog,ylog=ylog
 
 if not ev_tag_exist(gparam,'SERIES') then begin
    ;; if no series specified, use all points
@@ -157,13 +163,27 @@ if ev_tag_exist(gparam,'PSYM') then begin
    endelse
 endif else mypsym=fltarr(nser)
 
+;; Preponly will prepare the gparam and data correctly but do no plotting
+if keyword_set(preponly) then return
+
 ;; Plot the data as a function of series
+plot,dat.(DataInd[0]),dat.(DataInd[1]),$
+     ystyle=1,xstyle=1,$
+     xtitle=gparam.TITLES[0],$
+     ytitle=gparam.TITLES[1],$
+     title=gparam.TITLES[2],$
+     xrange=myXrange,$
+     yrange=myYrange,/nodata,$
+     xmargin=xmargin,thick=thick,$
+     xthick=thick,ythick=thick,$
+     xlog=xlog,ylog=ylog
+
 for i=0l,nser-1l do begin
    serInd = where(dat.(serTag) GE serArr[i] and $
                   dat.(serTag) LT serArr[i+1])
    nserInd = n_elements(serInd)
    if serInd NE [-1] then begin
-      oplot,[dat[serInd].(Xind)],[dat[serInd].(Yind)],$
+      oplot,[dat[serInd].(DataInd[0])],[dat[serInd].(DataInd[1])],$
            color=colArr[i],thick=thick,psym=mypsym[i]
       if ev_tag_exist(gparam,'YERR') OR ev_tag_exist(gparam,'XERR') then begin
          if not ev_tag_exist(gparam,'XERR') then begin
@@ -172,7 +192,7 @@ for i=0l,nser-1l do begin
          if not ev_tag_exist(gparam,'YERR') then begin
             yerr = fltarr(nserInd)
          endif else yerr = dat[serInd].(YerrInd)
-         oploterror,dat[serInd].(Xind),dat[serInd].(Yind),$
+         oploterror,dat[serInd].(DataInd[0]),dat[serInd].(DataInd[1]),$
                     xerr,yerr,$
                color=colArr[i],thick=thick
       endif
@@ -196,6 +216,7 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
       if xlog then legPos[0] = 10E^(legPos[0])
       if ylog then legPos[1] = 10E^(legPos[1])
    endelse
+
    al_legend,serLab,$
              linestyle=0,thick=thick,bthick=thick,$
              color=colArr,charsize=LegCharsize,$

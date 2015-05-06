@@ -8,25 +8,27 @@
 ;
 PRO genplot_event, ev
 WIDGET_CONTROL, ev.ID, GET_UVALUE=uval ;; retrieve button stuff
-widget_control, ev.top, get_uvalue= dat ;; retrieve the data
+widget_control, ev.top, get_uvalue= data ;; retrieve the data
 ;; Get the widget id of the widget base storing parameter info
 idParam = widget_info(ev.top,find_by_uname="paramw")
 widget_control, idParam, get_uvalue= gparam
 idY = widget_info(ev.top,find_by_uname="ywidget")
 widget_control, idY, get_uvalue= Y
+disp_plot,data,y,gparam=gparam,dat=dat,edat=edat,/preponly
+dattags = tag_names(dat)
 
 CASE uval of
-    'REPLOT':  disp_plot,dat,y,gparam=gparam
+    'REPLOT':  disp_plot,data,y,gparam=gparam
     'PS'    :  begin
        ev_add_tag,gparam,'PS',1
-       disp_plot,dat,y,gparam=gparam
+       disp_plot,data,y,gparam=gparam
        gparam.ps = 0
     end
     'PSSIZE':  ev_add_tag,gparam,'PSSMALL',ev.value
-    'ZOOM'  :  get_zoom,dat,y,plotp=gparam,/plotmode
-    'RZOOM' :  get_zoom,dat,y,plotp=gparam,/plotmode,/rzoom
+    'ZOOM'  :  get_zoom,data,y,plotp=gparam,/plotmode
+    'RZOOM' :  get_zoom,data,y,plotp=gparam,/plotmode,/rzoom
     'SCALE' : begin
-       disp_plot,dat,gparam=gparam,/psplot
+       disp_plot,data,gparam=gparam,/psplot
     end
     'XZTYPE' : begin
        if ev.value EQ 1 then begin
@@ -45,13 +47,21 @@ CASE uval of
        spawn,'open -a Terminal'
        return
     end
-    'SAVEDAT': check_idlsave,dat,y,gparam,filename='es_plot_data.save',$
+    'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.save',$
                             varnames=['dat','y','gparam']
-    'MOVELEG': cmove_legend,dat,gparam=gparam
+    'MOVELEG': cmove_legend,data,gparam=gparam
     'MARGLEG': begin
        ev_add_tag,gparam,'NOMARGLEG',1 - ev.value
     end
     'CFOLDER': spawn,'open .'
+    'XCHOICE': begin
+       gparam.PKEYS[0] = dattags[ev.index]
+       gparam.TITLES[0] = gparam.PKEYS[0]
+    end
+    'YCHOICE': begin
+       gparam.PKEYS[1] = dattags[ev.index]
+       gparam.TITLES[1] = gparam.PKEYS[1]
+    end
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -60,7 +70,7 @@ CASE uval of
     end
  ENDCASE
 ;; Save changes to the data & plot parameters
-  widget_control, ev.top, set_uvalue = dat
+  widget_control, ev.top, set_uvalue = data
   widget_control, idParam, set_uvalue = gparam ;; save the plot parameters
   widget_control, idY, set_uvalue = y ;; save the y data
 
@@ -86,11 +96,27 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
      endif
   endif
   
-  base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
-  cntl = widget_base(base, /column,/frame) ;; Plot control widget
-  zoomW = widget_base(base,/column,/frame) ;; base for zoom parameters
-  legW = widget_base(base,/column,/frame) ;; base for legend parameters
-  psW = widget_base(base,/column,/frame) ;; base for postscript/png output options
+  ;; Prepare the data correctly (like at parameter keys, create a data
+  ;; structure, etc.)
+
+  disp_plot,data,y,gparam=gparam,/preponly,dat=dat,edat=edat
+  datTags = tag_names(dat)
+
+  base = WIDGET_BASE(/column) ;; base to store groups of buttons
+
+  topR = widget_base(base,/row) ;; base to store top row of controls
+  cntl = widget_base(topR, /column,/frame) ;; Plot control widget
+  zoomW = widget_base(topR,/column,/frame) ;; base for zoom parameters
+  legW = widget_base(topR,/column,/frame) ;; base for legend parameters
+  psW = widget_base(topR,/column,/frame) ;; base for postscript/png output options
+
+  nextR = widget_base(base,/row) ;; base to store next row of controls
+  xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
+
+  xchoice = widget_droplist(xychoiceB,title='X Choice',$
+                           UVALUE='XCHOICE',VALUE=dattags,uname='XCHOICE')
+  ychoice = widget_droplist(xychoiceB,title='Y Choice',$
+                           UVALUE='YCHOICE',VALUE=dattags,uname='YCHOICE')
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
@@ -137,5 +163,10 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   widget_control, paramw, set_uvalue = gparam ;; save the plot parameters
   widget_control, base, set_uvalue = data
   widget_control, ywidget, set_uvalue = y ;; save the y data
+
+  ;; Start the initial parameters correctly
+
+  update_widgets,base,dat,edat,gparam
+
   XMANAGER, 'genplot', base
 END
