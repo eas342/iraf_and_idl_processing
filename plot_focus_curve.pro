@@ -44,6 +44,7 @@ for i=0l,ngroup-1l do begin
                    photdat.MAFWHM LT maxFWHM)
 
       if n_elements(binp) GT 3 then begin
+
          tempst = photdat[binp]
          xshow = tempst.ftelfocus
          fitpol = ev_robust_poly(xshow,tempst.MAFWHM,2,nsig=3)
@@ -52,7 +53,6 @@ for i=0l,ngroup-1l do begin
 
          ev_oplot,tempst,xmodel,ymodel,gparam=gparam
          
-         if quit_caught() then return
 
          outdat = create_struct('xbin',binmid[i,0],'ybin',binmid[j,1],$
                                 'bestfoc',-fitpol[1]/(2E * fitpol[2]),$
@@ -70,7 +70,11 @@ for i=0l,ngroup-1l do begin
          edat = create_struct('TEXT',ftext,'XYTEXT',$
                               [[0.5,0.9],[0.5,0.8]])
 
-         if keyword_set(showp) then genplot,tempst,edat,gparam=gparam
+         if keyword_set(showp) then begin
+            genplot,tempst,edat,gparam=gparam
+            if quit_caught() then return
+         endif
+
       endif
    endfor
 endfor
