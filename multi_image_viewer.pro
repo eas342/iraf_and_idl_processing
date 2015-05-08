@@ -105,7 +105,7 @@ while status NE 'q' and status NE 'Q' do begin
          if slot GT n_elements(filel) -1l then slot=0
       end
       status EQ 't' OR status EQ 'T': begin
-         slot = toggle_fits(fileL,plotp=plotp,lineP=lineP,startslot=slot)
+         toggle_fits,fileL,plotp=plotp,lineP=lineP,slot=slot
       end
       status EQ 'save' OR status EQ 'SAVE': begin
          save_image,fileL,plotp=plotp,lineP=lineP,startslot=slot
