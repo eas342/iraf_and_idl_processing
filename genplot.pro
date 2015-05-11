@@ -62,6 +62,9 @@ CASE uval of
        gparam.PKEYS[1] = dattags[ev.index]
        gparam.TITLES[1] = gparam.PKEYS[1]
     end
+    'SERCHOICE': begin
+       gparam.SERIES = dattags[ev.index]
+    end
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -111,12 +114,15 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   psW = widget_base(topR,/column,/frame) ;; base for postscript/png output options
 
   nextR = widget_base(base,/row) ;; base to store next row of controls
-  xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
 
+  ;; Allow the user to choose data points
+  xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
   xchoice = widget_droplist(xychoiceB,title='X Choice',$
                            UVALUE='XCHOICE',VALUE=dattags,uname='XCHOICE')
   ychoice = widget_droplist(xychoiceB,title='Y Choice',$
                            UVALUE='YCHOICE',VALUE=dattags,uname='YCHOICE')
+  serChoice = widget_droplist(xychoiceB,title='Series Choice',$
+                           UVALUE='SERCHOICE',VALUE=dattags,uname='SERCHOICE')
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
