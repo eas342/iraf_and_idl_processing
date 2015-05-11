@@ -19,7 +19,7 @@ function key_indices,dat,gparam
         keyLookName = gparam.SERIES
      endelse
      keyfind = where(dattags EQ keyLookName)
-     if n_elements(keyFind) EQ 0 then begin
+     if keyFind EQ [-1] then begin
         message,'Key ',keyLookName,' not found',/continue
      endif else initKeys[i] = keyfind[0]
   endfor
