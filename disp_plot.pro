@@ -143,14 +143,21 @@ if gparam.series EQ 'ALLPT' then begin
    ev_add_tag,dat,'ALLPT',intarr(npt) + 1
    tags = tag_names(dat)
 endif
-serTag = where(gParam.SERIES EQ tags)
-if serTag EQ [-1] then begin
+if not ev_tag_exist(dat,gParam.SERIES,index=serTag) then begin
    print,'********Series tag not found**********'
    return
 endif
-nser = max(dat.(serTag)) - min(dat.(serTag)) + 1;; number of series
-serArr = indgen(nser + 1) + min(dat.(serTag))
-;; later I may have it specified differently for non-integers
+
+if not ev_tag_exist(dat,'ROUNDSER') then begin 
+  ev_add_tag,gparam,'ROUNDSER',1 ;; default to rounding by 1
+endif
+
+;; Round and organize the groups of series to plot
+rlist= ev_round(float(dat.(serTag)),gparam.roundser);; rounded list
+srlist = rlist[sort(rlist)] ;; sorted, rounted list
+uniql = uniq(srlist) ;; unique elements in the rounded sorted list
+serArr = srlist[uniql] ;; final array that is unique, sorted and rounded
+nser = n_elements(uniql)
 
 colArr = myarraycol(nser,psversion=ev_tag_true(gparam,'PS'))
 
@@ -179,8 +186,7 @@ plot,dat.(DataInd[0]),dat.(DataInd[1]),$
      xlog=xlog,ylog=ylog
 
 for i=0l,nser-1l do begin
-   serInd = where(dat.(serTag) GE serArr[i] and $
-                  dat.(serTag) LT serArr[i+1])
+   serInd = where(rlist EQ serArr[i])
    nserInd = n_elements(serInd)
    if serInd NE [-1] then begin
       oplot,[dat[serInd].(DataInd[0])],[dat[serInd].(DataInd[1])],$
