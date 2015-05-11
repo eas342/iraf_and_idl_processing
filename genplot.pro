@@ -65,6 +65,15 @@ CASE uval of
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
     end
+    'ROUNDSER': begin
+       idSerRound = widget_info(ev.top,find_by_uname="ROUNDSER")
+       if ev_tag_exist(gparam,'ROUNDSER') then begin
+          widget_control,idSerRound,get_value=newRound
+          print,newRound
+          gparam.ROUNDSER = float(newRound)
+       endif else print,'No series rounding parameter found.'
+
+    end
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
@@ -121,8 +130,10 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
                            UVALUE='XCHOICE',VALUE=dattags,uname='XCHOICE')
   ychoice = widget_droplist(xychoiceB,title='Y Choice',$
                            UVALUE='YCHOICE',VALUE=dattags,uname='YCHOICE')
-  serChoice = widget_droplist(xychoiceB,title='Series Choice',$
+  serWidg = widget_base(xychoiceB,/row)
+  serChoice = widget_droplist(serWidg,title='Series Choice',$
                            UVALUE='SERCHOICE',VALUE=dattags,uname='SERCHOICE')
+  roundSer = widget_text(serWidg,value='1',uvalue='ROUNDSER',uname='ROUNDSER',/editable)
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
