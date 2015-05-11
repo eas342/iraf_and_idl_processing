@@ -13,5 +13,10 @@ pro update_widgets,base,dat,edat,gparam
   widget_control,idXchoice,set_droplist_select=dataInd[0]
   widget_control,idYchoice,set_droplist_select=dataInd[1]
   widget_control,idSerchoice,set_droplist_select=dataInd[2]
+  
+  idSerRound = widget_info(base,find_by_uname="ROUNDSER")
+  if ev_tag_exist(gparam,'ROUNDSER') then begin
+     widget_control,idSerRound,set_value=string(gparam.roundser)
+  endif else print,'No series rounding parameter set.'
 
 end
