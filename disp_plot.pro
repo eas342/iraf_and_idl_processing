@@ -86,6 +86,15 @@ endif
 if not ev_tag_exist(gparam,'TITLES') then begin
    ev_add_tag,gparam,'TITLES',[gparam.PKEYS,'']
 endif
+if not ev_tag_exist(gparam,'SERIES') then begin
+   ;; if no series specified, use all points
+   ev_add_tag,gparam,'SERIES','ALLPT'
+endif
+if gparam.series EQ 'ALLPT' then begin
+;; If all points then make a series description for all points
+   ev_add_tag,dat,'ALLPT',intarr(npt) + 1
+   tags = tag_names(dat)
+endif
 
 DataInd = key_indices(dat,gparam)
 if ev_tag_exist(gparam,'YERR') then begin
@@ -134,26 +143,14 @@ endelse
 if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
 if ev_tag_exist(gparam,'YLOG') then Ylog=1 else Ylog=0
 
-if not ev_tag_exist(gparam,'SERIES') then begin
-   ;; if no series specified, use all points
-   ev_add_tag,gparam,'SERIES','ALLPT'
-endif
-if gparam.series EQ 'ALLPT' then begin
-;; If all points then make a series description for all points
-   ev_add_tag,dat,'ALLPT',intarr(npt) + 1
-   tags = tag_names(dat)
-endif
-if not ev_tag_exist(dat,gParam.SERIES,index=serTag) then begin
-   print,'********Series tag not found**********'
-   return
-endif
+serTag = dataInd[2]
 
-if not ev_tag_exist(dat,'ROUNDSER') then begin 
+if not ev_tag_exist(gparam,'ROUNDSER') then begin 
   ev_add_tag,gparam,'ROUNDSER',1 ;; default to rounding by 1
 endif
 
 ;; Round and organize the groups of series to plot
-rlist= ev_round(float(dat.(serTag)),gparam.roundser);; rounded list
+rlist= ev_round(float(dat.(serTag)),float(gparam.roundser));; rounded list
 srlist = rlist[sort(rlist)] ;; sorted, rounted list
 uniql = uniq(srlist) ;; unique elements in the rounded sorted list
 serArr = srlist[uniql] ;; final array that is unique, sorted and rounded
