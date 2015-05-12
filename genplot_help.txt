@@ -37,6 +37,7 @@ ZOOMBOX - a 2 X 2 array of the plot ranges
 [[xleft,xright],[ybot,ytop]]
 SERIES - the name of a tag to split up series. For example, a spectrum
 with multiple orders would have gparam.series = 'ORDER'
+ROUNDSER - the amount to group/round the series into
 XERR - the name of a tag describing the x errors
 YERR - the name of a tag describing the y errors
 SLABEl - if it's one element, it will be a prefix in front of the series values
