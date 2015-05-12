@@ -20,7 +20,7 @@ function key_indices,dat,gparam
      endelse
      keyfind = where(dattags EQ keyLookName)
      if keyFind EQ [-1] then begin
-        message,'Key ',keyLookName,' not found',/continue
+        message,'Key '+keyLookName+' not found',/continue
      endif else initKeys[i] = keyfind[0]
   endfor
 
