@@ -16,7 +16,7 @@ pro update_widgets,base,dat,edat,gparam
   
   idSerRound = widget_info(base,find_by_uname="ROUNDSER")
   if ev_tag_exist(gparam,'ROUNDSER') then begin
-     widget_control,idSerRound,set_value=string(gparam.roundser)
+     widget_control,idSerRound,set_value=strtrim(gparam.roundser,1)
   endif else print,'No series rounding parameter set.'
 
 end
