@@ -235,10 +235,11 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
       if ylog then legPos[1] = 10E^(legPos[1])
    endelse
 
-   al_legend,serLab,$
-             linestyle=0,thick=thick,bthick=thick,$
-             color=colArr,charsize=LegCharsize,$
-             position=legPos,psym=mypsym
+   if tag_exist(gparam,'SERIES') then legTitle=gparam.series else legTitle=''
+   al_legend,[legTitle,serLab],$
+             linestyle=[-1,intarr(nser)],thick=thick,bthick=thick,$
+             color=[!p.color,colArr],charsize=LegCharsize,$
+             position=legPos,psym=[0,mypsym]
 endif
 
 ;; Find the !x.cranges corrected for log scales
