@@ -1,15 +1,25 @@
-pro save_image,fileL,lineP=lineP,plotp=plotp,$
-                     startslot=startslot,all=all
+pro save_image,input,lineP=lineP,plotp=plotp,$
+                     startslot=startslot,all=all,$
+               custname=custname
 ;; Saves a FITS images of the current slot as an EPS file
 ;; It returns the last index the user stopped with
 ;; set the up the PS plot
+;; custname - custom name for the plot
 
-if n_elements(startslot) EQ 0 then i=0l else i=startslot
-
-splitFileN = strsplit(fileL[i],'/',/extract)
-FullFitsName = splitFilen[n_elements(splitFileN)-1l]
-splitPrefix = strsplit(FullFitsName,'.',/extract)
-namePrefix = splitPrefix[0]
+type = size(input,/type)
+if type EQ 7 then begin
+   if n_elements(startslot) EQ 0 then i=0l else i=startslot
+   splitFileN = strsplit(fileL[i],'/',/extract)
+   FullFitsName = splitFilen[n_elements(splitFileN)-1l]
+   splitPrefix = strsplit(FullFitsName,'.',/extract)
+   namePrefix = splitPrefix[0]
+   fdisplay = fileL[i]
+endif else begin
+   if n_elements(custname) NE 0 then begin
+      namePrefix = custname
+   endif else namePrefix = "untitled"
+   fdisplay = input
+endelse
 
 
    set_plot,'ps'
@@ -40,7 +50,7 @@ namePrefix = splitPrefix[0]
    end
    device,xsize=psXs, ysize=psYs,decomposed=1,/color
 
-   fits_display,fileL[i],plotp=plotp,lineP=lineP,$
+   fits_display,fdisplay,plotp=plotp,lineP=lineP,$
                 message=namePrefix+'.fits'
 
 
