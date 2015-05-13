@@ -47,7 +47,7 @@ CASE uval of
        spawn,'open -a Terminal'
        return
     end
-    'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.save',$
+    'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.sav',$
                             varnames=['dat','y','gparam']
     'MOVELEG': cmove_legend,data,gparam=gparam
     'MARGLEG': begin
