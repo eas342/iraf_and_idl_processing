@@ -128,14 +128,21 @@ endelse
 !MOUSE.button = 1
 
 if n_elements(lineP) NE 0 then begin
-   if LineP.type EQ 'line' then begin
-      oplot,LineP.xcoor,LineP.ycoor,color=mycol('red'),thick=2
-   endif else begin
-      boxArrX = [lineP.xcoor[0],lineP.xcoor[0],lineP.xcoor[1],lineP.xcoor[1],lineP.xcoor[0]]
-      boxArrY = [lineP.ycoor[0],lineP.ycoor[1],lineP.ycoor[1],lineP.ycoor[0],lineP.ycoor[0]]
-      oplot,boxArrX,boxArrY,color=mycol('red'),thick=2
-      box_display,LineP
-   endelse
+   case LineP.type of
+      'line': $
+         oplot,LineP.xcoor,LineP.ycoor,color=mycol('red'),thick=2
+      'points': begin
+         plotsym,0
+         oplot,lineP.xcoor,lineP.ycoor,psym=8,color=mycol('red')
+      end
+      'box': begin
+         boxArrX = [lineP.xcoor[0],lineP.xcoor[0],lineP.xcoor[1],lineP.xcoor[1],lineP.xcoor[0]]
+         boxArrY = [lineP.ycoor[0],lineP.ycoor[1],lineP.ycoor[1],lineP.ycoor[0],lineP.ycoor[0]]
+         oplot,boxArrX,boxArrY,color=mycol('red'),thick=2
+         box_display,LineP
+      end
+      else: print,'LineP type not found'
+   endcase
 endif
 
 ;; Show the mask
