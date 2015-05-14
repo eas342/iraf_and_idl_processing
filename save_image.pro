@@ -8,6 +8,7 @@ pro save_image,input,lineP=lineP,plotp=plotp,$
 
 type = size(input,/type)
 if type EQ 7 then begin
+   fileL = input
    if n_elements(startslot) EQ 0 then i=0l else i=startslot
    splitFileN = strsplit(fileL[i],'/',/extract)
    FullFitsName = splitFilen[n_elements(splitFileN)-1l]
@@ -48,6 +49,7 @@ endelse
       psXs = 14
       psYs = 10
    end
+
    device,xsize=psXs, ysize=psYs,decomposed=1,/color
 
    fits_display,fdisplay,plotp=plotp,lineP=lineP,$
@@ -59,6 +61,8 @@ endelse
 ;   spawn,'convert -density 160% '+plotprenm+'.pdf '+plotprenm+'.png'
    device,decomposed=0
    set_plot,'x'
+
+
    !p.font=-1
    !p.thick=1
    !x.thick=1
