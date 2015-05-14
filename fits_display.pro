@@ -110,6 +110,7 @@ endif else begin
    endelse
 endelse
 
+
 if ev_tag_exist(plotp,'zoombox') then begin
    myXrange = fltarr(2)
    myYrange = fltarr(2)
@@ -117,12 +118,29 @@ if ev_tag_exist(plotp,'zoombox') then begin
    myXrange[1] = max(plotp.zoombox[*,0])
    myYrange[0] = min(plotp.zoombox[*,1])
    myYrange[1] = max(plotp.zoombox[*,1])
-   plotimage,a,range=scaleNums,title=Ftitle,$
-             xrange=myXrange,yrange=myYrange,$
-             pixel_aspect_ratio=1.0
+   if (myXrange[1] - myXrange[0]) * 2 LT (myYrange[1] - myYrange[0]) then begin
+      do2xtick=1
+      myxtickformat='(A1)'
+   endif
+   ev_mplotimage,a,range=scaleNums,title=Ftitle,$
+                 xrange=myXrange,yrange=myYrange,$
+                 pixel_aspect_ratio=1.0,$
+                 xtick_get=xtickvals,ytick_get=ytickvals,$
+                 xtickformat=myxtickformat
 endif else begin
-   plotimage,a,range=scaleNums,title=Ftitle,pixel_aspect_ratio=1.0
+   imsize = size(a)
+   if imsize[1] * 2 LT imsize[2] then begin
+      do2xtick=1
+      myxtickformat='(A1)'
+   endif
+   ev_mplotimage,a,range=scaleNums,title=Ftitle,pixel_aspect_ratio=1.0,$
+                 xtick_get=xtickvals,ytick_get=ytickvals,$
+                 xtickformat=myxtickformat
 endelse
+
+if n_elements(do2xtick) GT 0 then begin
+   if do2xtick then twotick_labels,xtickvals,ytickvals,/noY,xorient=45
+endif
 
 
 !MOUSE.button = 1
