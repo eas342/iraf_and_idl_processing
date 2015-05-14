@@ -122,21 +122,32 @@ if ev_tag_exist(plotp,'zoombox') then begin
       do2xtick=1
       myxtickformat='(A1)'
    endif
+   if (myXrange[1] - myXrange[0])  GT 5 * (myYrange[1] - myYrange[0]) then begin
+      do2ytick=1
+      myytickformat='(A1)'
+   endif
 endif else begin
    imsize = size(a)
    if imsize[1] * 2 LT imsize[2] then begin
       do2xtick=1
       myxtickformat='(A1)'
    endif
+   if imsize[1] GT 5 * imsize[2] then begin
+      do2ytick=1
+      myytickformat='(A1)'
+   endif
 endelse
 ev_mplotimage,a,range=scaleNums,title=Ftitle,$
               xrange=myXrange,yrange=myYrange,$
               pixel_aspect_ratio=1.0,$
               xtick_get=xtickvals,ytick_get=ytickvals,$
-              xtickformat=myxtickformat
+              xtickformat=myxtickformat,ytickformat=myytickformat
 
 if n_elements(do2xtick) GT 0 then begin
    if do2xtick then twotick_labels,xtickvals,ytickvals,/noY,xorient=45
+endif
+if n_elements(do2ytick) GT 0 then begin
+   if do2ytick then twotick_labels,xtickvals,ytickvals,/noX
 endif
 
 
