@@ -15,6 +15,17 @@ widget_control, fileW, get_uvalue= filel
 
 nFile = n_elements(fileL)
 
+CASE uval of
+    'NEXT': slot = wrap_mod((slot + 1l),nfile)
+    'PREV': slot = wrap_mod((slot - 1l),nfile)
+    'DONE': begin
+       slottemp = slot
+       WIDGET_CONTROL, ev.TOP, /DESTROY
+       spawn,'open -a Terminal'
+       return
+    end
+ENDCASE
+
 if ev_tag_exist(plotp,'KEYDISP') then begin
    temphead = headfits(fileL[slot])
    if n_elements(temphead) GT 1 then begin
@@ -27,17 +38,6 @@ if ev_tag_exist(plotp,'KEYDISP') then begin
       print,"Invalid header found"
    endelse
 endif
-CASE uval of
-    'NEXT': slot = wrap_mod((slot + 1l),nfile)
-    'PREV': slot = wrap_mod((slot - 1l),nfile)
-    'DONE': begin
-       slottemp = slot
-       WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
-       return
-    end
-ENDCASE
-
 fits_display,filel[slot],plotp=plotp,linep=linep
 
 ;; Save changes to the data & plot parameters
