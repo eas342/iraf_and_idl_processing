@@ -30,6 +30,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
+           '(ashift) to use arrow keys to shift an image',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
            '(rot)ation change','(maskedit) mask edit',$
@@ -115,6 +116,9 @@ while status NE 'q' and status NE 'Q' do begin
             save_image,fileL,plotp=plotp,lineP=lineP,$
                        startslot=i
          endfor
+      end
+      status EQ 'ashift' OR status EQ 'ASHIFT': begin
+         arrow_shift,filel,plotp=plotp,linep=linep,slot=slot
       end
       status EQ 'nodsub' Or status EQ 'NODSUB': $
          nodsub,filel,plotp,lineP,slot
