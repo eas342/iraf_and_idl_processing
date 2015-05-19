@@ -39,6 +39,7 @@ if keyword_set(findscale) then begin
    xcur = 0.3
    ycur = 0.8
    message = 'Click lower left corner of box for scaling and then right'
+   asize = size(a)
    if ev_tag_exist(plotp,'ZOOMBOX') then begin
       myXrange = fltarr(2)
       myYrange = fltarr(2)
@@ -48,7 +49,6 @@ if keyword_set(findscale) then begin
       myYrange[1] = max(plotp.zoombox[*,1])
       maxImgRange = 0
    endif else begin
-      asize = size(a)
       myYrange = [0,asize[2] - 1l]
       myXrange = [0,asize[1] - 1l]
    endelse
@@ -70,6 +70,10 @@ if keyword_set(findscale) then begin
    cursor,xboxTR,yboxTR,/down
    boxW = xboxTR - xboxBL
    boxH = yboxTR - yboxBL
+   xboxBL = checkrange(xboxBL,0,asize[1]-1l)
+   xboxTR = checkrange(xboxTR,0,asize[1]-1l)
+   yboxBL = checkrange(yboxBL,0,asize[2]-1l)
+   yboxTR = checkrange(yboxTR,0,asize[2]-1l)
    boxArrX = [xboxBL,xboxBL,xboxTR,xboxTR,xboxBL]
    boxArrY = [yboxBL,yboxTR,yboxTR,yboxBL,yboxBL]
    plots,boxArrX,boxarrY,color=mycol('green'),thick=1.8
