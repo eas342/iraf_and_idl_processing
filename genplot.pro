@@ -17,6 +17,7 @@ widget_control, idY, get_uvalue= Y
 disp_plot,data,y,gparam=gparam,dat=dat,edat=edat,/preponly
 dattags = tag_names(dat)
 
+
 CASE uval of
     'REPLOT':  disp_plot,data,y,gparam=gparam
     'PS'    :  begin
@@ -68,6 +69,14 @@ CASE uval of
     'PARAB': begin
        quick_parab,dat,edat,gparam=gparam
     end
+    'MATH': begin
+       plot_math,data,Y,gparam=gparam
+    end
+    'GETMATH': if file_exists('ev_local_math_params.sav') then begin
+       restore,'ev_local_math_params.sav'
+       data = mathst
+       update_widgets,ev.top,data,edat,gparam
+    endif
     'ROUNDSER': begin
        widget_control,ev.id,get_value=newRound
        if valid_num(newRound) then begin
@@ -181,8 +190,12 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   psFold = WIDGET_BUTTON(psW, VALUE='Open in Finder', UVALUE='CFOLDER')
 
   ;; Buttons for fitting
-  fitMenu = widget_button(base,value = 'Fit',/menu)
+  fitMenu = widget_button(fitW,value = 'Fit',/menu)
   parabW = WIDGET_BUTTON(fitMenu, VALUE='Parabola Fit', UVALUE='PARAB',accelerator='Ctrl+A')
+
+  ;; Button for doing math
+  mathW = widget_button(fitW,value='Math',UVALUE='MATH')
+  mathGW = widget_button(fitW,value='Get Math',UVALUE='GETMATH')
 
   WIDGET_CONTROL, base, /REALIZE
 

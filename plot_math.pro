@@ -45,6 +45,8 @@ CASE uval of
        ev_add_tag,outdat,ops.outname,calculated
     end
     'DONE': begin
+       mathst = outdat
+       save,mathst,filename='ev_local_math_params.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
        return
     end
