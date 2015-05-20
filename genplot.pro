@@ -65,6 +65,9 @@ CASE uval of
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
     end
+    'PARAB': begin
+       quick_parab,dat,edat,gparam=gparam
+    end
     'ROUNDSER': begin
        widget_control,ev.id,get_value=newRound
        if valid_num(newRound) then begin
@@ -125,6 +128,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   psW = widget_base(topR,/column,/frame) ;; base for postscript/png output options
 
   nextR = widget_base(base,/row) ;; base to store next row of controls
+  fitW = widget_base(base,/row) ;; base for fitting lines
 
   ;; Allow the user to choose data points
   xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
@@ -175,6 +179,10 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
                       label_top='Export Size',/frame)
   psPlot = WIDGET_BUTTON(psW, VALUE='Postscript Plot', UVALUE='PS')
   psFold = WIDGET_BUTTON(psW, VALUE='Open in Finder', UVALUE='CFOLDER')
+
+  ;; Buttons for fitting
+  fitMenu = widget_button(base,value = 'Fit',/menu)
+  parabW = WIDGET_BUTTON(fitMenu, VALUE='Parabola Fit', UVALUE='PARAB',accelerator='Ctrl+A')
 
   WIDGET_CONTROL, base, /REALIZE
 
