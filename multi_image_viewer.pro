@@ -125,7 +125,7 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'maskedit' OR status EQ 'MASKEDIT': $
          maskedit,filel[slot],lineP,plotp
       status EQ 'imcombine' OR status EQ 'IMCOMBINE': $
-         imcombine,'action_list.txt'
+         imcombine,'action_list.txt',/median
       status EQ 'sparam' OR status EQ 'SPARAM': check_idlsave,fileL,slot,lineP,plotp,$
          varnames=['fileL','slot','lineP','plotp']
       status EQ 'c' OR status EQ 'C': begin
