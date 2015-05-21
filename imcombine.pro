@@ -19,7 +19,7 @@ for i=0l,nfile-1l do begin
       outA = fltarr(szFirst[1],szFirst[2]) ;; output array for the average
       countA = fltarr(szFirst[1],szFirst[2]) ;; array for counting number of points
       outhead = head
-      fullA = fltarr(szFirst[1],szFirst[2],nfile)
+      fullA = fltarr(szFirst[1],szFirst[2],nfile) ;; full array for all data
    endif
    
    sz = size(a)
@@ -59,6 +59,7 @@ for i=0l,nfile-1l do begin
       b = mod_rdfits(fileFind,0,maskhead)
       whereGood = where(b EQ 0)
       if whereGood NE [-1] then begin
+         
          totalA[whereGood] = totalA[whereGood] + a[whereGood]
          countA[whereGood] = countA[whereGood] + 1E
       endif
@@ -70,6 +71,18 @@ for i=0l,nfile-1l do begin
             'File used in making average'
    
 endfor
+
+;; save the median image
+if keyword_set(median) then begin
+   medhead = outhead
+   fxaddpar,medhead,'MEDIAN',1,'File is a median of other images'
+   medImg = median(fullA,dimension=3)
+   if n_elements(medName) EQ 0 then medName='es_median.fits'
+   fileFind = file_search(medName)
+   if fileFind NE '' then medName=dialog_pickfile(/write,filter='*.fits',$
+                                                  default_extension='.fits')
+   writefits,medName,medImg,medhead
+endif
 
 nonZ = where(countA GT 0)
 if nonZ NE [-1] then outA[nonZ] = totalA[nonZ]/countA[nonz]
