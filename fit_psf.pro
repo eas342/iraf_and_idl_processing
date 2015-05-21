@@ -52,9 +52,11 @@ endif else begin
    a2fit = a[xstart:xend,ystart:yend]
 
    result = gauss2dfit(a2fit,fitp,/tilt)
-   fitp[4] = fitp[4] + xstart
-   fitp[5] = fitp[5] + ystart
-   
+   fitp[4] = fitp[4] + xstart 
+   fitp[5] = fitp[5] + ystart 
+   xshowFit = fitp[4] 
+   yshowFit = fitp[5] 
+
    ;; Set up contour plot
    X = FINDGEN(sz[1]) # REPLICATE(1.0, sz[2])
    Y = REPLICATE(1.0, sz[1]) # FINDGEN(sz[2])
@@ -67,6 +69,15 @@ endif else begin
    minorF = min(abs(fitp[2:3])) * 2.35482E    ;; convert to FWHM
 
 
+   ;; Find the RA and dec if the WCS headers are found
+   extast,header,astr,noparams
+   if noparams EQ -1 then begin
+      raCen = 0D
+      decCen = 0D
+   endif else begin
+      xy2ad, fitp[4],fitp[5],astr,raCen,decCen
+   endelse
+
    if type EQ 7 then begin
       fileDescrip = input
    endif else fileDescrip = 'NONE'
@@ -77,6 +88,7 @@ endif else begin
                               'MiFWHM',minorF,$
                               'XCEN',fitp[4],$
                               'YCEN',fitp[5],'THETA',cortheta,$
+                              'RACEN',raCen,'DecCEN',decCen,$
                               'FILEN',fileDescrip)
    if ev_tag_exist(plotp,'KEYDISP') then begin
       nkey = n_elements(plotp.KEYDISP)
@@ -87,8 +99,8 @@ endif else begin
    endif
 
    if not keyword_set(noplot) then begin
-      xprime = (X - fitp[4])*cos(fitp[6]) - (Y - fitp[5])*sin(fitp[6])
-      yprime = (X - fitp[4])*sin(fitp[6]) + (Y - fitp[5])*cos(fitp[6])
+      xprime = (X - xshowfit)*cos(fitp[6]) - (Y - yshowfit)*sin(fitp[6])
+      yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
       Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
       Ymodel = fitp[0] + fitp[1] * EXP(-Ufit/2)
       sig = fitp[3]
