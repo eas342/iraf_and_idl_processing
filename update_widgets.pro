@@ -10,9 +10,10 @@ pro update_widgets,base,dat,edat,gparam
   idXchoice = widget_info(base,find_by_uname="XCHOICE")
   idYchoice = widget_info(base,find_by_uname="YCHOICE")
   idSerchoice = widget_info(base,find_by_uname="SERCHOICE")
-  widget_control,idXchoice,set_droplist_select=dataInd[0]
-  widget_control,idYchoice,set_droplist_select=dataInd[1]
-  widget_control,idSerchoice,set_droplist_select=dataInd[2]
+  dattags = tag_names(dat)
+  widget_control,idXchoice,set_droplist_select=dataInd[0],set_value=dattags
+  widget_control,idYchoice,set_droplist_select=dataInd[1],set_value=dattags
+  widget_control,idSerchoice,set_droplist_select=dataInd[2],set_value=dattags
   
   idSerRound = widget_info(base,find_by_uname="ROUNDSER")
   if ev_tag_exist(gparam,'ROUNDSER') then begin
