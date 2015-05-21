@@ -13,6 +13,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   endif
 
   a = mrdfits(filen,ext,header,silent=silent)
+  if n_elements(a) LT 2 then begin
+     message,'Extension '+strtrim(ext,1)+' not found, trying '+strtrim(ext+1l,1),/cont
+     a = mod_rdfits(filen,ext+1,header,silent=silent)
+  endif
   if ev_tag_exist(plotp,'ROT') then begin
      a = rotate(a,plotp.rot)
   endif
