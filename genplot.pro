@@ -54,7 +54,14 @@ CASE uval of
     'MARGLEG': begin
        ev_add_tag,gparam,'NOMARGLEG',1 - ev.value
     end
-    'CFOLDER': spawn,'open .'
+    'CFOLDER': begin
+       if not ev_tag_exist(gparam,'FILENAME') then begin
+          plotprenm='unnamed_genplot'
+       endif else begin
+          plotprenm=gparam.filename
+       endelse
+       spawn,'open -R '+plotprenm+'.eps'
+    end
     'XCHOICE': begin
        gparam.PKEYS[0] = dattags[ev.index]
        gparam.TITLES[0] = gparam.PKEYS[0]
