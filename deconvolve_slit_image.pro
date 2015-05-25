@@ -1,16 +1,27 @@
 pro deconvolve_slit_image,narArNm,WideArcNm,showplots=showplots,$
-                          custom1=custom1,custom2=custom2
+                          custom1=custom1,custom2=custom2,$
+                          xrange=xrange,yrange=yrange,$
+                          NarrSKern=NarrSKern
 ;; De-convolves the slit image from the 3x60 arc image by using a
 ;; 0.3x60 arc image and my function slit_deconvolution
 ;; custom1 - custom set of exposures
 ;; custom2 - save the intermediate de-convolved arc image step
+;; xrange - optional range for where to look at arcs in X direction
+;; yrange - optional range for where to look at arcs in Y direction
 
 
 if keyword_set(custom1) or keyword_set(custom2) then begin
-   a = mrdfits('arc-00035-trimmed.fits',0,headW)
-   b = mrdfits('arc-00023-trimmed.fits',0,headN)
-   startrow = 0
-   endrow= 584
+   if n_elements(narArNm) EQ 0 then narArNm = 'arc-00035-trimmed.fits'
+   a = mrdfits(narArNm,0,headW,/fscale)
+   if n_elements(WideArcNm) EQ 0 then WideArcNm = 'arc-00023-trimmed.fits'
+   b = mrdfits(WideArcNm,0,headN,/fscale)
+   if n_elements(yrange) EQ 0 then begin
+      startrow = 0
+      endrow= 584
+   endif else begin
+      startrow = yrange[0]
+      endrow = yrange[1]
+   endelse
 endif else begin
    EndRow = 608
    StartRow = 21
@@ -23,6 +34,14 @@ ylength = fxpar(headW,'NAXIS2')
 outimage = fltarr(xlength,ylength)
 interImage = fltarr(xlength,ylength) ;; intermediate step image of the de-convolved arc image
 
+if n_elements(xrange) EQ 0 then begin
+   startX=0
+   endX=xlength-1l
+endif else begin
+   startX=xrange[0]
+   endX=xrange[1]
+endelse
+
 case 1 of 
    keyword_set(custom1): begin
 ;   custrow = 327 - 2
@@ -30,7 +49,7 @@ case 1 of
       startRow = custrow
       endRow = startRow
       for i=startRow,EndRow do begin
-         outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=1,psplot=0,useplain=0,deconvstep=1)
+         outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=1,psplot=0,useplain=0,deconvstep=1,narrSkern=narrSkern)
 ;      outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=1,psplot=1,/useplain,deconvstep=deconvstep)
 ;      outImage[*,i] =
 ;      slit_deconvolution(a[*,i],b[*,i],showplots=1,psplot=1)
@@ -67,16 +86,18 @@ case 1 of
    end
    keyword_set(custom2): begin
       for i=startRow,EndRow do begin
-         outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=showplots)
+         outImage[startX:endX,i] = slit_deconvolution(a[startX:endX,i],b[startX:endX,i],showplots=showplots,$
+                                                     narrSkern=narrSkern)
          restore,'data/deconv_step_data.sav'
          imagePoints = where(xcolumn GT 0)
-         interImage[*,i] = fulldeltas[imagePoints]
+         interImage[startX:endX,i] = fulldeltas[imagePoints]
       endfor
-      writefits,'data/intermediate_deconv_step.fits',interImage,headN
+      fxaddpar,headN,'DECONVOLVED',1
+      writefits,clobber_exten(narArNm)+'_deconv.fits',interImage,headN
    end
    else: begin
       for i=startRow,EndRow do begin
-         outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=showplots)
+         outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=showplots,narrSkern=narrSkern)
          interImage[*,i] = fulldeltas[imagePoints]
       endfor
       writefits,'wide_slit_image.fits',outImage,headW
