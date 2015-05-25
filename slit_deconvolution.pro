@@ -1,12 +1,17 @@
 function slit_deconvolution,arcNar,arcWide,filter=filter,psplot=psplot,$
                        useplainArgon=useplainArgon,showplots=showplots,$
-                            deconvstep=deconvstep
+                            deconvstep=deconvstep,outArr=outArr,$
+                            NarrSKern=NarrSKern
 ;; Deconvolves a arc spectra to find the slit function
 ;; filter - does a low pass filter in Fourier domain
 ;; psplot - saves a postscript plot
 ;; useplainArgon - just use the 0.3x60 argon spectrum (don't
 ;;                 deconvolve it)
 ;; deconvstep - Terry wanted to see this intermediate step
+;; outArr - an optional keyword for the array of the de-convolved
+;;          0.3x60 slit image
+;; NarrSKern - the kernel used in max likelihood de-convolution of the
+;;             0.3x60 arcsecond image
 
 ;; set the up the PS plot
 if keyword_set(psplot) then begin
@@ -50,7 +55,7 @@ endif
 if keyword_set(useplainArgon) then begin
    fulldeltas = narArc
 endif else begin
-   restore,'narrSKern.sav'
+   if n_elements(NarrSkern) EQ 0 then restore,'narrSKern.sav'
    normKern = narrSKern / total(NarrSkern)
    for i=0l,300 do Max_Likelihood, narArc, normkern, Narrdeconv,ft_psf=psf_ft
    fulldeltas = Narrdeconv
@@ -118,6 +123,7 @@ if keyword_set(deconvstep) then begin
             comment='Column number in 1 based counting from [65:749,33:617] trim;'+$
             ' Wide Arc Image 3x60; Narrow Arc Image 0.3x60; De-convolved Arc 0.3x60 Image;'+$
             ' Slit Image from De-convolved Wide Arc Image'
+   outArr=real_part(fulldeltas)
 endif
 
 ;save,deconvol,filename='slit_func_estimate.sav'
