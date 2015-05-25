@@ -1,13 +1,14 @@
 function fits_line_plot,fileL,lineP=lineP,current=current,$
                         median=median,makestop=makestop,$
                         overplot=overplot,normalize=normalize,$
-                        plotp=plotp
+                        plotp=plotp,peakNorm=peaknorm
 ;; This plots a line or box depending on input
 ;; lineP - a structure of line coordinates
 ;; boxC - a structure of box coordinates
 ;; median - do a median instead of an average
 ;; overplot - makes an over-plot
 ;; normalize - normalize the plot by the median
+;; peaknorm - normalize the plot by the peak
 
 nfile = n_elements(filel)
 type = size(filel[0],/type)
@@ -53,6 +54,9 @@ while counter LT maxCounter do begin
    endelse
    if keyword_set(normalize) then begin
       yplot = yplot/median(yplot)
+   endif
+   if keyword_set(peaknorm) then begin
+      yplot = yplot/max(yplot)
    endif
 
    if counter GT 0 and keyword_set(overplot) then begin

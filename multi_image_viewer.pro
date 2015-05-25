@@ -12,6 +12,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(p)lot a line or box','(pm) to plot median',$
            '(op) overplot line or box mode',$
            '(opd) overplot and divide by median',$
+           '(opp) overplot and divide by the peak',$
            '(ps) to plot and stop',$
            '(b)ox draw mode','(c)lear previous settings',$
            '(cf) to clear file list',$
@@ -34,7 +35,9 @@ actions = ['(q)uit','(r)ead new file',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
            '(rot)ation change','(maskedit) mask edit',$
-           '(imcombine) image combine','(aedit) Edit Action List',$
+           '(imcombine) image combine',$
+           '(nimcombine) normalize each image by box to combine',$
+           '(aedit) Edit Action List',$
            '(nodsub) nod subtract image w/ next',$
            '(head) to show FITS header',$
            '(ckey) to choose a FITS keyword to print',$
@@ -125,7 +128,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'maskedit' OR status EQ 'MASKEDIT': $
          maskedit,filel[slot],lineP,plotp
       status EQ 'imcombine' OR status EQ 'IMCOMBINE': $
-         imcombine,'action_list.txt',/median
+         imcombine,'action_list.txt',/median,plotp=plotp,linep=linep
+      status EQ 'nimcombine' OR status EQ 'NIMCOMBINE': $
+         imcombine,'action_list.txt',/median,plotp=plotp,/normalize,linep=linep
       status EQ 'sparam' OR status EQ 'SPARAM': check_idlsave,fileL,slot,lineP,plotp,$
          varnames=['fileL','slot','lineP','plotp']
       status EQ 'c' OR status EQ 'C': begin
@@ -166,6 +171,10 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'opd' OR status EQ 'OPD': begin
          slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,$
                                /normalize,plotp=plotp)
+      end
+      status EQ 'opp' OR status EQ 'OPP': begin
+         slot = fits_line_plot(fileL,lineP=lineP,current=slot,/overplot,$
+                               /peaknorm,plotp=plotp)
       end
       status EQ 'pm' OR status EQ 'PM': begin
          slot = fits_line_plot(fileL,lineP=lineP,current=slot,/median,plotp=plotp)
