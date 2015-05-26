@@ -46,9 +46,11 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
   r = mod_rdfits(responseF,0,rheader,trimReg=rtrimReg)
   
   nfile=n_elements(scienceList)
-  
+
+  ;; First remove the pixel-to-pixel response
+  subregionPixCor = s[breg[0]:breg[1],breg[2]:breg[3]]/r[breg[0]:breg[1],breg[2]:breg[3]]
   ;; median stripe structure in stripe image
-  ssub = median(s[breg[0]:breg[1],breg[2]:breg[3]],dimension=1)
+  ssub = median(subregionPixCor,dimension=1)
 ;  rsub = median(r[breg[0]:breg[1],breg[2]:breg[3]],dimension=1)
   
   lagarray = lindgen(lagsize) - lagsize/2l
@@ -69,6 +71,12 @@ readcol,'science_images_plain.txt',scienceList,format='(A)'
      PolyTrend = poly_fit(lagarray[lowp:highp],crosscor[lowp:highp],NpolyF)
      peak = -PolyTrend[1]/(2E * polyTrend[2])
      vertDir = peak
+     if keyword_set(showplot) then begin
+        tempdat = struct_arrays(create_struct('LAG',lagarray,'XCOR',crosscor))
+        tempfit = create_struct('VERTLINES',peak)
+        genplot,tempdat,tempfit
+        if quit_caught() then return
+     endif
 
      if keyword_set(twoDir) then begin
         ;; Median spectral structure
