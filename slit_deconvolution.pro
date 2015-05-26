@@ -59,6 +59,12 @@ endif else begin
    normKern = narrSKern / total(NarrSkern)
    for i=0l,300 do Max_Likelihood, narArc, normkern, Narrdeconv,ft_psf=psf_ft
    fulldeltas = Narrdeconv
+   if keyword_set(cutoff) then begin
+      thresh = threshold(fulldeltas[where(fulldeltas NE 0E)],low=0.20,high=0.8,mult=0E)
+      lowp = where(fulldeltas LT thresh[1])
+      if lowp NE [-1] then fulldeltas[lowp] = 0E
+   endif
+
    if keyword_set(showplots) then begin
       plot,fulldeltas,title='De-convolved Argon (0.3x60)',charsize=2
    endif
@@ -161,6 +167,7 @@ endif else begin
    if keyword_set(showplots) then stop
 endelse
 
-return, deconvol[midP:(midP+nY-1l)]
+startp = np/2 - ny/2
+return, deconvol[startp:(startp+nY-1l)]
 
 end
