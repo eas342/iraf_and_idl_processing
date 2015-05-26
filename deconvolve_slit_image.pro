@@ -94,12 +94,15 @@ case 1 of
       endfor
       fxaddpar,headN,'DECONVOLVED',1
       writefits,clobber_exten(narArNm)+'_deconv.fits',interImage,headN
+      
+      fxaddpar,headW,'SLITIMAGE',1,'Slit image found from deconvolution by Arc lamp.'
+      writefits,'wide_slit_image.fits',outImage,headW
    end
    else: begin
       for i=startRow,EndRow do begin
          outImage[*,i] = slit_deconvolution(a[*,i],b[*,i],showplots=showplots,narrSkern=narrSkern)
-         interImage[*,i] = fulldeltas[imagePoints]
       endfor
+      fxaddpar,headW,'SLITIMAGE',1,'Slit image found from deconvolution by Arc lamp.'
       writefits,'wide_slit_image.fits',outImage,headW
    end
 endcase
