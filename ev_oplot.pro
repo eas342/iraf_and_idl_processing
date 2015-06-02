@@ -28,19 +28,18 @@ if ev_tag_exist(gparam,'GFLAG') then begin
    gparam = create_struct(gparam,'GFLAG',[prevGflag,intarr(np)+1])
 endif
 
-if n_elements(xerr) GT 0 OR n_elements(yerr) GT 0 then begin
-endif else begin
-   if ev_tag_exist(gparam,'XERR') OR ev_tag_exist(gparam,'YERR') then begin
-      if ev_tag_exist(gparam,'XERR') then begin
-         XerrInd = where(gparam.XERR EQ tags)
-         addStruct.(XerrInd) = 0E
-      endif
-      if ev_tag_exist(gparam,'YERR') then begin
-         YerrInd = where(gparam.YERR EQ tags)
-         addStruct.(YerrInd) = 0
-      endif
-   endif
-endelse
+if ev_tag_exist(gparam,'XERR') then begin
+   XerrInd = where(gparam.XERR EQ tags)
+   if n_elements(xerr) GT 0 then addStruct.(XerrInd) = xerr else begin
+      addStruct.(XerrInd) = 0E
+   endelse
+endif
+if ev_tag_exist(gparam,'YERR') then begin
+   YerrInd = where(gparam.YERR EQ tags)
+   if n_elements(yerr) GT 0 then addStruct.(YerrInd) = yerr else begin
+      addStruct.(YerrInd) = 0E
+   endelse
+endif
 
 addStruct.ev_oplot_ser = max(dat.ev_oplot_ser) + 1
 ev_add_tag,gparam,'SERIES','EV_OPLOT_SER'
