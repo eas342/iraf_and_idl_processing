@@ -47,6 +47,7 @@ gparam.series = ['Order 3','Order 4','Model spectrum']
 XLOG - if it exists, x axis will be logarithmic
 YLOG - if it exists, y axis will be logarithmic
 PSYM - if it exists, it will do circular plot symbols, otherwise lines
+LEGTITLE - Title for the Legend
 
 ********* Overplotting ********
 To over plot, you can add data to the data structure:
