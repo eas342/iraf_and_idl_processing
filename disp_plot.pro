@@ -31,15 +31,20 @@ if ev_tag_true(gparam,'PS')then begin
    endif else begin
       plotprenm=gparam.filename
    endelse
-   if ev_tag_true(gparam,'PSSMALL') then begin
-      PSxsize=14.2
-      PSysize=10
-;      PSxsize=10
-;      PSysize=7 ;; extra small - good for presentations
-   endif else begin
-      PSxsize=20
-      PSysize=9
-   endelse
+   case 1 of 
+      ev_tag_true(gparam,'PSXSMALL'): begin
+         PSxsize=9
+         PSysize=6 ;; extra small - good for presentations
+      end
+      ev_tag_true(gparam,'PSSMALL'): begin
+         PSxsize=14.2
+         PSysize=10
+      end
+      else: begin
+         PSxsize=20
+         PSysize=9
+      end
+   endcase
    device,encapsulated=1, /helvetica,$
           filename=plotprenm+'.eps'
    device,xsize=PSxsize, ysize=PSysize,decomposed=1,/color
@@ -210,9 +215,11 @@ for i=0l,nser-1l do begin
          if not ev_tag_exist(gparam,'YERR') then begin
             yerr = fltarr(nserInd)
          endif else yerr = dat[serInd].(YerrInd)
-         oploterror,dat[serInd].(DataInd[0]),dat[serInd].(DataInd[1]),$
-                    xerr,yerr,$
-               color=colArr[i],thick=thick
+         if total(xerr) GT 0E OR total(yerr) GT 0E then begin
+            oploterror,dat[serInd].(DataInd[0]),dat[serInd].(DataInd[1]),$
+                       xerr,yerr,$
+                       color=colArr[i],thick=thick
+         endif
       endif
    endif
 endfor
@@ -235,7 +242,9 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
       if ylog then legPos[1] = 10E^(legPos[1])
    endelse
 
-   if tag_exist(gparam,'SERIES') then legTitle=gparam.series else legTitle=''
+   if tag_exist(gparam,'LEGTITLE') then legTitle=gparam.legtitle else begin
+      if tag_exist(gparam,'SERIES') then legTitle=gparam.series else legTitle=''
+   endelse
    al_legend,[legTitle,serLab],$
              linestyle=[-1,intarr(nser)],thick=thick,bthick=thick,$
              color=[!p.color,colArr],charsize=LegCharsize,$
