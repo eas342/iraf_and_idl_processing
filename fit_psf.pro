@@ -40,7 +40,7 @@ endif else begin
 endelse
 
 if yend - ystart LT minsize OR xend - xstart LT minsize then begin
-   print,'Not enough image data around location'
+   message,'Not enough image data around location',/continue
    return
 endif
 
