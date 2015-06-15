@@ -73,11 +73,11 @@ common share1, outdat
   base = WIDGET_BASE(/ROW) ;; base to store groups of buttons
   opsW = widget_base(base,uname='opsW') ;; base to store operators & operands
   opsTot = widget_base(base,uname='opsTot') ;; base to store the total operator choices
-  op1W = widget_droplist(base,title='',$
+  op1W = widget_combobox(base,$
                          UVALUE='OP1CHOICE',VALUE=dattags,uname='OP1CHOICE')
   operatorW  = widget_droplist(base,title='',$
                                UVALUE='OPERATOR',VALUE=operators,uname='OPERATOR')
-  op2W = widget_droplist(base,title='',$
+  op2W = widget_combobox(base,$
                          UVALUE='OP2CHOICE',VALUE=dattags,uname='OP2CHOICE')
   eqW = widget_text(base,value='=')
   outNmW = widget_text(base,value='MATH',uvalue='OUTNM',uname='OUTNM',/editable)
