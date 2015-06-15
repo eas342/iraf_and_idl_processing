@@ -76,6 +76,12 @@ CASE uval of
     'PARAB': begin
        quick_parab,dat,edat,gparam=gparam
     end
+    'PLOTSYM': begin
+       ev_add_tag,gparam,'PSYM',1
+    end
+    'ALLLINE': begin
+       ev_add_tag,gparam,'PSYM',0
+    end
     'MATH': begin
        plot_math,data,Y,gparam=gparam
     end
@@ -142,6 +148,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   zoomW = widget_base(topR,/column,/frame) ;; base for zoom parameters
   legW = widget_base(topR,/column,/frame) ;; base for legend parameters
   psW = widget_base(topR,/column,/frame) ;; base for postscript/png output options
+  plotPW = widget_base(topR,/column,/frame) ;; base for plot point options
 
   nextR = widget_base(base,/row) ;; base to store next row of controls
   fitW = widget_base(base,/row) ;; base for fitting lines
@@ -202,6 +209,10 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
                       label_top='Export Size',/frame)
   psPlot = WIDGET_BUTTON(psW, VALUE='Postscript Plot', UVALUE='PS')
   psFold = WIDGET_BUTTON(psW, VALUE='Open in Finder', UVALUE='CFOLDER')
+
+  ;; Buttons for changing the plot symbols
+  psymWidget = widget_button(plotPW,UVALUE='PLOTSYM',VALUE='No Lines')
+  lineWidget = widget_button(plotPW,UVALUE='ALLLINE',VALUE='All Lines')
 
   ;; Buttons for fitting
   fitMenu = widget_button(fitW,value = 'Fit',/menu)
