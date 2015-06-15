@@ -148,15 +148,22 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 
   ;; Allow the user to choose data points
   xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
-  xchoice = widget_droplist(xychoiceB,title='X Choice',$
-                           UVALUE='XCHOICE',VALUE=dattags,uname='XCHOICE')
-  ychoice = widget_droplist(xychoiceB,title='Y Choice',$
-                           UVALUE='YCHOICE',VALUE=dattags,uname='YCHOICE')
-  serWidg = widget_base(xychoiceB,/row)
-  serChoice = widget_droplist(serWidg,title='Series Choice',$
-                           UVALUE='SERCHOICE',VALUE=dattags,uname='SERCHOICE')
-  
-  roundSer = widget_text(serWidg,value='1',uvalue='ROUNDSER',uname='ROUNDSER',/editable)
+  nch = 3
+  choiceWidg = lonarr(nch)
+  choicelabel = lonarr(nch)
+  choiceSelector = lonarr(nch)
+  cPref = ['X','Y','SER']
+  cName = ['X','Y','Series']
+  for i=0l,nch-1l do begin
+     choiceWidg[i] = widget_base(xyChoiceB,/row);; each choice gets its own widget base
+     choicelabel[i] = widget_text(choiceWidg[i],value=cName[i]+' Choice:')
+     choiceSelector[i] = widget_combobox(choiceWidg[i],$
+                                      UVALUE=cPref[i]+'CHOICE',VALUE=dattags,$
+                                      uname=cPref[i]+'CHOICE')
+     if cPREF[i] EQ 'SER' then begin
+        roundSer = widget_text(choiceWidg[i],value='1',uvalue='ROUNDSER',uname='ROUNDSER',/editable)
+     endif
+  endfor
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
