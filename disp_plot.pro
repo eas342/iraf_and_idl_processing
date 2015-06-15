@@ -111,6 +111,10 @@ endif
 ; Check if the arrays are strings and if so convert them to floats
 for i=0l,1l do begin
    if size(dat.(dataInd[i]),/type) EQ 7 then begin
+      if total(valid_num(dat.(dataInd[i]))) NE n_elements(dat) then begin
+         message,'Attempted to plot invalid string',/cont
+         return
+      endif
       newArr = float(dat.(dataInd[i]))
       ev_undefine_tag,dat,gparam.pkeys[i]
       ev_add_tag,dat,gparam.pkeys[i],newArr 
