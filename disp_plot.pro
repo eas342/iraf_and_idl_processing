@@ -143,10 +143,12 @@ if ev_tag_exist(gparam,'ZOOMBOX') then begin
 endif else begin
    if ev_tag_exist(gparam,'XTHRESH') then begin
       myXrange = threshold(dat.(DataInd[0]),mult=0.1)
-   endif else myXrange = [min(dat.(DataInd[0])),max(dat.(DataInd[0]))]
+   endif else myXrange = $
+      [min(dat.(DataInd[0]),/nan),max(dat.(DataInd[0]),/nan)]
    if ev_tag_exist(gparam,'YTHRESH') then begin
       myYrange = threshold(dat.(DataInd[1]))
-   endif else myYrange = [min(dat.(DataInd[1])),max(dat.(DataInd[1]))]
+   endif else myYrange = $
+      [min(dat.(DataInd[1]),/nan),max(dat.(DataInd[1]),/nan)]
 endelse
 
 if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
