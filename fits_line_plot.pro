@@ -22,34 +22,42 @@ endif
 firsttime = 1
 counter=0
 maxCounter = 100
+
+
+
 while counter LT maxCounter do begin
    slot = i ;; current image slot number
    a = mod_rdfits(fileL[i],0,header,plotp=plotp)
 
+   ;; Make sure the coordintes are in range
+   sz = size(a)
+   xcoor = checkrange(LineP.xcoor,0,sz[1]-1l)
+   ycoor = checkrange(LineP.ycoor,0,sz[2]-1l)
+
    ;; Get the plot abscissa axis
    if LineP.direction EQ 'x' then begin
-      xplot = min(Linep.xcoor) + lindgen(abs(LineP.xcoor[1] - LineP.xcoor[0]))
+      xplot = min(xcoor) + lindgen(abs(xcoor[1] - xcoor[0]))
    endif else begin
-      xplot = min(Linep.ycoor) + lindgen(abs(LineP.ycoor[1] - Linep.ycoor[0]))
+      xplot = min(ycoor) + lindgen(abs(ycoor[1] - ycoor[0]))
    endelse
    ;; Get the ordinate axis
 ;   case 1 of 
 ;      LineP.type EQ 'line': begin
    if keyword_set(median) then begin
       if LineP.direction EQ 'x' then begin
-         yplot = median(a[xplot,LineP.ycoor[0]:LineP.ycoor[1]],dimension=2)
+         yplot = median(a[xplot,ycoor[0]:ycoor[1]],dimension=2)
       endif else begin
-         yplot = median(a[LineP.xcoor[0]:LineP.xcoor[1],xplot],dimension=1)
+         yplot = median(a[xcoor[0]:xcoor[1],xplot],dimension=1)
       endelse
    endif else begin
       if LineP.direction EQ 'x' then begin
          if LineP.type EQ 'box' then begin
-            yplot = total(a[xplot,LineP.ycoor[0]:LineP.ycoor[1]],2)
-            yplot = yplot / float(LineP.ycoor[1] - LineP.ycoor[0] + 1l) ;; renormalize for avg
-         endif else yplot = a[xplot,LineP.ycoor[0]]
+            yplot = total(a[xplot,ycoor[0]:ycoor[1]],2)
+            yplot = yplot / float(ycoor[1] - ycoor[0] + 1l) ;; renormalize for avg
+         endif else yplot = a[xplot,ycoor[0]]
       endif else begin
-         yplot = total(a[LineP.xcoor[0]:LineP.xcoor[1],xplot],1)
-         yplot = yplot / float(LineP.xcoor[1] - LineP.xcoor[0] + 1l) ;; renormalize for avg
+         yplot = total(a[xcoor[0]:xcoor[1],xplot],1)
+         yplot = yplot / float(xcoor[1] - xcoor[0] + 1l) ;; renormalize for avg
       endelse
    endelse
    if keyword_set(normalize) then begin
@@ -61,11 +69,16 @@ while counter LT maxCounter do begin
 
    if counter GT 0 and keyword_set(overplot) then begin
       plottedInd = [plottedInd,i]
-      ev_oplot,data,xplot,yplot,gparam=gparam
-      newslabel = [gparam.slabel,clobber_dir(filel[i],/exten)]
-      ev_undefine_tag,gparam,'slabel'
-      gparam = create_struct(gparam,'slabel',newslabel)
-      genplot,data,gparam=gparam
+      if counter GT n_elements(filel) -1l then begin
+         message,'Finished plotting all files.',/cont
+         genplot,data,gparam=gparam
+      endif else begin 
+         ev_oplot,data,xplot,yplot,gparam=gparam
+         newslabel = [gparam.slabel,clobber_dir(filel[i],/exten)]
+         ev_undefine_tag,gparam,'slabel'
+         gparam = create_struct(gparam,'slabel',newslabel)
+         genplot,data,gparam=gparam
+      endelse
    endif else begin
       gparam = create_struct('TITLES',[lineP.direction+ 'coordinate',$
                                        'Counts',''],$
