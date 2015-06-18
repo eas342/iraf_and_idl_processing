@@ -84,6 +84,7 @@ for i=0l,lastfile do begin
    colNum = findgen(Xlength)  ;; column number
    outImage = a
    profImage = a
+   bimg = a * !values.f_nan
    fitImage = fltarr(xlength,ylength) ;; profile fits
    resImage = fltarr(xlength,ylength) ;; profile-subtracted (residuals)
    cosImage = intarr(xlength,ylength) ;; cosmic ray image
@@ -123,14 +124,12 @@ for i=0l,lastfile do begin
                                        mask=maskArray,niter=Fiter,$
                                        showplot=showB,Nsig=Nsig,sigma=backsigma)
          
-         for k=0l,Nap-1l do begin
-            ;; Save the background flux
-            bflux[j,k] = eval_poly(posit[i,k],modelBParams)
-         endfor
+         ;; Save a background image
+         bimg[j,*] = eval_poly(rownum,modelBParams)
          
          ;; Save the background uncertainty
          bsigmas[j] = backsigma
-         
+
          outImage[j,*] = a[j,*] - eval_poly(rownum,modelBParams)
          profimage[j,*] = norm_array(transpose(outimage[j,*]),apsize,posit[i,*])
          
@@ -192,6 +191,15 @@ for i=0l,lastfile do begin
          proflux[*,k] = total(outimage[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]],2) /$
                         total(fitImage[*,Apstart[k]:ApEnd[k]]^2,2)
       endfor
+
+      ;; FInd the profile-weighted background spectrum
+      bcolumn = eval_poly(rownum,modelBParams) ;; background for one column
+      for k=0l,Nap-1l do begin
+         ;; Save the background flux
+         bflux[*,k] =  total(bimg[*,Apstart[k]:ApEnd[k]] * fitImage[*,Apstart[k]:ApEnd[k]],2) /$
+                       total(fitImage[*,Apstart[k]:ApEnd[k]]^2,2)
+      endfor
+
       
       ;; Find the variance estimator & variance-weighted optimal extraction
       varImage = rebin(bsigmas^2,xlength,ylength) + readN^2 ;; background & read noise
