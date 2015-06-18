@@ -64,6 +64,11 @@ if ev_tag_true(gparam,'NOMARGLEG') then begin
 endif else xmargin = xmarginLeg
 
 npt = n_elements(X)
+if npt EQ 0 then begin
+   message,'Input undefined.',/cont
+   return
+endif
+
 type = size(X,/type)
 
 if type NE 8 then begin
@@ -132,9 +137,14 @@ if not ev_tag_exist(gparam,'GFLAG') then begin
 endif else gflag = gparam.gflag
 gInd = where(gflag EQ 1);; good indices
 if gInd EQ [-1] then begin
-   print,'No valid points to plot'
+   message,'No valid points to plot'
+   return
 endif
-
+if n_elements(gInd) EQ 1 then begin
+   message,'Only 1 valid point to plot'
+   return
+endif
+stop
 dat = dat[gInd]
 
 if ev_tag_exist(gparam,'ZOOMBOX') then begin

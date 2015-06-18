@@ -14,6 +14,7 @@ idParam = widget_info(ev.top,find_by_uname="paramw")
 widget_control, idParam, get_uvalue= gparam
 idY = widget_info(ev.top,find_by_uname="ywidget")
 widget_control, idY, get_uvalue= Y
+
 disp_plot,data,y,gparam=gparam,dat=dat,edat=edat,/preponly
 dattags = tag_names(dat)
 
@@ -138,6 +139,10 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   ;; Prepare the data correctly (like at parameter keys, create a data
   ;; structure, etc.)
 
+  if n_elements(data) LE 1 then begin
+     message,'Not enough data to plot',/cont
+     return
+  endif
   disp_plot,data,y,gparam=gparam,/preponly,dat=dat,edat=edat
   datTags = tag_names(dat)
 
