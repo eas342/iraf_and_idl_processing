@@ -144,7 +144,7 @@ if n_elements(gInd) EQ 1 then begin
    message,'Only 1 valid point to plot'
    return
 endif
-stop
+
 dat = dat[gInd]
 
 if ev_tag_exist(gparam,'ZOOMBOX') then begin
