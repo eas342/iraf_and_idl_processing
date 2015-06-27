@@ -1,4 +1,5 @@
-function rescale_model,y,yerr,ymodel,xmodel,xdata
+function rescale_model,y,yerr,ymodel,xmodel,xdata,$
+                       interpolated=interpolated
 ;; Rescales a model to match the data
 ;; if xdata and xmodel are supplied, it interpolate the model to data
 
@@ -8,12 +9,13 @@ if n_elements(xmodel) GT 0 then begin
 
 endif else ycompar = ymodel
 
-scaleF = total(y^2/yerr^2)/total(ycompar * y/yerr^2)
+scaleF = total(y * ycompar/yerr^2)/total(ycompar^2/yerr^2)
+
 
 if n_elements(xmodel) GT 0 then begin
-   return,scaleF * ymodel
+   interpolated = ycompar * scaleF
+   return,ymodel * scaleF
 endif else begin
    return,scaleF * ycompar
 endelse
-
 end
