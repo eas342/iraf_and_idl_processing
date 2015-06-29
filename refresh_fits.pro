@@ -1,6 +1,11 @@
-pro refresh_fits,nfile,fileL,plotp,linep,slot,display=display
+pro refresh_fits,nfile,fileL,plotp,linep,slot,display=display,$
+                 pref=pref
 
-allfits = file_search('*.fits')
+if n_elements(pref) EQ 0 then pref=''
+spawn,'ls -t '+pref+'*.fits > ev_sorted_filelist.txt'
+readcol,'ev_sorted_filelist.txt',sortedF,format='(A)',/silent
+allfits = reverse(sortedF)
+;allfits = file_search(pref+'*.fits')
 ntot = n_elements(allfits)
 startf = max([ntot - nfile,0l])
 endF = ntot -1l
