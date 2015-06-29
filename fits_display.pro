@@ -17,7 +17,7 @@ pro fits_display,input,findscale=findscale,$
 
 type = size(input,/type)
 if type EQ 7 then begin
-   a = mod_rdfits(input,0,header,plotp=plotp)
+   a = mod_rdfits(input,0,header,plotp=plotp,/silent)
 endif else a = input
 
 if n_elements(a) LT 2 then begin
@@ -32,7 +32,7 @@ case 1 of
    else: Fitle = ''
 endcase
 
-
+if ev_tag_true(plotp,'STRETCH') EQ 0 then paspectR=1.0
 
 if keyword_set(findscale) then begin
 ;; start cursor
@@ -61,12 +61,12 @@ if keyword_set(findscale) then begin
    plotimage,a,range=myPrange,$
              xrange=myXrange,yrange=myYrange,$
              title='Draw lower Left corner of box for scaling and left click',$
-             pixel_aspect_ratio=1.0
+             pixel_aspect_ratio=paspectR
    cursor,xboxBL,yboxBL,/down
    plotimage,a,range=myPrange,$
              xrange=myXrange,yrange=myYrange,$
              title='Draw Upper Right corner of box for scaling and left click',$
-             pixel_aspect_ratio=1.0
+             pixel_aspect_ratio=paspectR
    cursor,xboxTR,yboxTR,/down
    boxW = xboxTR - xboxBL
    boxH = yboxTR - yboxBL
@@ -86,7 +86,7 @@ if keyword_set(findscale) then begin
       plotimage,a,range=scaleNums,$
                 title='Scaling Mode L click to scale, R click to exit',$
                 xrange=myXrange,yrange=myYrange,$
-                pixel_aspect_ratio=1.0
+                pixel_aspect_ratio=paspectR
       plots,boxArrX,boxarrY,color=mycol('green'),thick=1.8
       cursor,xcur,ycur,/normal,/down
       ev_add_tag,plotp,'scale',usescale
@@ -143,7 +143,7 @@ endif else begin
 endelse
 ev_mplotimage,a,range=scaleNums,title=Ftitle,$
               xrange=myXrange,yrange=myYrange,$
-              pixel_aspect_ratio=1.0,$
+              pixel_aspect_ratio=paspectR,$
               xtick_get=xtickvals,ytick_get=ytickvals,$
               xtickformat=myxtickformat,ytickformat=myytickformat
 
