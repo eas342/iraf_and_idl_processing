@@ -20,6 +20,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(fedit) to export filelist to a text file for editing',$
            '(fread) to read filelist that was made by fedit',$
            '(l)oad another parameter file.',$
+           '(st)retch image to fill screen (losing 1:1 pixel aspect ratio)',$
+           '(unst)retch image to preserve 1:1 pixel aspect ratio',$
            '(z)oom in','(save) EPS of FITS image',$
            '(zz)oom in from a zoomed',$
            '(rzoom) to reset the zoom',$
@@ -93,7 +95,11 @@ while status NE 'q' and status NE 'Q' do begin
          endelse
       end
       splitstatus[0] EQ 'ref': begin
-         refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot,/display
+         if n_elements(splitstatus) GT 2 then begin
+            pref =splitstatus[2]
+         endif else pref=''
+         refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot,/display,$
+                      pref=pref
       end
       status EQ 's' OR status EQ 'S': begin
          fits_display,filel[slot],/findscale,plotp=plotp,lineP=lineP
@@ -199,6 +205,12 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'z' OR status EQ 'Z': begin
          get_zoom,filel[slot],plotp=plotp,/restart
+      end
+      status EQ 'st' OR status EQ 'ST': begin
+         ev_add_tag,plotp,'STRETCH',1
+      end
+      status EQ 'unst' OR status EQ 'UNST': begin
+         ev_add_tag,plotp,'STRETCH',0
       end
       status EQ 'zz' OR status EQ 'ZZ': begin
          get_zoom,filel[slot],plotp=plotp
