@@ -27,6 +27,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rzoom) to reset the zoom',$
            '(cflat) to choose a flat','(qflat) to cancel a flat',$
            '(fitpsf) to fit a PSF',$
+           '(bsize) to set the box size for PSF fitting',$
            '(mfit) to fit many PSFs',$
            '(sphot) to save the photomery',$
            '(refit) to fit many PSFs from previous file',$
@@ -75,13 +76,13 @@ while status NE 'q' and status NE 'Q' do begin
                read,filter
                filen = choose_file(filetype=filter)
             end
-            else: filen = dialog_pickfile(/read,filter='*.fits')
+            else: filen = dialog_pickfile(/read,filter='*.fits',/multiple)
          endcase
-         fits_display,filen,plotp=plotp,lineP=lineP
          if n_elements(fileL) EQ 0 then begin
             fileL = filen
          endif else fileL = [fileL,filen]
          slot = n_elements(fileL)-1l
+         fits_display,fileL[slot],plotp=plotp,lineP=lineP
       end
       status EQ 'rfa' OR status EQ 'RFA': begin
          prevFileL = fileL
@@ -274,6 +275,16 @@ while status NE 'q' and status NE 'Q' do begin
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
          quick_specsum,filel[slot],float(splitstatus[1]),$
                        float(splitstatus[2]),plotp=plotp
+      end
+      splitstatus[0] EQ 'dospec' OR splitstatus[0] EQ 'DOSPEC': begin
+         if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
+         spec_from_ap,filel[slot],doap,$
+                      plotp=plotp,linep=linep
+      end
+      splitstatus[0] EQ 'pspec' OR splitstatus[0] EQ 'PSPEC': begin
+         if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
+         spec_from_ap,filel[slot],doap,$
+                      plotp=plotp,linep=linep,/peak
       end
       status EQ 'cflat' OR status EQ 'CFLAT': begin
          choose_flat,plotp

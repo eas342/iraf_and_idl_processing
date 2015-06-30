@@ -16,7 +16,7 @@ if keyword_set(showAp) then begin
 endif
 
 oneStruct = create_struct('sum',0E,'nord',oArr.nord,$
-                          'ord',0,'xp',0l)
+                          'ord',0,'xp',0l,'peak',0E)
 sumArr = replicate(oneStruct,oArr.xsize * oArr.nord)
 ymod = fltarr(oArr.nord,oArr.xsize)
 xArr = findgen(oArr.xsize)
@@ -34,6 +34,7 @@ for i=0l,oArr.nord-1l do begin
       sumArr[fI].xp = xArr[j]
       sumArr[fI].ord = oArr.orderL[i]
       sumArr[fI].sum = total(a[j,startp[j]:endp[j]])
+      sumArr[fI].peak = max(a[j,startp[j]:endp[j]],/nan)
    endfor
 endfor
 return,sumArr
