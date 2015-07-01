@@ -99,6 +99,9 @@ while status NE 'q' and status NE 'Q' do begin
          if n_elements(splitstatus) GT 2 then begin
             pref =splitstatus[2]
          endif else pref=''
+         if n_elements(splitstatus) LE 1 then begin
+            splitstatus=['ref','1']
+         endif
          refresh_fits,long(splitstatus[1]),filel,plotp,linep,slot,/display,$
                       pref=pref
       end
