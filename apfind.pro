@@ -1,8 +1,10 @@
-pro apfind,filen,apsize,plotp=plotp,linep=linep,peak=peak,one=one
+pro apfind,filen,apsize,plotp=plotp,linep=linep,peak=peak,one=one,$
+           savecal=savecal
 ;; Finds the aperture(s)
 ;; peak - finds the peak
 ;; one - only show the positive aperture spectrum (otherwise it
 ;;          addes the two)
+;; savecal - saves a calibrator
 
 ;; Get the order info
 restore,reduction_dir()+'/data/ts4_order_coeff.sav'
@@ -52,10 +54,35 @@ restore,reduction_dir()+'/data/ts4_order_coeff.sav'
    ycomb = ypos
    ycomb.sum = ypos.sum - shiftYneg
 
+   if file_exists('A0_cal.sav') then begin
+      restore,'A0_cal.sav'
+      goodp = where(cali.sum NE 0E and finite(cali.sum),complement=badp)
+      npt = n_elements(ycomb)
+      newSum = fltarr(npt)
+      if badp NE [-1] then begin
+         newSum[badp] = !values.f_nan
+      endif
+      if goodp NE [-1] then begin
+         newSum[goodp] = ycomb[goodp].sum / cali[goodp].divspec
+      endif
+      ev_add_tag,ycomb,'CALIB',newSum
+   endif
+
 ;   genplot,ydat,gparam=gparam
    if keyword_set(peak) then begin
       gparam.pkeys=['WAV','PEAK']
       genplot,ypos,gparam=gparam
    endif else genplot,ycomb,gparam=gparam
+
+   cali = ycomb
+   if keyword_set(savecal) then begin
+      threshCal = threshold(cali.sum)
+      npt = n_elements(cali.sum)
+      divideSpec = cali.sum / threshCal[1]
+      badp = where(divideSpec LT 0.01)
+      if badp NE [-1] then divideSpec[badp] = !values.f_nan
+      ev_add_tag,cali,'DIVSPEC',divideSPec
+      save,cali,filename='A0_cal.sav'
+   endif
 
 end

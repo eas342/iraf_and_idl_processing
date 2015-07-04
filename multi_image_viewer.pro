@@ -4,6 +4,7 @@ pro multi_image_viewer
 actions = ['(q)uit','(r)ead new file',$
            '(rf) read a file with filter',$
            '(rfa) read a set of files with a filter',$
+           '(paird) # to pair down file list into # images',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(fullscale) to use min/max for scaling',$
            '(ref #) to refesh the last #',$
@@ -34,6 +35,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
+           '(dospec # ) to auto find a spectrum #ap and quickly extract',$
+           '(calspec #) to save a calibration spectrum)',$
            '(ashift) to use arrow keys to shift an image',$
            '(asave) to save all images in file list',$
            '(sparam) to save the display parameters as custom filename',$
@@ -95,6 +98,8 @@ while status NE 'q' and status NE 'Q' do begin
             fits_display,filel[slot],plotp=plotp,lineP=lineP
          endelse
       end
+      splitstatus[0] EQ 'paird': $
+         fileL = pair_down(splitstatus,nfile,fileL)
       splitstatus[0] EQ 'ref': begin
          if n_elements(splitstatus) GT 2 then begin
             pref =splitstatus[2]
@@ -283,6 +288,11 @@ while status NE 'q' and status NE 'Q' do begin
          if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
          spec_from_ap,filel[slot],doap,$
                       plotp=plotp,linep=linep
+      end
+      splitstatus[0] EQ 'calspec' OR splitstatus[0] EQ 'CALSPEC': begin
+         if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
+         spec_from_ap,filel[slot],doap,$
+                      plotp=plotp,linep=linep,/savecal
       end
       splitstatus[0] EQ 'pspec' OR splitstatus[0] EQ 'PSPEC': begin
          if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
