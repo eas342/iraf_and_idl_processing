@@ -4,7 +4,7 @@ pro multi_image_viewer
 actions = ['(q)uit','(r)ead new file',$
            '(rf) read a file with filter',$
            '(rfa) read a set of files with a filter',$
-           '(paird) # to pair down file list into # images',$
+           '(pared) # to pare down file list into # images',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(fullscale) to use min/max for scaling',$
            '(ref #) to refesh the last #',$
@@ -98,8 +98,8 @@ while status NE 'q' and status NE 'Q' do begin
             fits_display,filel[slot],plotp=plotp,lineP=lineP
          endelse
       end
-      splitstatus[0] EQ 'paird': $
-         fileL = pair_down(splitstatus,nfile,fileL)
+      splitstatus[0] EQ 'pared': $
+         fileL = pare_down(splitstatus,nfile,fileL,slot=slot)
       splitstatus[0] EQ 'ref': begin
          if n_elements(splitstatus) GT 2 then begin
             pref =splitstatus[2]

@@ -1,5 +1,5 @@
-function pair_down,splitstatus,nfile,fileL
-;; pairs down a list of files
+function pare_down,splitstatus,nfile,fileL,slot=slot
+;; pares down a list of files
   if n_elements(splitstatus) LE 1 then pnum=5 else begin
      if valid_num(splitstatus[1]) then begin
         pnum = long(splitstatus[1])
@@ -9,7 +9,7 @@ function pair_down,splitstatus,nfile,fileL
      endelse
   endelse
   subCh = floor(findgen(pnum)/float(pnum-1) * float(nfile-1l))
+  slot = pnum - 1l
   return,fileL[subCh]
-  
   
 end
