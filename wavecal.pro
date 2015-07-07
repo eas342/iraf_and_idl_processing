@@ -18,7 +18,7 @@ while ~ EOF(1) do begin
          readf,1,oneline
          reads,oneline,storageA
          pixel[i] = storageA[0]
-         wavel[i] = storageA[1]/1E4 ;; in microns
+         wavel[i] = storageA[2]/1E4 ;; in microns
       endfor
    endif
 endwhile
