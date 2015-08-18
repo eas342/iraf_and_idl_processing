@@ -7,6 +7,10 @@ function cross_cor_find,x1,x2,nlagpt=nlagpt,fitsize=fitsize,$
   if n_elements(fitsize) EQ 0 then fitsize=4l
   if n_elements(NpolyF) EQ 0 then NpolyF=2l
   lagarray = lindgen(nlagpt) - floor(nlagpt/2l)
+  if n_elements(x1) NE n_elements(x2) then begin
+     message,'Inputs to cross-cor find not the same length',/cont
+     return,'bad'
+  endif
   crosscor = c_correlate(x1,x2,lagarray)
   maxVal = max(crosscor,topInd)
   lowp = max([0l,topInd - fitsize])
