@@ -296,6 +296,10 @@ for i=0l,lastfile do begin
       ;; shift to match the core and peak, not so much wings
          shiftAmt = cross_cor_find(star1quickProf,star2quickProf,$
                                    nlag=50l,fitsize=3l,showplot=showstarshift)
+         szShiftAmtVariable = size(shiftAmt)
+         if szShiftAmtVariable[1] EQ 7 then begin
+            message,'Bad shift returned from cross_cor_find'
+         endif
 ;      midAp = round(apsize)
 ;      corestart = MidAp - round(Apsize/2E)
 ;      coreend = midAp + round(Apsize/2E)
