@@ -125,7 +125,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 ;; restore - restores the previous parameter settings
 
   if keyword_set(help) then begin
-     spawn,'open /Users/bokonon/triplespec/iraf_scripts/genplot_help.txt'
+     spawn,'open '+reduction_dir()+'/genplot_help.txt'
      return
   endif
 
