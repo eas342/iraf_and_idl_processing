@@ -21,7 +21,6 @@ if keyword_set(restore) then begin
    endif
 endif
 
-
 ;; Set up postscript, PDF and PNG plots
 if ev_tag_true(gparam,'PS')then begin
    set_plot,'ps'
@@ -88,7 +87,6 @@ endif else begin
 endelse
 tags = tag_names(dat)
 
-
 if not ev_tag_exist(gparam,'PKEYS') then begin
    ev_add_tag,gparam,'PKEYS',[tags[0],tags[1]]
    ;; plot keys to describe tags to plot
@@ -113,6 +111,7 @@ endif
 if ev_tag_exist(gparam,'XERR') then begin
    XerrInd = where(gparam.xerr EQ tags)
 endif
+
 ; Check if the arrays are strings and if so convert them to floats
 for i=0l,1l do begin
    if size(dat.(dataInd[i]),/type) EQ 7 then begin
@@ -121,8 +120,8 @@ for i=0l,1l do begin
          return
       endif
       newArr = float(dat.(dataInd[i]))
-      ev_undefine_tag,dat,gparam.pkeys[i]
-      ev_add_tag,dat,gparam.pkeys[i],newArr 
+      ev_undefine_tag,dat,gparam.pkeys[i],replace=newArr
+;      ev_add_tag,dat,gparam.pkeys[i],newArr 
       ;; the undefining and re-adding the field will re-order the
       ;; indices so you need to redo them
       ;; find the new indices
@@ -130,7 +129,6 @@ for i=0l,1l do begin
       tags = tag_names(dat)
    endif
 endfor
-
 
 if not ev_tag_exist(gparam,'GFLAG') then begin
    gflag = intarr(npt) + 1
@@ -145,17 +143,22 @@ if n_elements(gInd) EQ 1 then begin
    return
 endif
 
+if n_elements(dat) EQ 1 then begin
+   message,"Plotting data should be an array of structures,"+$
+           "but it appears to be a structure with arrays"
+   return
+endif
 dat = dat[gInd]
 
 if ev_tag_exist(gparam,'ZOOMBOX') then begin
    myXrange = gparam.zoombox[0:1,0]
    myYrange = gparam.zoombox[0:1,1]
 endif else begin
-   if ev_tag_exist(gparam,'XTHRESH') then begin
+   if ev_tag_true(gparam,'XTHRESH') then begin
       myXrange = threshold(dat.(DataInd[0]),mult=0.1)
    endif else myXrange = $
       [min(dat.(DataInd[0]),/nan),max(dat.(DataInd[0]),/nan)]
-   if ev_tag_exist(gparam,'YTHRESH') then begin
+   if ev_tag_true(gparam,'YTHRESH') then begin
       myYrange = threshold(dat.(DataInd[1]))
    endif else myYrange = $
       [min(dat.(DataInd[1]),/nan),max(dat.(DataInd[1]),/nan)]
@@ -197,10 +200,11 @@ colArr = myarraycol(nser,psversion=ev_tag_true(gparam,'PS'))
 if ev_tag_exist(gparam,'PSYM') then begin
    plotsym,0,thick=thick
    if gparam.psym[0] EQ 1 then begin
-      mypsym=8 + fltarr(nser)
+      mypsym=8
    endif else begin
       mypsym=gparam.psym
    endelse
+   if n_elements(mypsym) EQ 1 then mypsym = mypsym + fltarr(nser)
 endif else mypsym=fltarr(nser)
 
 ;; Preponly will prepare the gparam and data correctly but do no plotting
@@ -238,6 +242,7 @@ for i=0l,nser-1l do begin
          endif
       endif
    endif
+
 endfor
 
 ;; Make a legend for the series of plots
