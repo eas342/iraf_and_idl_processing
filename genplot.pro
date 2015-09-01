@@ -71,6 +71,11 @@ CASE uval of
        gparam.PKEYS[1] = dattags[ev.index]
        gparam.TITLES[1] = gparam.PKEYS[1]
     end
+    'SWITCHXY': begin
+       prevkeys = gparam.PKEYS
+       gparam.PKEYS = reverse(gparam.PKEYS)
+       gparam.TITLES[0:1] = reverse(gparam.TITLES[0:1])
+    end
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
     end
@@ -113,7 +118,7 @@ CASE uval of
   widget_control, ev.top, set_uvalue = data
   widget_control, idParam, set_uvalue = gparam ;; save the plot parameters
   widget_control, idY, set_uvalue = y ;; save the y data
-
+  update_widgets,ev.top,data,edat,gparam
 
 END
 
@@ -176,6 +181,8 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
         roundSer = widget_text(choiceWidg[i],value='1',uvalue='ROUNDSER',uname='ROUNDSER',/editable)
      endif
   endfor
+  ;; Button to switch X and Y axes
+  choiceSwitch = widget_button(xyChoiceB,Value='Switch X/Y',UVALUE='SWITCHXY')
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
@@ -191,13 +198,13 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   button5 = WIDGET_BUTTON(zoomW, VALUE='Default Ranges',UVALUE='RZOOM')
 
   ;; A radio button to choose the plot scale Type
-  wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
-                       /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
-                      uvalue='XZTYPE',set_value=0,label_top='X Default',/frame)
-  wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
-                       /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
-                      uvalue='YZTYPE',set_value=0,label_top='Y Default',/frame)
-
+  for i=0l,1l do begin
+     wBgroup1 = CW_BGROUP(zoomW, ['Full','Threshold'], button_uvalue = [0,1],$
+                          /ROW, /EXCLUSIVE, /RETURN_NAME, /NO_RELEASE, $
+                          uvalue=cPref[i]+'ZTYPE',set_value=0,$
+                          label_top=cPref[i]+' Default',/frame,$
+                          uname=cPref[i]+'ZTYPE')
+  endfor
 
   ;; Adjust the legend with the legend widgets
   ;; Margin legend widget

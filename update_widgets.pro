@@ -5,16 +5,25 @@ pro update_widgets,base,dat,edat,gparam
 ;; edat - genplot extra data structure
 ;; gparam - general plot parameters
 
-  ;; Set the X choices and Y choices to current gparam
-  dataInd = key_indices(dat,gparam)
-  idXchoice = widget_info(base,find_by_uname="XCHOICE")
-  idYchoice = widget_info(base,find_by_uname="YCHOICE")
-  idSerchoice = widget_info(base,find_by_uname="SERCHOICE")
+  choiceNames = ['X','Y','SER'] ;; for looping around
+
   dattags = tag_names(dat)
-  widget_control,idXchoice,set_combobox_select=dataInd[0],set_value=dattags
-  widget_control,idYchoice,set_combobox_select=dataInd[1],set_value=dattags
-  widget_control,idSerchoice,set_combobox_select=dataInd[2],set_value=dattags
-  
+  ;; Set the X, Y and series choices to current gparam
+  dataInd = key_indices(dat,gparam)
+  for i=0l,2l do begin
+     idchoice = widget_info(base,find_by_uname=choiceNames[i]+"CHOICE")
+     widget_control,idchoice,set_combobox_select=dataInd[i],set_value=dattags
+  endfor
+
+  ;; Set the threshold buttons to what gparam says
+  for i=0l,1l do begin
+     if ev_tag_true(gparam,choiceNames[i]+'THRESH') then begin
+        idthresh = widget_info(base,find_by_uname=choiceNames[i]+"ZTYPE")
+        widget_control,idThresh,set_value=1
+     endif
+  endfor
+  idYthresh = widget_info(base,find_by_uname="YZTYPE")
+
   idSerRound = widget_info(base,find_by_uname="ROUNDSER")
   if ev_tag_exist(gparam,'ROUNDSER') then begin
      widget_control,idSerRound,set_value=strtrim(gparam.roundser,1)
