@@ -29,9 +29,6 @@ CASE uval of
     'PSSIZE':  ev_add_tag,gparam,'PSSMALL',ev.value
     'ZOOM'  :  get_zoom,data,y,plotp=gparam,/plotmode
     'RZOOM' :  get_zoom,data,y,plotp=gparam,/plotmode,/rzoom
-    'SCALE' : begin
-       disp_plot,data,gparam=gparam,/psplot
-    end
     'XZTYPE' : begin
        if ev.value EQ 1 then begin
           ev_add_tag,gparam,'XTHRESH',1
@@ -75,6 +72,9 @@ CASE uval of
        prevkeys = gparam.PKEYS
        gparam.PKEYS = reverse(gparam.PKEYS)
        gparam.TITLES[0:1] = reverse(gparam.TITLES[0:1])
+    end
+    'HISTX': begin
+       genhist,data,gparam=gparam
     end
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
@@ -183,6 +183,8 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   endfor
   ;; Button to switch X and Y axes
   choiceSwitch = widget_button(xyChoiceB,Value='Switch X/Y',UVALUE='SWITCHXY')
+  ;; Button to 
+  histButton = widget_button(xyChoiceB,Value='Histogram X',UVALUE='HISTX')
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
