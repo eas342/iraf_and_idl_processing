@@ -1,5 +1,5 @@
 function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
-                    plotp=plotp
+                    plotp=plotp,fileDescrip=fileDescrip
 ;; Same as mrdfits, but if the image has been trimmed, this script
 ;; finds puts a section of 0s where the original image was (but only
 ;; in the short direction, since the long direction isn't known)
@@ -8,9 +8,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   type = size(filen,/type)
   if type NE 7 then begin
      c = filen
+     fileDescrip = 'None'
      return, c
      ;; Check if it's already an image
-  endif
+  endif else fileDescrip=filen
 
   a = mrdfits(filen,ext,header,silent=silent)
   if n_elements(a) LT 2 then begin
