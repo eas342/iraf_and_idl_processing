@@ -27,6 +27,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(zz)oom in from a zoomed',$
            '(rzoom) to reset the zoom',$
            '(cflat) to choose a flat','(qflat) to cancel a flat',$
+           '(dcssub) to automatically do a Double-correlated subtraction',$
+           '(qdcs) to cancel DCS subtraction',$
            '(fitpsf) to fit a PSF',$
            '(bsize) to set the box size for PSF fitting',$
            '(mfit) to fit many PSFs',$
@@ -304,6 +306,12 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'qflat' OR status EQ 'QFLAT': begin
          ev_undefine_tag,plotp,'FLATFILE'
+      end
+      status EQ 'DCSsub' OR status EQ 'dcssub': begin
+         ev_add_tag,plotp,'DCSSUB',1
+      end
+      status EQ 'qDCS' OR status EQ 'qdcs': begin
+         ev_add_tag,plotp,'DCSSUB',0
       end
       else: print,'Unrecognized Action'
    endcase

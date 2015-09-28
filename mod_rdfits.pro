@@ -51,8 +51,13 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   if fxpar(header,'NAXIS') EQ 3 then begin
      ;; For now we'll read spectra 3d data cubes for spsectra
      ;; as firsta aperture
-     c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
-     c[*,*] = b[*,0,*]
+     if ev_tag_true(plotp,'DCSsub') then begin
+        c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS2'))
+        c[*,*] = b[*,*,1] - b[*,*,0]
+     endif else begin
+        c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
+        c[*,*] = b[*,0,*]
+     endelse
   endif else c=b
 
   return,c
