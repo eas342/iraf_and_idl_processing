@@ -23,13 +23,13 @@ for i=0,nser-1l do begin
    endif
    if i EQ 0 then begin
       yhist = histogram(xdat,nbin=nbin,locations=xhist,/nan)
-      ynorm = float(yhist)/float(max(yhist))
+      ynorm = float(yhist)/float(total(yhist))
       histdat = struct_arrays(create_struct('xhist',xhist,$
                                             'yhist',ynorm))
       pop1 = xdat[goodp]
    endif else begin
       yhist = histogram(xdat,nbin=nbin,min=min(xhist),max=max(xhist),/nan)
-      ynorm = float(yhist)/float(max(yhist))
+      ynorm = float(yhist)/float(total(yhist))
       ev_oplot,histdat,xhist,ynorm,gparam=histparam
       if i EQ 1 then pop2 = xdat[goodp]
    endelse
@@ -48,6 +48,6 @@ endif
 ev_add_tag,histparam,'TITLES',[tags[dataInd[0]],'Frequency','']
 
 ;genplot,histdat,edat,gparam=histparam
-disp_plot,histdat,edat,gparam=histparam
+genplot,histdat,edat,gparam=histparam
 
 end
