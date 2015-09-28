@@ -8,7 +8,7 @@ minsize=2 ;; minimum size for PSF fitting (below this there is not enough data t
 type = size(input,/type)
 
 if type EQ 7 then begin
-   a = mod_rdfits(input,0,header)
+   a = mod_rdfits(input,0,header,plotp=plotp)
 endif else a=input
 
 sz = size(a)
