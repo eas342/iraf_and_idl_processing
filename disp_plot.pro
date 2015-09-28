@@ -242,7 +242,12 @@ if nser GT 1 or ev_tag_exist(gparam,'SLABEL') then begin
    endelse
 
    if tag_exist(gparam,'LEGTITLE') then legTitle=gparam.legtitle else begin
-      if tag_exist(gparam,'SERIES') then legTitle=gparam.series else legTitle=''
+      if tag_exist(gparam,'SERIES') then begin
+         if gparam.series EQ 'EV_OPLOT_SER' then legTitle = '' else begin
+            legTitle=gparam.series
+         endelse
+      endif else legTitle=''
+      
    endelse
    al_legend,[legTitle,serLab],$
              linestyle=[-1,intarr(nser)],thick=thick,bthick=thick,$
