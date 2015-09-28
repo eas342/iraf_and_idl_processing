@@ -11,11 +11,6 @@ if type EQ 7 then begin
    a = mod_rdfits(input,0,header)
 endif else a=input
 
-if ev_tag_exist(plotp,'ROT') then begin
-   a = rotate(a,plotp.rot)
-end
-               
-
 sz = size(a)
 
 if n_elements(custbox) NE 0 then begin
