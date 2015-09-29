@@ -118,7 +118,7 @@ CASE uval of
   widget_control, ev.top, set_uvalue = data
   widget_control, idParam, set_uvalue = gparam ;; save the plot parameters
   widget_control, idY, set_uvalue = y ;; save the y data
-  update_widgets,ev.top,data,edat,gparam
+  update_widgets,ev.top,dat,edat,gparam
 
 END
 
