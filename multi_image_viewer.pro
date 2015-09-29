@@ -36,6 +36,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
+           '(boxstat) box statistics',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
            '(dospec # ) to auto find a spectrum #ap and quickly extract',$
            '(calspec #) to save a calibration spectrum)',$
@@ -282,6 +283,12 @@ while status NE 'q' and status NE 'Q' do begin
          refit_psf,fileL,LineP,plotp=plotp
       end
       status EQ 'cphot' OR status EQ 'CPHOT': clear_phot
+      status EQ 'boxstat' OR status EQ 'BOXSTAT': begin
+         box_stats,fileL[slot],lineP=lineP,plotp=plotp
+      end
+      status EQ 'allbox' OR status EQ 'ALLBOX': begin
+         allbox,fileL,lineP=lineP,plotp=plotp
+      end
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
          quick_specsum,filel[slot],float(splitstatus[1]),$
                        float(splitstatus[2]),plotp=plotp
