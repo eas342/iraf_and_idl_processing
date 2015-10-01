@@ -40,14 +40,6 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
         endif else b =a
      endelse
   endif else b=a
-  if ev_tag_exist(plotp,'FLATFILE') then begin
-     f = mrdfits(plotp.flatfile,ext,flathead,silent=silent)
-     nonz = where(f NE 0)
-     b = float(b)
-     if nonz NE [-1] then begin
-        b[nonz] = b[nonz] / float(f[nonz])
-     endif
-  endif
 
   if fxpar(header,'NAXIS') EQ 3 then begin
      ;; For now we'll read spectra 3d data cubes for spsectra
@@ -60,6 +52,15 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
         c[*,*] = b[*,0,*]
      endelse
   endif else c=b
+
+  if ev_tag_exist(plotp,'FLATFILE') then begin
+     f = mrdfits(plotp.flatfile,ext,flathead,silent=silent)
+     nonz = where(f NE 0)
+     c = float(c)
+     if nonz NE [-1] then begin
+        c[nonz] = c[nonz] / float(f[nonz])
+     endif
+  endif
 
   return,c
 end
