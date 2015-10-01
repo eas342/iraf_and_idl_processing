@@ -11,7 +11,7 @@ readcol,listname,filel,format='(A)'
 nfile = n_elements(filel)
 
 for i=0l,nfile-1l do begin
-   a = mod_rdfits(filel[i],0,head)
+   a = mod_rdfits(filel[i],0,head,plotp=plotp)
    if i EQ 0 then begin
       szFirst = size(a)
       totalA = a
@@ -70,7 +70,7 @@ for i=0l,nfile-1l do begin
    maskFile = 'mask_for_'+filenInside+'.fits'
    fileFind = file_search(maskFile)
    if fileFind NE '' then begin
-      b = mod_rdfits(fileFind,0,maskhead)
+      b = mod_rdfits(fileFind,0,maskhead,plotp=plotp)
       whereGood = where(b EQ 0)
       if whereGood NE [-1] then begin
          
