@@ -54,8 +54,11 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   endif else c=b
 
   if ev_tag_exist(plotp,'FLATFILE') then begin
-     f = mrdfits(plotp.flatfile,ext,flathead,silent=silent)
-     nonz = where(f NE 0)
+     subName = clobber_exten(plotp.flatfile,exten=exten)
+     if exten EQ '.sav' then restore,plotp.flatfilen else begin
+        f = mrdfits(plotp.flatfile,ext,flathead,silent=silent)
+        nonz = where(f NE 0)
+     endelse
      c = float(c)
      if nonz NE [-1] then begin
         c[nonz] = c[nonz] / float(f[nonz])
