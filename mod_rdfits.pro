@@ -6,6 +6,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
 ;; plotp - accepts the display parameters to put in image rotations
   
   type = size(filen,/type)
+  if not ev_tag_exist(plotp,'FSCALE') then fscale=1 else begin
+     fscale=plotp.fscale
+  endelse
+
   if type NE 7 then begin
      c = filen
      fileDescrip = 'None'
@@ -13,10 +17,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      ;; Check if it's already an image
   endif else fileDescrip=filen
 
-  a = mrdfits(filen,ext,header,silent=silent)
+  a = mrdfits(filen,ext,header,silent=silent,fscale=fscale)
   if n_elements(a) LT 2 then begin
      message,'Extension '+strtrim(ext,1)+' not found, trying '+strtrim(ext+1l,1),/cont
-     a = mrdfits(filen,ext+1,header,silent=silent)
+     a = mrdfits(filen,ext+1,header,silent=silent,fscale=fscale)
   endif
   if ev_tag_exist(plotp,'ROT') then begin
      a = rotate(a,plotp.rot)
@@ -56,7 +60,7 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   if ev_tag_exist(plotp,'FLATFILE') then begin
      subName = clobber_exten(plotp.flatfile,exten=exten)
      if exten EQ '.sav' then restore,plotp.flatfilen else begin
-        f = mrdfits(plotp.flatfile,ext,flathead,silent=silent)
+        f = mrdfits(plotp.flatfile,ext,flathead,silent=silent,fscale=fscale)
         nonz = where(f NE 0)
      endelse
      c = float(c)
