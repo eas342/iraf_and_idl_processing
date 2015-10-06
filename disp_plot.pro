@@ -103,6 +103,11 @@ if gparam.series EQ 'ALLPT' then begin
    ev_add_tag,dat,'ALLPT',intarr(npt) + 1
    tags = tag_names(dat)
 endif
+if not ev_tag_exist(dat,'AINDEX') then begin
+   ;; Arbitrary index for all points, sometimes useful for plotting
+   ev_add_tag,dat,'AINDEX',lindgen(npt)
+   tag = tag_names(dat)
+endif
 
 DataInd = key_indices(dat,gparam)
 if ev_tag_exist(gparam,'YERR') then begin
