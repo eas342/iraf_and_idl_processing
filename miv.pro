@@ -9,7 +9,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(fullscale) to use min/max for scaling',$
            '(ref #) to refesh the last #',$
            '(h)elp prints the commands',$
-           '(t)oggle image mode','(d)raw a line',$
+           '(t)oggle image mode','(cindex) to change current index',$
+           '(d)raw a line',$
            '(p)lot a line or box','(pm) to plot median',$
            '(op) overplot line or box mode',$
            '(opd) overplot and divide by median',$
@@ -128,6 +129,14 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 't' OR status EQ 'T': begin
          toggle_fits,fileL,plotp=plotp,lineP=lineP,slot=slot
+      end
+      splitstatus[0] EQ 'cindex' OR splitstatus[0] EQ 'CINDEX': begin
+         if n_elements(splitstatus) LE 1 then cindex = 0 else begin
+            if valid_num(splitstatus[1]) then cindex = long(splitstatus[1]) else begin
+               cindex=0
+            endelse
+         endelse
+         slot = checkrange(cindex,0,nfile)
       end
       status EQ 'save' OR status EQ 'SAVE': begin
          save_image,fileL,plotp=plotp,lineP=lineP,startslot=slot
