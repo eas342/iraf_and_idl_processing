@@ -1,4 +1,4 @@
-pro multi_image_viewer
+pro miv
 ;; Displays multiple fits files and lets you go between them
 
 actions = ['(q)uit','(r)ead new file',$
