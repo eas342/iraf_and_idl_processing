@@ -77,6 +77,12 @@ endif else begin
       fileDescrip = input
    endif else fileDescrip = 'NONE'
 
+   ;; Find the aperture photometry
+   aperRad = 20E
+   skyArr = [22,30]
+   aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
+
+
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
                               'MaFWHM',majorF,$
@@ -84,7 +90,10 @@ endif else begin
                               'XCEN',fitp[4],$
                               'YCEN',fitp[5],'THETA',cortheta,$
                               'RACEN',raCen,'DecCEN',decCen,$
-                              'FILEN',fileDescrip)
+                              'FILEN',fileDescrip,$
+                             'APFLUX',mags,$
+                             'APERR',errap,$
+                             'APSKY',sky)
    if ev_tag_exist(plotp,'KEYDISP') then begin
       nkey = n_elements(plotp.KEYDISP)
       for i=0l,nkey-1l do begin
@@ -106,7 +115,7 @@ endif else begin
       print,fitp[0],fitp[1],majorF,minorF,Fitp[4],fitp[5],corTheta,$
             format='(2G15,5F9.2)'
 ;            plotimage,a,range=[min(a),max(a)],pixel_aspect_ratio=1.0
-      myLevelsUnsort = [0.2,0.5,0.8] * fitp[1]
+      myLevelsUnsort = [0.2,0.5,0.8] * fitp[1] + fitp[0]
       lsort = sort(myLevelsUnsort)
       mylevels = myLevelsUnsort[lsort]
       contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=mylevels
