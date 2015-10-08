@@ -14,7 +14,8 @@ for i=0l,nfile-1l do begin
    a = mod_rdfits(filel[i],0,head,plotp=plotp)
    if i EQ 0 then begin
       szFirst = size(a)
-      totalA = a
+      type = size(a,/type)
+      if type EQ 2 then totalA = long(a) else totalA =A
       totalA[*] = 0
       outA = fltarr(szFirst[1],szFirst[2]) ;; output array for the average
       countA = fltarr(szFirst[1],szFirst[2]) ;; array for counting number of points
@@ -99,6 +100,7 @@ if keyword_set(median) then begin
    medImg = median(fullA,dimension=3)
    if n_elements(medName) EQ 0 then medName='es_median.fits'
    fileFind = file_search(medName)
+   print,'Saving median ...'
    if fileFind NE '' then medName=dialog_pickfile(/write,filter='*.fits',$
                                                   default_extension='.fits')
    writefits,medName,medImg,medhead
@@ -109,6 +111,7 @@ if nonZ NE [-1] then outA[nonZ] = totalA[nonZ]/countA[nonz]
 
 if n_elements(outname) EQ 0 then outname='es_average.fits'
 fileFind = file_search(outname)
+print,'Saving average ...'
 if fileFind NE '' then outname=dialog_pickfile(/write,filter='*.fits',$
                                                default_extension='.fits')
 fxaddpar,outhead,'AVERAGE',1,'File is average of others'
