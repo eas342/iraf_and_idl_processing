@@ -78,10 +78,12 @@ endif else begin
    endif else fileDescrip = 'NONE'
 
    ;; Find the aperture photometry
-   aperRad = 20E
-   skyArr = [22,30]
+   aperRad = 15E
+   skyArr = [15,18]
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
-
+   es_circle,fitp[4],fitp[5],aperRad
+   es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
+   es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
 
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
