@@ -61,21 +61,28 @@ for j=0l,ntag-1l do begin
    endfor
 endfor
 
+FluxTags = ['APFLUX','PEAK']
+RatioTags = ['FRATIO','PRATIO']
+nFluxTags = n_elements(FluxTags)
+
 if keyword_set(norm) then begin
    ottags= tag_names(otdat)
    ;phottags = where(strmid(ottags,0,5) EQ 'APFLUX')
-   for i=0l,nsource-1l do begin
-      for j=i + 1l,nsource-1l do begin
-         ;;Find the tags
-         toptag = 'APFLUX_'+string(i,format='(i02)')
-         topThere = tag_exist(otdat,toptag,ind=topind)
-         bottag = 'APFLUX_'+string(j,format='(i02)')
-         botThere = tag_exist(otdat,bottag,ind=botind)
-         ;;Calc ratio and add to array of structures
-         ratioF = otdat.(topind) / otdat.(botind)
-         normF = ratioF / float(median(ratioF))
-         ratioTag = 'FRATIO_'+string(i,j,format='(i02,"_",i02)')
-         ev_add_tag,otdat,ratioTag,normF
+   for m=0l,nFluxTags-1l do begin
+      for i=0l,nsource-1l do begin
+         for j=i + 1l,nsource-1l do begin
+            
+            ;;Find the tags
+            toptag = FluxTags[m]+string(i,format='("_",i02)')
+            topThere = tag_exist(otdat,toptag,ind=topind)
+            bottag = FluxTags[m]+string(j,format='("_",i02)')
+            botThere = tag_exist(otdat,bottag,ind=botind)
+            ;;Calc ratio and add to array of structures
+            ratioF = otdat.(topind) / otdat.(botind)
+            normF = ratioF / float(median(ratioF))
+            ratioTag = RatioTags[m]+string(i,j,format='("_",i02,"_",i02)')
+            ev_add_tag,otdat,ratioTag,normF
+         endfor
       endfor
    endfor
 endif
