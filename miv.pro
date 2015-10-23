@@ -37,7 +37,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
-           '(boxstat) box statistics',$
+           '(boxstat) box statistics','(allbox) for box statistics on all images',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
            '(dospec # ) to auto find a spectrum #ap and quickly extract',$
            '(calspec #) to save a calibration spectrum)',$
@@ -281,6 +281,12 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'sphot' OR status EQ 'SPHOT': begin
          save_phot
+      end
+      status EQ 'tser' OR status EQ 'TSER': begin
+         make_tser,/norm
+         photfile = 'ev_phot_data_tser.sav'
+         if file_exists(photfile) then restore,photfile
+         genplot,otdat
       end
       status EQ 'qfoc' OR status EQ 'QFOC': begin
          quick_foc,filel,plotp,linep,slot
