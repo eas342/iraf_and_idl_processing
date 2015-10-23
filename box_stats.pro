@@ -29,6 +29,10 @@ pro box_stats,input,lineP=lineP,plotp=plotp
   
   ;; Statistics in for one image and box
   stat = create_struct('FILEN',clobber_dir(fileDescrip),$
+                       'CEN_X',mean(lineP.Xcoor),$
+                       'CEN_Y',mean(lineP.Ycoor),$
+                       'LEN_X',xend - xstart,$
+                       'LEN_Y',yend - ystart,$
                        'MIN',min(subArr,/nan),$
                        'MAX',max(subarr,/nan),$
                        'MEDIAN',MedVal,$
