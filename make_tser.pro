@@ -61,8 +61,11 @@ for j=0l,ntag-1l do begin
    endfor
 endfor
 
-FluxTags = ['APFLUX','PEAK']
-RatioTags = ['FRATIO','PRATIO']
+;FluxTags = ['APFLUX','PEAK']
+;RatioTags = ['FRATIO','PRATIO']
+fluxtags = tags[where(strmatch(tags,'AP??_FLUX'),nap)]
+;FluxTags = 'AP'+string(indgen(nap),format='(i02)')+'_FLUX'
+RatioTags = 'AP'+string(indgen(nap),format='(i02)')+'_RATIO'
 nFluxTags = n_elements(FluxTags)
 
 if keyword_set(norm) then begin
