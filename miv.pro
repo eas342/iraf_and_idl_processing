@@ -34,10 +34,12 @@ actions = ['(q)uit','(r)ead new file',$
            '(bsize) to set the box size for PSF fitting',$
            '(mfit) to fit many PSFs',$
            '(sphot) to save the photomery',$
+           '(tser) to save a time series of photometry',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
            '(boxstat) box statistics','(allbox) for box statistics on all images',$
+           '(boxtser) to make a time series of the box statistics',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
            '(dospec # ) to auto find a spectrum #ap and quickly extract',$
            '(calspec #) to save a calibration spectrum)',$
@@ -303,6 +305,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'allbox' OR status EQ 'ALLBOX': begin
          allbox,fileL,lineP=lineP,plotp=plotp
+      end
+      status EQ 'boxtser' OR status EQ 'BOXTSER': begin
+         box_tser
       end
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
          quick_specsum,filel[slot],float(splitstatus[1]),$
