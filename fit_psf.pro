@@ -78,13 +78,11 @@ endif else begin
    endif else fileDescrip = 'NONE'
 
    ;; Find the aperture photometry
-   aperRad = 15E
-   skyArr = [15,18]
+   aperRad = [5,7,10,13,16]
+   skyArr = [16,22]
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
-   es_circle,fitp[4],fitp[5],aperRad
-   es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
-   es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
 
+   nAp = n_elements(aperRad)
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
                               'MaFWHM',majorF,$
@@ -93,9 +91,13 @@ endif else begin
                               'YCEN',fitp[5],'THETA',cortheta,$
                               'RACEN',raCen,'DecCEN',decCen,$
                               'FILEN',fileDescrip,$
-                             'APFLUX',mags,$
-                             'APERR',errap,$
-                             'APSKY',sky)
+                              'APSKY',sky)
+
+   for i=0l,nAp-1l do begin
+      ev_add_tag,singlephot,'AP'+string(i,format='(i02)')+'_FLUX',mags[i]
+      ev_add_tag,singlephot,'AP'+string(i,format='(i02)')+'_ERR',errap[i]
+   endfor
+
    if ev_tag_exist(plotp,'KEYDISP') then begin
       nkey = n_elements(plotp.KEYDISP)
       for i=0l,nkey-1l do begin
@@ -105,6 +107,11 @@ endif else begin
    endif
 
    if not keyword_set(noplot) then begin
+;   es_circle,fitp[4],fitp[5],aperRad
+      es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
+      es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
+
+
       xprime = (X - xshowfit)*cos(fitp[6]) - (Y - yshowfit)*sin(fitp[6])
       yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
       Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
