@@ -32,7 +32,7 @@ noiseEst = sqrt(Gain * normFactor + npix * RN^2)
 errEst = noiseEst / signalEst
 print,'Err from Flux= ',ErrEst * 1E6,' ppm'
 
-;; Calculate teh expectd SNR using the spatial stdev as a guide
+;; Calculate the expectd SNR using the spatial stdev as a guide
 spatialSt = float(median(statdat.RSTDEV)) ;; use robust-sigma
 spatialN = sqrt(npix) * spatialSt
 spatialS = normFactor
