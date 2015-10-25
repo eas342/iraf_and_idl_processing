@@ -19,7 +19,7 @@ npix = float(median(statdat.LEN_X)) * float(median(statdat.LEN_Y))
 normFactor = float(median(statdat.total))
 normFlux = statdat.total / normFactor
 Gain = 1E ;;; for now, what is it really?
-RN = 4E ;; for now, what is it really?
+RN = 21E ;; for now from NIRCam pocket guide, what is it really?
 
 
 ev_add_tag,statdat,'NORM_FLUX',normFlux
