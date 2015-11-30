@@ -59,9 +59,10 @@ naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
 cd,current=currentD
-FindPref = file_search(currentD+'/ev_local_display_params.sav')
+prefpath = '~/reduction_data/ev_local_display_params.sav'
+FindPref = file_search(prefpath)
 if findPref NE '' then begin
-   restore,currentD+'/ev_local_display_params.sav'
+   restore,prefpath
    if n_elements(filel) NE 0 then status='nothing' else status = 'r'
 endif else status = 'o'
 
