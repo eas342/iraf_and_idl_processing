@@ -42,6 +42,17 @@ if n_elements(customfunc) EQ 0 then begin
    endif
 endif else begin
    ymodel = expression_eval(customfunc,xmodel,fitpol)
+   case customfunc of
+      'Gaussian(X,P)': begin
+         print,'Max/min x = ',fitpol[1]
+         print,'Max/min y = ',fitpol[0]
+         print,'Sigma = ',fitpol[2]
+         print,'Baseline = ',fitpol[3]
+         edata = create_struct('VERTLINES',fitpol[1])
+      end
+      else: print,fitpol
+   endcase
+
 endelse
 ev_oplot,tempst,xmodel,ymodel,gparam=tempParam
 if ev_tag_exist(tempParam,'SLABEL') then begin
