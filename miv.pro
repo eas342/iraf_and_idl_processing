@@ -349,7 +349,7 @@ while status NE 'q' and status NE 'Q' do begin
 
 endwhile
 save,fileL,slot,lineP,plotp,$
-     filename='ev_local_display_params.sav'
+     filename='~/reduction_data/ev_local_display_params.sav'
 
 
 end
