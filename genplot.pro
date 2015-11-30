@@ -43,7 +43,7 @@ CASE uval of
        ev_add_tag,gparam,'QUIT',1
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+;       spawn,'open -a Terminal'
        return
     end
     'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.sav',$
@@ -58,7 +58,7 @@ CASE uval of
        endif else begin
           plotprenm=gparam.filename
        endelse
-       spawn,'open -R '+plotprenm+'.eps'
+;       spawn,'open -R '+plotprenm+'.eps'
     end
     'XCHOICE': begin
        gparam.PKEYS[0] = dattags[ev.index]
@@ -130,7 +130,8 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 ;; restore - restores the previous parameter settings
 
   if keyword_set(help) then begin
-     spawn,'open '+reduction_dir()+'/genplot_help.txt'
+;     spawn,'open '+reduction_dir()+'/genplot_help.txt'
+     print,'see genplot_help.txt'
      return
   endif
 
