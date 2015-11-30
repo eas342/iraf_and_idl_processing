@@ -18,6 +18,8 @@ widget_control, idY, get_uvalue= Y
 disp_plot,data,y,gparam=gparam,dat=dat,edat=edat,/preponly
 dattags = tag_names(dat)
 
+defSaveName = '~/reduction_data/ev_local_pparams.sav'
+defSaveData = '~/reduction_data/plot_data.sav'
 
 CASE uval of
     'REPLOT':  disp_plot,data,y,gparam=gparam
@@ -41,12 +43,12 @@ CASE uval of
     end
     'SQUIT': begin
        ev_add_tag,gparam,'QUIT',1
-       save,gparam,filename='ev_local_pparams.sav'
+       save,gparam,filename=defSaveName
        WIDGET_CONTROL, ev.TOP, /DESTROY
 ;       spawn,'open -a Terminal'
        return
     end
-    'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.sav',$
+    'SAVEDAT': check_idlsave,data,y,gparam,filename=defSaveData,$
                             varnames=['dat','y','gparam']
     'MOVELEG': cmove_legend,data,gparam=gparam
     'MARGLEG': begin
@@ -108,7 +110,7 @@ CASE uval of
        endif else message,'Invalid round number',/cont
     end
     'DONE': begin
-       save,gparam,filename='ev_local_pparams.sav'
+       save,gparam,filename=defSaveName
        WIDGET_CONTROL, ev.TOP, /DESTROY
 ;       spawn,'open -a Terminal'
        return
@@ -135,10 +137,12 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
      return
   endif
 
+  defSaveName = '~/reduction_data/ev_local_pparams.sav'
+
   if keyword_set(restore) then begin
-     fileList = file_search('ev_local_pparams.sav')
+     fileList = file_search(defSaveName)
      if fileList NE '' then begin
-        restore,'ev_local_pparams.sav'
+        restore,defSaveName
      endif
   endif
   
