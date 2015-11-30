@@ -50,7 +50,7 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      ;; as firsta aperture
      if ev_tag_true(plotp,'DCSsub') then begin
         c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS2'))
-        c[*,*] = b[*,*,1] - b[*,*,0]
+        c[*,*] = b[*,*,-1] - b[*,*,0]
      endif else begin
         c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
         c[*,*] = b[*,0,*]
