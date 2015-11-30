@@ -3,10 +3,24 @@ pro quick_fit,dat,y,gparam=gparam,gaussian=gaussian,$
 ;; Default mode: Quickly fits a parabola and finds the min or max
 ;; Gaussian mode - fit a Gaussian instead
 
+minp = 4 ;; minimum number of points allowed
+
 disp_plot,dat,y,gparam=gparam,dat=dat,edat=edat,/preponly
 DataInd = key_indices(dat,gparam)
 
-tempst = dat
+fulltempst = dat
+
+;; Trim the data if asked to
+if ev_tag_exist(gparam,'FITREGION') then begin
+   dopoint = where(fulltempst.(DataInd[0]) GT gparam.fitregion[0] and $
+                   fulltempst.(DataInd[0]) LT gparam.fitregion[1])
+   if n_elements(dopoint) LT minp then begin
+      message,'Fewer than ',minp,' to fit',/cont
+      return
+   endif
+   tempst = dat[dopoint]
+endif else tempst=dat
+
 tempParam = gparam
 
 npmod = 512
@@ -24,10 +38,11 @@ if n_elements(customfunc) NE 0 then begin
          start[1] = median(xtofit)
          start[2] = (max(xtofit) - min(xtofit)) / 4E
          start[3] = thresh[0]
+         name='Gaussian'
       end
       else: start = [0,0]
    endcase
-endif
+endif else name='Parabola'
 
 fitpol = ev_robust_poly(xtofit,ytofit,polyord,nsig=3,customfunc=customfunc,start=start)
 xmodel = findgen(npmod)/float(npmod-1) * (max(xtofit) - min(xtofit)) + min(xtofit)
@@ -54,10 +69,10 @@ endif else begin
    endcase
 
 endelse
-ev_oplot,tempst,xmodel,ymodel,gparam=tempParam
+ev_oplot,fulltempst,xmodel,ymodel,gparam=tempParam
 if ev_tag_exist(tempParam,'SLABEL') then begin
-   ev_add_tag,tempParam,'SLABEL',[tempParam.slabel,'Parabola']
+   ev_add_tag,tempParam,'SLABEL',[tempParam.slabel,name]
 endif
-disp_plot,tempst,edata,gparam=tempParam
+disp_plot,fulltempst,edata,gparam=tempParam
 
 end
