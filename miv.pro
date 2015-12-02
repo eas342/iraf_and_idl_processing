@@ -353,6 +353,12 @@ while status NE 'q' and status NE 'Q' do begin
 endwhile
 save,fileL,slot,lineP,plotp,$
      filename='ev_local_display_params.sav'
+openw,1,'ev_local_display_params.json'
+if n_elements(fileL) GT 0 then printf,1,json_serialize(fileL)
+if n_elements(slot) GT 0 then printf,1,json_serialize(slot)
+if n_elements(lineP) GT 0 then printf,1,json_serialize(lineP)
+if n_elements(plotp) GT 0 then printf,1,json_serialize(plotp)
+close,1
 
 
 end
