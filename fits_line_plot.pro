@@ -67,6 +67,11 @@ while counter LT maxCounter do begin
       yplot = yplot/max(yplot)
    endif
 
+   ;; Choose either file names or a specified keyword
+   if ev_tag_exist(plotp,'PLOTFKEY') then begin
+      legendLabel = fxpar(header,plotp.plotfkey)
+   endif else legendLabel = clobber_dir(filel[i],/exten)
+
    if counter GT 0 and keyword_set(overplot) then begin
       plottedInd = [plottedInd,i]
       if counter GT n_elements(filel) -1l then begin
@@ -74,7 +79,7 @@ while counter LT maxCounter do begin
          genplot,data,gparam=gparam
       endif else begin 
          ev_oplot,data,xplot,yplot,gparam=gparam
-         newslabel = [gparam.slabel,clobber_dir(filel[i],/exten)]
+         newslabel = [gparam.slabel,legendLabel]
          ev_undefine_tag,gparam,'slabel'
          gparam = create_struct(gparam,'slabel',newslabel)
          genplot,data,gparam=gparam
@@ -83,7 +88,7 @@ while counter LT maxCounter do begin
       gparam = create_struct('TITLES',[lineP.direction+ 'coordinate',$
                                        'Counts',''],$
                             'FILENAME',clobber_dir(filel[i],/exten),$
-                            'SLABEL',clobber_dir(filel[i],/exten))
+                            'SLABEL',legendLabel)
       data = struct_arrays(create_struct('X',xplot,'Y',yplot))
       genplot,data,gparam=gparam
 ;      plot,xplot,yplot,ystyle=16,$
