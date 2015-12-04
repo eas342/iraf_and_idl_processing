@@ -30,6 +30,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(cflat) to choose a flat','(qflat) to cancel a flat',$
            '(dcssub) to automatically do a Double-correlated subtraction',$
            '(qdcs) to cancel DCS subtraction',$
+           '(cplane #) to Choose an image Plane in Cube',$
+           '(qplane) to undefine the Image plane',$
            '(fitpsf) to fit a PSF',$
            '(bsize) to set the box size for PSF fitting',$
            '(mfit) to fit many PSFs',$
@@ -340,6 +342,16 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'qDCS' OR status EQ 'qdcs': begin
          ev_add_tag,plotp,'DCSSUB',0
+      end
+      splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
+         if valid_num(splitstatus[1]) then begin
+            ev_add_tag,plotp,'ChoosePlane',splitstatus[1]
+         endif else begin
+            print,'No valid plane specified.'
+         endelse
+      end
+      splitstatus[0] EQ 'qplane': begin
+         ev_undefine_tag,plotp,'ChoosePlane'
       end
       else: print,'Unrecognized Action'
    endcase
