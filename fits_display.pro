@@ -28,6 +28,14 @@ endif
 
 case 1 of
    n_elements(message) NE 0: Ftitle=message 
+   ev_tag_exist(plotp,'IMGTITLEKEY'): begin
+      if n_elements(header) GT 0 then begin
+         Ftitle = fxpar(header,plotp.imgtitlekey,count=count)
+         if count EQ 0 then message,'Keyword not found in header',/cont
+      endif else begin
+         message,'No header found'
+      endelse
+   end
    type EQ 7: Ftitle = input
    else: Fitle = ''
 endcase
