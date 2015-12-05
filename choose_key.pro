@@ -1,4 +1,9 @@
-pro choose_key,filen,plotp
+pro choose_key,filen,plotp,dispkey=dispkey
+;; Gives a numbered list of FITS keywords
+;; You select one to keep track of for photometry, viewing, etc.
+;; dispkey - set this true if you want to save it for use in the 
+;;           plotting legend
+
   keypar = ''
   temphead = headfits(filen)
   nkeys = n_elements(temphead)
@@ -8,15 +13,21 @@ pro choose_key,filen,plotp
   print,'Choose a FITS keyword to print'
   read,keypar
   newKey = strtrim(gettok(temphead[keypar],'='),1)
-  if ev_tag_exist(plotp,'KEYDISP') then begin
-     if total(strmatch(plotp.keyDisp,newKey)) EQ 0 then begin
-        fullkey = [plotp.keyDisp,newKey]
-     endif else begin
-        print,'Tag already chosen!'
-        fullkey = plotp.keydisp
-     endelse
-  endif else fullkey=newkey
+  if keyword_set(dispkey) then begin
+     ev_add_tag,plotp,'PLOTFKEY',newKey
+  endif else begin
+     if ev_tag_exist(plotp,'KEYDISP') then begin
+        if total(strmatch(plotp.keyDisp,newKey)) EQ 0 then begin
+           fullkey = [plotp.keyDisp,newKey]
+        endif else begin
+           print,'Tag already chosen!'
+           fullkey = plotp.keydisp
+        endelse
+     endif else fullkey=newkey
 
-  ev_add_tag,plotp,'KEYDISP',fullKey
+     ev_add_tag,plotp,'KEYDISP',fullKey
+
+  endelse
+  
 end
 

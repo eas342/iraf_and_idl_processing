@@ -56,7 +56,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(head) to show FITS header',$
            '(ckey) to choose a FITS keyword to print',$
            '(keyedit) to edit the FITS keywords',$
-           '(keyread) to read the FITS keyword list']
+           '(keyread) to read the FITS keyword list',$
+           '(dispkey) to choose a FITS keyword for plot legend']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -275,6 +276,8 @@ while status NE 'q' and status NE 'Q' do begin
          readcol,'keyword_list.txt',quickkey,format='(A)'
          ev_add_tag,plotp,'KEYDISP',quickkey
       end
+      status EQ 'dispkey' OR status EQ 'DISPKEY': $
+         choose_key,fileL[slot],plotp,/dispkey
       status EQ 'bsize' OR status EQ 'BSIZE': begin
          choose_bsize,plotp
       end
@@ -364,5 +367,12 @@ endwhile
 save,fileL,slot,lineP,plotp,$
      filename='~/reduction_data/ev_local_display_params.sav'
 
+if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
+if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
+if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
+if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
+openw,1,'~/reduction_data/ev_local_display_params.json'
+printf,1,json_serialize(allParams)
+close,1
 
 end

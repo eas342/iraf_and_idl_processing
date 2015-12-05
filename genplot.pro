@@ -82,7 +82,10 @@ CASE uval of
        gparam.SERIES = dattags[ev.index]
     end
     'PARAB': begin
-       quick_parab,dat,edat,gparam=gparam
+       quick_fit,dat,edat,gparam=gparam
+    end
+    'GAUSS': begin
+       quick_fit,dat,edat,gparam=gparam,customfunc='Gaussian(X,P)'
     end
     'PLOTSYM': begin
        ev_add_tag,gparam,'PSYM',1
@@ -98,6 +101,11 @@ CASE uval of
        data = mathst
        update_widgets,ev.top,data,edat,gparam
     endif
+    'ALLPOINTS': ev_undefine_tag,gparam,'FITREGION'
+    'FITREGION': begin
+       zoomBox = find_click_box()
+       ev_add_tag,gparam,'FITREGION',[min(zoombox[*,0]),max(zoombox[*,0])]
+    end
     'ROUNDSER': begin
        widget_control,ev.id,get_value=newRound
        if valid_num(newRound) then begin
@@ -236,6 +244,12 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   ;; Buttons for fitting
   fitMenu = widget_button(fitW,value = 'Fit',/menu)
   parabW = WIDGET_BUTTON(fitMenu, VALUE='Parabola Fit', UVALUE='PARAB',accelerator='Ctrl+A')
+  gaussW = WIDGET_BUTTON(fitMenu, VALUE='Gaussian Fit', UVALUE='GAUSS',accelerator='Ctrl+U')
+
+  ;; Button to choose fit region
+  allptBt = widget_button(fitW,value='Allpt',UVALUE='ALLPOINTS')
+  regionBt = widget_button(fitW,value='Fit Reg',uvalue='FITREGION')
+
 
   ;; Button for doing math
   mathW = widget_button(fitW,value='Math',UVALUE='MATH')
