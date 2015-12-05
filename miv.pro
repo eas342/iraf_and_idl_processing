@@ -58,7 +58,9 @@ actions = ['(q)uit','(r)ead new file',$
            '(keyedit) to edit the FITS keywords',$
            '(keyread) to read the FITS keyword list',$
            '(dispkey) to choose a FITS keyword for plot legend',$
-           '(titlekey) to choose a FITS keyword for image titles']
+           '(qdispkey) to return to file names for plot legend.',$
+           '(titlekey) to choose a FITS keyword for image titles',$
+           '(qtitlekey) to return to file names for image titles']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
@@ -278,9 +280,13 @@ while status NE 'q' and status NE 'Q' do begin
          ev_add_tag,plotp,'KEYDISP',quickkey
       end
       status EQ 'dispkey' OR status EQ 'DISPKEY': $
-         choose_key,fileL[slot],plotp,insertkey='PLOTFKEY'
+         choose_key,fileL[slot],plotp,insertkey=
+      status EQ 'dispkey' OR status EQ 'QDISPKEY': $
+         ev_undefine,plotp,'PLOTFKEY'
       status EQ 'titlekey' OR status EQ 'TITLEKEY': $
          choose_key,fileL[slot],plotp,insertkey='IMGTITLEKEY'
+      status EQ 'qtitlekey' OR status EQ 'QTITLEKEY': $
+         ev_undefine,plotp,'IMGTITLEKEY'
       status EQ 'bsize' OR status EQ 'BSIZE': begin
          choose_bsize,plotp
       end
