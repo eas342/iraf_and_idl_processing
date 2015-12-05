@@ -48,25 +48,13 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   if fxpar(header,'NAXIS') EQ 3 then begin
      ;; For now we'll read spectra 3d data cubes for spsectra
      ;; as firsta aperture
-     case 1 of
-        ev_tag_true(plotp,'DCSsub'): begin
-           c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS2'))
-           c[*,*] = b[*,*,-1] - b[*,*,0]
-        end
-        ev_tag_exist(plotp,'ChoosePlane'): begin
-           plane = plotp.ChoosePlane
-           if plane GE 0 and plane LT header('NAXIS3') then begin
-              c = b[*,*,plotp.ChoosePlane]
-           endif else begin
-              message,'ChoosePlane is an invalid plane',/cont
-              c=b
-           endelse
-        end
-        else: begin
-           c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
-           c[*,*] = b[*,0,*]
-        end
-     endcase
+     if ev_tag_true(plotp,'DCSsub') then begin
+        c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS2'))
+        c[*,*] = b[*,*,-1] - b[*,*,0]
+     endif else begin
+        c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
+        c[*,*] = b[*,0,*]
+     endelse
   endif else c=b
 
   if ev_tag_exist(plotp,'FLATFILE') then begin
