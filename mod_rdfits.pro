@@ -55,7 +55,8 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
         end
         ev_tag_exist(plotp,'ChoosePlane'): begin
            plane = plotp.ChoosePlane
-           if plane GE 0 and plane LT header('NAXIS3') then begin
+
+           if plane GE 0 and plane LT fxpar(header,'NAXIS3') then begin
               c = b[*,*,plotp.ChoosePlane]
            endif else begin
               message,'ChoosePlane is an invalid plane',/cont
