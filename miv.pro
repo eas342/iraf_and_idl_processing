@@ -348,7 +348,7 @@ while status NE 'q' and status NE 'Q' do begin
       end
       splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
          if valid_num(splitstatus[1]) then begin
-            ev_add_tag,plotp,'ChoosePlane',splitstatus[1]
+            ev_add_tag,plotp,'ChoosePlane',long(splitstatus[1])
          endif else begin
             print,'No valid plane specified.'
          endelse
@@ -367,12 +367,12 @@ endwhile
 save,fileL,slot,lineP,plotp,$
      filename='~/reduction_data/ev_local_display_params.sav'
 
-if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
-if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
-if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
-if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
-openw,1,'~/reduction_data/ev_local_display_params.json'
-printf,1,json_serialize(allParams)
-close,1
+;if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
+;if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
+;if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
+;if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
+;openw,1,'~/reduction_data/ev_local_display_params.json'
+;printf,1,json_serialize(allParams)
+;close,1
 
 end
