@@ -4,7 +4,7 @@ pro allbox,fileL,lineP=lineP,plotp=plotp
 if file_exists('box_stats.sav') then file_delete,'box_stats.sav'
 nfile = n_elements(fileL)
 for i=0l,nfile-1l do begin
-   box_stats,fileL[i],lineP=lineP,plotp=plotp
+   es_box_stats,fileL[i],lineP=lineP,plotp=plotp
 end
 
 restore,'box_stats.sav'

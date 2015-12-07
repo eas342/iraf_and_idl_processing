@@ -1,4 +1,4 @@
-pro box_stats,input,lineP=lineP,plotp=plotp
+pro es_box_stats,input,lineP=lineP,plotp=plotp
 ;; Finds the statistics of the zoombox
 
   if not ev_tag_exist(Linep,'type') then begin

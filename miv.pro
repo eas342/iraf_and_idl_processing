@@ -280,7 +280,7 @@ while status NE 'q' and status NE 'Q' do begin
          ev_add_tag,plotp,'KEYDISP',quickkey
       end
       status EQ 'dispkey' OR status EQ 'DISPKEY': $
-         choose_key,fileL[slot],plotp,insertkey=
+         choose_key,fileL[slot],plotp,insertkey='PLOTFKEY'
       status EQ 'dispkey' OR status EQ 'QDISPKEY': $
          ev_undefine,plotp,'PLOTFKEY'
       status EQ 'titlekey' OR status EQ 'TITLEKEY': $
@@ -316,7 +316,7 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'cphot' OR status EQ 'CPHOT': clear_phot
       status EQ 'boxstat' OR status EQ 'BOXSTAT': begin
-         box_stats,fileL[slot],lineP=lineP,plotp=plotp
+         es_box_stats,fileL[slot],lineP=lineP,plotp=plotp
       end
       status EQ 'allbox' OR status EQ 'ALLBOX': begin
          allbox,fileL,lineP=lineP,plotp=plotp
