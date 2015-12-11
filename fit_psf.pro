@@ -78,9 +78,25 @@ endif else begin
    endif else fileDescrip = 'NONE'
 
    ;; Find the aperture photometry
-   aperRad = [5,7,10,13,16]
-   skyArr = [16,22]
+   if not file_exists('phot_params.txt') then begin
+      aperRad = [10]
+      skyArr = [16,22]
+   endif else begin
+      openr,1,'phot_params.txt'
+      oneline = ''
+      readf,1,oneline ;; comments
+      readf,1,oneline ;; comments
+      readf,1,oneline ;; aperture line
+      aperRad = float(strsplit(oneline,',',/extract))
+      readf,1,oneline ;; comments
+      readf,1,oneline ;; Sky radii line
+      skyArr = float(strsplit(oneline,',',/extract))
+      close,1
+      
+   endelse
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
+
+;   bigsky = where(skyArr[0]^2
 
    nAp = n_elements(aperRad)
    singlephot = create_struct('BACKG',fitp[0],$
