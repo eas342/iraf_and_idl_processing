@@ -30,6 +30,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(cflat) to choose a flat','(qflat) to cancel a flat',$
            '(dcssub) to automatically do a Double-correlated subtraction',$
            '(qdcs) to cancel DCS subtraction',$
+           '(cplane #) to Choose an image Plane in Cube',$
+           '(qplane) to undefine the Image plane',$
            '(fitpsf) to fit a PSF',$
            '(bsize) to set the box size for PSF fitting',$
            '(mfit) to fit many PSFs',$
@@ -56,12 +58,14 @@ actions = ['(q)uit','(r)ead new file',$
            '(ckey) to choose a FITS keyword to print',$
            '(keyedit) to edit the FITS keywords',$
            '(keyread) to read the FITS keyword list',$
-           '(dispkey) to choose a FITS keyword for plot legend']
+           '(dispkey) to choose a FITS keyword for plot legend',$
+           '(titlekey) to choose a FITS keyword for image titles']
 naction = n_elements(actions)
 
 ;; Load in previous preferences, if it finds the right file
 cd,current=currentD
 FindPref = file_search(currentD+'/ev_local_display_params.sav')
+
 if findPref NE '' then begin
    restore,currentD+'/ev_local_display_params.sav'
    if n_elements(filel) NE 0 then status='nothing' else status = 'r'
@@ -275,7 +279,9 @@ while status NE 'q' and status NE 'Q' do begin
          ev_add_tag,plotp,'KEYDISP',quickkey
       end
       status EQ 'dispkey' OR status EQ 'DISPKEY': $
-         choose_key,fileL[slot],plotp,/dispkey
+         choose_key,fileL[slot],plotp,insertkey='PLOTFKEY'
+      status EQ 'titlekey' OR status EQ 'TITLEKEY': $
+         choose_key,fileL[slot],plotp,insertkey='IMGTITLEKEY'
       status EQ 'bsize' OR status EQ 'BSIZE': begin
          choose_bsize,plotp
       end
@@ -347,6 +353,16 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'qDCS' OR status EQ 'qdcs': begin
          ev_add_tag,plotp,'DCSSUB',0
       end
+      splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
+         if valid_num(splitstatus[1]) then begin
+            ev_add_tag,plotp,'ChoosePlane',long(splitstatus[1])
+         endif else begin
+            print,'No valid plane specified.'
+         endelse
+      end
+      splitstatus[0] EQ 'qplane': begin
+         ev_undefine_tag,plotp,'ChoosePlane'
+      end
       else: print,'Unrecognized Action'
    endcase
    
@@ -357,6 +373,7 @@ while status NE 'q' and status NE 'Q' do begin
 endwhile
 save,fileL,slot,lineP,plotp,$
      filename='ev_local_display_params.sav'
+
 if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
 if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
 if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
@@ -364,6 +381,5 @@ if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
 openw,1,'ev_local_display_params.json'
 printf,1,allParams,/implied_print
 close,1
-
 
 end
