@@ -40,6 +40,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(cphot) to clear photometry',$
            '(boxstat) box statistics','(allbox) for box statistics on all images',$
            '(boxtser) to make a time series of the box statistics',$
+           '(bsub) to do a background subtraction from the box',$
            '(qspec # #) to extract a quick spectrum with #ap #pos',$
            '(dospec # ) to auto find a spectrum #ap and quickly extract',$
            '(calspec #) to save a calibration spectrum)',$
@@ -311,6 +312,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       status EQ 'boxtser' OR status EQ 'BOXTSER': begin
          box_tser
+      end
+      status EQ 'bsub' OR status EQ 'BSUB': begin
+         fileL[slot] = fits_backsub(fileL[slot],lineP=lineP,plotp=plotp)
       end
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
          quick_specsum,filel[slot],float(splitstatus[1]),$
