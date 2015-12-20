@@ -32,7 +32,7 @@ case 1 of
          Ftitle = fxpar(header,plotp.imgtitlekey,count=count)
          if count EQ 0 then message,'Keyword not found in header',/cont
       endif else begin
-         message,'No header found'
+         message,'No header found',/cont
       endelse
    end
    n_elements(message) NE 0: Ftitle=message 
