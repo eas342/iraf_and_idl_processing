@@ -31,8 +31,8 @@ while counter LT maxCounter do begin
 
    ;; Make sure the coordintes are in range
    sz = size(a)
-   xcoor = checkrange(LineP.xcoor,0,sz[1]-1l)
-   ycoor = checkrange(LineP.ycoor,0,sz[2]-1l)
+   xcoor = float(checkrange(ceil(LineP.xcoor),0,sz[1]-1l))
+   ycoor = float(checkrange(ceil(LineP.ycoor),0,sz[2]-1l))
 
    ;; Get the plot abscissa axis
    if LineP.direction EQ 'x' then begin
