@@ -55,8 +55,11 @@ endif else begin
 
    result = mpfit2dpeak(a2fit,fitp,/tilt)
 
-   fitp[4] = fitp[4] + float(xstart)
-   fitp[5] = fitp[5] + float(ystart)
+   ;; Add the X/Ystart for the window
+   ;; Add the 0.5 to be consistent with showing in plot image
+   plotimgAdjustXY = 0.5
+   fitp[4] = fitp[4] + float(xstart) + plotimgAdjustXY
+   fitp[5] = fitp[5] + float(ystart) + plotimgAdjustXY
    xshowFit = fitp[4] 
    yshowFit = fitp[5] 
 
@@ -140,6 +143,7 @@ endif else begin
       yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
       Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
       Ymodel = fitp[0] + fitp[1] * EXP(-Ufit/2)
+
       sig = fitp[3]
 ;            print,flist[i]
       descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$
