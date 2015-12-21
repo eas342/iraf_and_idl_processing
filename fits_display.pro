@@ -2,6 +2,28 @@ pro fits_display,input,findscale=findscale,$
                  plotp=plotp,$
                  message=message,lineP=lineP
 ;; This script displays a fits image and allows you to set the scaling
+;; 
+;; IT USES ZERO-Based counting, to be consistent with IDL and plotimage
+;;         +-----------+-----------+ 2.0
+;;         |           |           |  
+;;         | IMG[0,1]  | IMG[1,1]  |  
+;;         |     +     |     +     | 1.5
+;;         |           |           |  
+;;         |           |           |  
+;;         +-----------+-----------+ 1.0
+;;         |           |           |  
+;;         | IMG[0,0]  | IMG[1,0]  |  
+;;         |     +     |     +     | 0.5
+;;         |           |           |  
+;;         |           |           |  
+;;         +-----------+-----------+ 0.0
+;;        0.0   0.5   1.0   1.5   2.0
+;;
+;; This is different from SAOImage DS9, which uses (0.5, 0.5) for the
+;; bottom left corner. 
+;;
+;; 
+;;
 ;; If the input is a data array, it uses that
 ;; if the input is a string, it reads the file
 ;; with right right mouse click and exit the scaling with a left click
