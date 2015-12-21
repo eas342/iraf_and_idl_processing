@@ -34,6 +34,13 @@ endif else begin
    endelse
 endelse
 
+;; Round the x start and xend to be clear about the box starts and
+;; ends
+xstart = ceil(xstart)
+xend = ceil(xend)
+ystart = ceil(ystart)
+yend = ceil(yend)
+
 if yend - ystart LT minsize OR xend - xstart LT minsize then begin
    message,'Not enough image data around location',/continue
    return
@@ -46,11 +53,13 @@ endif else begin
    
    a2fit = a[xstart:xend,ystart:yend]
 
-   result = gauss2dfit(a2fit,fitp,/tilt)
-   fitp[4] = fitp[4] + xstart 
-   fitp[5] = fitp[5] + ystart 
+   result = mpfit2dpeak(a2fit,fitp,/tilt)
+
+   fitp[4] = fitp[4] + float(xstart)
+   fitp[5] = fitp[5] + float(ystart)
    xshowFit = fitp[4] 
    yshowFit = fitp[5] 
+
 
    ;; Set up contour plot
    X = FINDGEN(sz[1]) # REPLICATE(1.0, sz[2])
@@ -123,10 +132,9 @@ endif else begin
    endif
 
    if not keyword_set(noplot) then begin
-;   es_circle,fitp[4],fitp[5],aperRad
       es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
       es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
-
+      es_circle,fitp[4],fitp[5],aperRad[0],ccolor=mycol('lblue')
 
       xprime = (X - xshowfit)*cos(fitp[6]) - (Y - yshowfit)*sin(fitp[6])
       yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
