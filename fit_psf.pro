@@ -137,7 +137,10 @@ endif else begin
    if not keyword_set(noplot) then begin
       es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
       es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
-      es_circle,fitp[4],fitp[5],aperRad[0],ccolor=mycol('lblue')
+      for i=0l,n_elements(aperRad)-1l do begin
+         es_circle,fitp[4],fitp[5],aperRad[i],ccolor=mycol('lblue')
+      endfor
+         
 
       xprime = (X - xshowfit)*cos(fitp[6]) - (Y - yshowfit)*sin(fitp[6])
       yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
