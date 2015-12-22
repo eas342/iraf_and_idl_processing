@@ -92,12 +92,19 @@ if keyword_set(findscale) then begin
              xrange=myXrange,yrange=myYrange,$
              title='Draw lower Left corner of box for scaling and left click',$
              pixel_aspect_ratio=paspectR
-   cursor,xboxBL,yboxBL,/down
+   cursor,xbox1,ybox1,/down
    plotimage,a,range=myPrange,$
              xrange=myXrange,yrange=myYrange,$
              title='Draw Upper Right corner of box for scaling and left click',$
              pixel_aspect_ratio=paspectR
-   cursor,xboxTR,yboxTR,/down
+   cursor,xbox2,ybox2,/down
+   
+   ;; Ensure that the bottom is bottom and top is top
+   xboxBL = min([xbox1,xbox2])
+   yboxBL = min([ybox1,ybox2])
+   xboxTR = max([xbox1,xbox2])
+   yboxTR = max([ybox1,ybox2])
+   
    boxW = xboxTR - xboxBL
    boxH = yboxTR - yboxBL
    xboxBL = checkrange(xboxBL,0,asize[1]-1l)
