@@ -52,8 +52,8 @@ if n_elements(customfunc) EQ 0 then begin
    ymodel = poly(xmodel,fitpol)
    case polyord of
       1: begin
-         print,'Slope = ',fitpol[0]
-         print,'Intercept = ',fitpol[1]
+         print,'Intercept = ',fitpol[0]
+         print,'Slope = ',fitpol[1]
       end
       2: begin
          maxX = -fitpol[1]/(2E * fitpol[2])
