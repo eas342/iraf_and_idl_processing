@@ -79,6 +79,9 @@ CASE uval of
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
     end
+    'LINFIT': begin
+       quick_fit,dat,edat,gparam=gparam,polyord=1
+    end
     'PARAB': begin
        quick_fit,dat,edat,gparam=gparam
     end
@@ -238,6 +241,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 
   ;; Buttons for fitting
   fitMenu = widget_button(fitW,value = 'Fit',/menu)
+  parabW = WIDGET_BUTTON(fitMenu, VALUE='Linear Fit', UVALUE='LINFIT',accelerator='Ctrl+I')
   parabW = WIDGET_BUTTON(fitMenu, VALUE='Parabola Fit', UVALUE='PARAB',accelerator='Ctrl+A')
   gaussW = WIDGET_BUTTON(fitMenu, VALUE='Gaussian Fit', UVALUE='GAUSS',accelerator='Ctrl+U')
 

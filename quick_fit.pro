@@ -1,5 +1,5 @@
 pro quick_fit,dat,y,gparam=gparam,gaussian=gaussian,$
-              customfunc=customfunc
+              customfunc=customfunc,polyord=polyord
 ;; Default mode: Quickly fits a parabola and finds the min or max
 ;; Gaussian mode - fit a Gaussian instead
 
@@ -42,19 +42,28 @@ if n_elements(customfunc) NE 0 then begin
       end
       else: start = [0,0]
    endcase
-endif else name='Parabola'
+endif else begin
+   name='Polynomial (order '+strtrim(long(polyord),2)+')'
+endelse 
 
 fitpol = ev_robust_poly(xtofit,ytofit,polyord,nsig=3,customfunc=customfunc,start=start)
 xmodel = findgen(npmod)/float(npmod-1) * (max(xtofit) - min(xtofit)) + min(xtofit)
 if n_elements(customfunc) EQ 0 then begin
    ymodel = poly(xmodel,fitpol)
-   if polyord EQ 2 then begin
-      maxX = -fitpol[1]/(2E * fitpol[2])
-      maxY = fitpol[0] - fitpol[1]^2/(4E * fitpol[2])
-      edata = create_struct('VERTLINES',maxX)
-      print,'Max/min, x =',maxX
-      print,'Max/min, y =',maxY
-   endif
+   case polyord of
+      1: begin
+         print,'Slope = ',fitpol[0]
+         print,'Intercept = ',fitpol[1]
+      end
+      2: begin
+         maxX = -fitpol[1]/(2E * fitpol[2])
+         maxY = fitpol[0] - fitpol[1]^2/(4E * fitpol[2])
+         edata = create_struct('VERTLINES',maxX)
+         print,'Max/min, x =',maxX
+         print,'Max/min, y =',maxY
+      end
+      else: print,fitpol
+   endcase
 endif else begin
    ymodel = expression_eval(customfunc,xmodel,fitpol)
    case customfunc of
@@ -72,7 +81,10 @@ endelse
 ev_oplot,fulltempst,xmodel,ymodel,gparam=tempParam
 if ev_tag_exist(tempParam,'SLABEL') then begin
    ev_add_tag,tempParam,'SLABEL',[tempParam.slabel,name]
-endif
+endif else begin
+   ev_add_tag,tempParam,'SLABEL',['Data',name]
+endelse
+
 disp_plot,fulltempst,edata,gparam=tempParam
 
 end
