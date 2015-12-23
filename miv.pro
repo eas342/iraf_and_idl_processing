@@ -141,7 +141,9 @@ while status NE 'q' and status NE 'Q' do begin
       end
       splitstatus[0] EQ 'cindex' OR splitstatus[0] EQ 'CINDEX': begin
          if n_elements(splitstatus) LE 1 then cindex = 0 else begin
-            if valid_num(splitstatus[1]) then cindex = long(splitstatus[1]) else begin
+            if valid_num(splitstatus[1]) then begin
+               cindex = long(checkrange(splitstatus[1],0,n_elements(filel)-1))
+            endif else begin
                cindex=0
             endelse
          endelse
