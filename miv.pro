@@ -40,6 +40,8 @@ actions = ['(q)uit','(r)ead new file',$
            '(refit) to fit many PSFs from previous file',$
            '(allfit) to fit many PSFs in all FITs files',$
            '(cphot) to clear photometry',$
+           '(showphot) to show photometry',$
+           '(qshowphot) to stop showing photometry',$
            '(boxstat) box statistics','(allbox) for box statistics on all images',$
            '(boxtser) to make a time series of the box statistics',$
            '(bsub) to do a background subtraction from the box',$
@@ -315,6 +317,8 @@ while status NE 'q' and status NE 'Q' do begin
          refit_psf,fileL,LineP,plotp=plotp
       end
       status EQ 'cphot' OR status EQ 'CPHOT': clear_phot
+      status EQ 'showphot': ev_add_tag,plotp,'SHOWPHOT',1
+      status EQ 'qshowphot': ev_add_tag,plotp,'SHOWPHOT',0
       status EQ 'boxstat' OR status EQ 'BOXSTAT': begin
          box_stats,fileL[slot],lineP=lineP,plotp=plotp
       end

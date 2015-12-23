@@ -212,6 +212,21 @@ if n_elements(lineP) NE 0 then begin
    endcase
 endif
 
+if ev_tag_true(plotp,'SHOWPHOT') then begin
+   photfile = 'ev_phot_data.sav'
+   if file_exists(photfile) and type EQ 7 then begin
+      restore,photfile
+      prevPhotpt = where(photdat.filen EQ input,count)
+      get_phot_params,aperRad,skyArr
+      if count NE 0 then begin
+         for i=0l,count-1l do begin
+            show_phot,photdat[prevPhotpt[i]],skyArr,aperRad,size(a)
+         endfor
+      endif
+   endif
+endif
+
+
 ;; Show the mask
 if type EQ 7 then begin
    filenInside = clobber_dir(input,/exten,dir=dir)

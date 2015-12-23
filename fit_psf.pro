@@ -64,9 +64,6 @@ endif else begin
    yshowFit = fitp[5] 
 
 
-   ;; Set up contour plot
-   X = FINDGEN(sz[1]) # REPLICATE(1.0, sz[2])
-   Y = REPLICATE(1.0, sz[1]) # FINDGEN(sz[2])
    
    corTheta = fitp[6] * 57.2958E              ;; (180E/!pi)
    if abs(fitp[3]) GT abs(fitp[2]) then corTheta = corTheta + 90E
@@ -89,23 +86,8 @@ endif else begin
       fileDescrip = input
    endif else fileDescrip = 'NONE'
 
-   ;; Find the aperture photometry
-   if not file_exists('phot_params.txt') then begin
-      aperRad = [10]
-      skyArr = [16,22]
-   endif else begin
-      openr,1,'phot_params.txt'
-      oneline = ''
-      readf,1,oneline ;; comments
-      readf,1,oneline ;; comments
-      readf,1,oneline ;; aperture line
-      aperRad = float(strsplit(oneline,',',/extract))
-      readf,1,oneline ;; comments
-      readf,1,oneline ;; Sky radii line
-      skyArr = float(strsplit(oneline,',',/extract))
-      close,1
-      
-   endelse
+   get_phot_params,aperRad,skyArr
+
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
 
 ;   bigsky = where(skyArr[0]^2
@@ -114,6 +96,9 @@ endif else begin
    singlephot = create_struct('BACKG',fitp[0],$
                               'PEAK',fitp[1],$
                               'MaFWHM',majorF,$
+                              'Xsig',fitp[2],$
+                              'Ysig',fitp[3],$
+                              'OrigTheta',fitp[6],$
                               'MiFWHM',minorF,$
                               'XCEN',fitp[4],$
                               'YCEN',fitp[5],'THETA',cortheta,$
@@ -135,32 +120,7 @@ endif else begin
    endif
 
    if not keyword_set(noplot) then begin
-      es_circle,fitp[4],fitp[5],skyArr[0],ccolor=mycol('blue')
-      es_circle,fitp[4],fitp[5],skyArr[1],ccolor=mycol('blue')
-      for i=0l,n_elements(aperRad)-1l do begin
-         es_circle,fitp[4],fitp[5],aperRad[i],ccolor=mycol('lblue')
-      endfor
-         
-
-      xprime = (X - xshowfit)*cos(fitp[6]) - (Y - yshowfit)*sin(fitp[6])
-      yprime = (X - xshowfit)*sin(fitp[6]) + (Y - yshowfit)*cos(fitp[6])
-      Ufit = (xprime/fitp[2])^2 + (yprime/fitp[3])^2
-      Ymodel = fitp[0] + fitp[1] * EXP(-Ufit/2)
-
-      sig = fitp[3]
-;            print,flist[i]
-      descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$
-               "X cen","Y cen","Rot CW,d"]
-      print,descrip,format='(2A15,5A9)'
-      print,fitp[0],fitp[1],majorF,minorF,Fitp[4],fitp[5],corTheta,$
-            format='(2G15,5F9.2)'
-;            plotimage,a,range=[min(a),max(a)],pixel_aspect_ratio=1.0
-      myLevelsUnsort = [0.2,0.5,0.8] * fitp[1] + fitp[0]
-      lsort = sort(myLevelsUnsort)
-      mylevels = myLevelsUnsort[lsort]
-      contour,ymodel,/overplot,color=mycol('red'),nlevels=3,levels=mylevels
-;      print,"Fit Sigma = ",fitp[2]
-;         c = contour(ymodel,/overplot,c_thick=[4],color='red')
+      show_phot,singlephot,skyArr,aperRad,sz
    endif
 
 
