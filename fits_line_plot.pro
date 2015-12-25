@@ -23,11 +23,12 @@ firsttime = 1
 counter=0
 maxCounter = 100
 
-adjust_pwindow,type='Plot Window'
 
 while counter LT maxCounter do begin
    slot = i ;; current image slot number
    a = mod_rdfits(fileL[i],0,header,plotp=plotp)
+   fits_display,filel[slot],plotp=plotp,linep=linep
+   adjust_pwindow,type='Plot Window'
 
    ;; Make sure the coordintes are in range
    sz = size(a)
@@ -96,9 +97,10 @@ while counter LT maxCounter do begin
 ;           xtitle=lineP.direction+' coordinate',psym=10
       plottedInd = i
    endelse
+   adjust_pwindow,type='FITS Window'
+   
    if keyword_set(makestop) then stop
    if quit_caught() then begin
-      adjust_pwindow,type='FITS Window'
       return,slot
    endif
 
@@ -114,7 +116,6 @@ endwhile
 ;!Mouse.button=1
 close,1
 
-adjust_pwindow,type='Plot Window'
 return,slot
 
 end
