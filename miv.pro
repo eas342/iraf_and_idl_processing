@@ -69,6 +69,11 @@ naction = n_elements(actions)
 cd,current=currentD
 FindPref = file_search(currentD+'/ev_local_display_params.sav')
 
+;; Make sure there are two windows open - one for plotting and one for
+;;                                        images
+adjust_pwindow,type='Plot Window'
+adjust_pwindow,type='FITS Window'
+
 if findPref NE '' then begin
    restore,currentD+'/ev_local_display_params.sav'
    if n_elements(filel) NE 0 then status='nothing' else status = 'r'
@@ -305,7 +310,9 @@ while status NE 'q' and status NE 'Q' do begin
          make_tser,/norm
          photfile = 'ev_phot_data_tser.sav'
          if file_exists(photfile) then restore,photfile
+         adjust_pwindow,type='Plot Window'
          genplot,otdat
+         adjust_pwindow,type='FITS Window'
       end
       status EQ 'qfoc' OR status EQ 'QFOC': begin
          quick_foc,filel,plotp,linep,slot

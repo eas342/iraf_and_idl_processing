@@ -23,7 +23,7 @@ firsttime = 1
 counter=0
 maxCounter = 100
 
-
+adjust_pwindow,type='Plot Window'
 
 while counter LT maxCounter do begin
    slot = i ;; current image slot number
@@ -97,7 +97,10 @@ while counter LT maxCounter do begin
       plottedInd = i
    endelse
    if keyword_set(makestop) then stop
-   if quit_caught() then return,slot
+   if quit_caught() then begin
+      adjust_pwindow,type='FITS Window'
+      return,slot
+   endif
 
 ;   cursor,xcur,ycur,/normal;,/down
 ;   if xcur LT 0.5 then begin
@@ -109,7 +112,9 @@ while counter LT maxCounter do begin
 
 endwhile
 ;!Mouse.button=1
+close,1
 
+adjust_pwindow,type='Plot Window'
 return,slot
 
 end
