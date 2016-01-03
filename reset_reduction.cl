@@ -22,4 +22,5 @@ delete response_for*run*.fits
 delete sky_structure.fits
 delete skycombine.fits
 delete skycombine_untrim.fits
+delete skycombine_untrim_avg.fits
 

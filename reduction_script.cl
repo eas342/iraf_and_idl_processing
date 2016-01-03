@@ -24,7 +24,7 @@ hsigma=30., ngood=3, linterp=2, cinterp=3, eqinterp=2)
 ## Merge this pixel mask with the known bad diagonals
 imcopy ("mask_from_masterdark.pl",
 "mask_from_masterdark.fits", verbose=yes)
-!echo "combine_masks,'mask_from_masterdark.fits','/Users/bokonon/triplespec/iraf_scripts/diagonal_mask.fits'" | idl
+!echo "combine_masks,'mask_from_masterdark.fits','/Users/everettschlawin/es_programs/reduction_scripts/diagonal_mask.fits'" | idl
 imcopy ("combined_mask.fits[0]",
 "combined_mask.pl", verbose=yes)
 
@@ -58,7 +58,7 @@ niterate=3, grow=0., graphics="stdgraph", cursor="")
 # Make a sky flat or a lamp flat
 if ((b1) == yes) {
 ## Make a median sky frame to use as a flat
-!echo "imcombine,'sky_choices.txt',outname='skycombine_untrim.fits'" | idl
+!echo "imcombine,'sky_choices.txt',outname='skycombine_untrim_avg.fits',/median,medname='skycombine_untrim.fits" | idl
 
 ## Trim the median sky for use as flat
 ccdproc ("skycombine_untrim",
