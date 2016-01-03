@@ -102,6 +102,9 @@ CASE uval of
        data = mathst
        update_widgets,ev.top,data,edat,gparam
     endif
+    'CLICKID': begin
+       click_img_identify,data,Y,gparam=gparam
+    end
     'ALLPOINTS': ev_undefine_tag,gparam,'FITREGION'
     'FITREGION': begin
        zoomBox = find_click_box()
@@ -173,6 +176,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 
   nextR = widget_base(base,/row) ;; base to store next row of controls
   fitW = widget_base(base,/row) ;; base for fitting lines
+  clickW = widget_base(base,/row) ;; base for the clicking options
 
   ;; Allow the user to choose data points
   xychoiceB = widget_base(nextR,/column,/frame) ;; base for x, y plot control
@@ -253,6 +257,9 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   ;; Button for doing math
   mathW = widget_button(fitW,value='Math',UVALUE='MATH')
   mathGW = widget_button(fitW,value='Get Math',UVALUE='GETMATH')
+
+  ;; Button to identify FITS image
+  clickIdentify = widget_button(clickW,value='Click Identify',UVALUE='CLICKID')
 
   WIDGET_CONTROL, base, /REALIZE
 
