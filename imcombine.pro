@@ -1,11 +1,13 @@
 pro imcombine,listname,median=median,outname=outname,$
-              linep=linep,normalize=normalize,plotp=plotp
+              linep=linep,normalize=normalize,plotp=plotp,$
+              medname=medname
 ;; Combines images with averaging or median, using masks
 ;; listname - list of files to average, median etc.
 ;; outname - specify the output name
 ;; FUTURE ADDED FUNCTIONALITY:
 ;; linep - contains a box where normalization should be performed
 ;; median - specifies that a median should be used
+;; medname - name for the median file
 
 readcol,listname,filel,format='(A)'
 nfile = n_elements(filel)
