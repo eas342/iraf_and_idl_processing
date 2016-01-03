@@ -17,28 +17,28 @@ All data files should be called "run*.fits" (it’s OK if they’re sky images c
 All flat images (with relevant (3x60) slit) should be "flat*.fits"
 All dark images should be dark*.fits
 All arc images (with relevant (0.3 x 60) slit) should be arc*.fits
-All sky flat images (if using them) should be listed in 
-Make a "proc" directory adjacent to the edited folder
 All sky files (if using) should be listed in sky_choices.txt
+Make a "proc" directory adjacent to the edited folder
+
 
 C: Load all IRAF scripts
 #(If necessary)
-task $adjust_headers=/Users/bokonon/triplespec/iraf_scripts/adjust_headers.cl
+task $adjust_headers=/Users/everettschlawin/es_programs/reduction_scripts/adjust_headers.cl
 
 #Run these in the edited directory, first set the trim section & other reduction parameters
-task $reduction_script=/Users/bokonon/triplespec/iraf_scripts/reduction_script.cl
+task $reduction_script=/Users/everettschlawin/es_programs/reduction_scripts/reduction_script.cl
 
 #The reset script allows you to reset in case of a mistake
-task $reset_reduction=/Users/bokonon/triplespec/iraf_scripts/reset_reduction.cl
+task $reset_reduction=/Users/everettschlawin/es_programs/reduction_scripts/reset_reduction.cl
 
 #Run these in the proc directory
 
-task $extraction_script=/Users/bokonon/triplespec/iraf_scripts/extraction_script.cl
+task $extraction_script=/Users/everettschlawin/es_programs/reduction_scripts/extraction_script.cl
 #The reset script allows you to reset in case of a mistake
 #I might have to go into the database/idfirst_wavecal and confirm that the coefficients of the dispersion function are the exact same for aperture 1 and aperture 2
-task $reset_extraction=/Users/bokonon/triplespec/iraf_scripts/reset_extraction.cl
+task $reset_extraction=/Users/everettschlawin/es_programs/reduction_scripts/reset_extraction.cl
 
-task $cleanup_dup_files=/Users/bokonon/triplespec/iraf_scripts/cleanup_dup_files.cl
+task $cleanup_dup_files=/Users/everettschlawin/es_programs/reduction_scripts/cleanup_dup_files.cl
 
 D: Reduce data from the “edited” directory
 adjust_headers
