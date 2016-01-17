@@ -169,6 +169,9 @@ endif else begin
       [min(dat.(DataInd[1]),/nan),max(dat.(DataInd[1]),/nan)]
 endelse
 
+if ev_tag_true(gparam,'XFLIP') then myXrange = reverse(myXrange)
+if ev_tag_true(gparam,'YFLIP') then myYrange = reverse(myYrange)
+
 if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
 if ev_tag_exist(gparam,'YLOG') then Ylog=1 else Ylog=0
 
@@ -306,6 +309,15 @@ if ev_tag_exist(edat,'TEXT') then begin
          endfor
       endif
    endif
+endif
+
+if ev_tag_exist(edat,'POLYX') and ev_tag_exist(edat,'POLYY') then begin
+   if ev_tag_exist(edat,'POLYCOLOR') then begin
+      polycolor=mycol(edat.polycolor)
+   endif else begin
+      polycolor=!p.color
+   endelse
+   oplot,edat.polyx,edat.polyy,color=polycolor,thick=thick * 1.5
 endif
 
 if ev_tag_true(gparam,'PS') then begin
