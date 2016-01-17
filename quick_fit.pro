@@ -1,11 +1,17 @@
 pro quick_fit,dat,y,gparam=gparam,gaussian=gaussian,$
-              customfunc=customfunc,polyord=polyord
+              customfunc=customfunc,polyord=polyord,$
+              _extra=ex,fitpol=fitpol,dopoint=dopoint,$
+              nsig=nsig
 ;; Default mode: Quickly fits a parabola and finds the min or max
 ;; Gaussian mode - fit a Gaussian instead
+;; fitpol - polynomial fit coefficients
+;; dopoint - the points within the fit region
+;; nsig - sigma rejection to use in polynomial fit
 
 minp = 4 ;; minimum number of points allowed
 
 disp_plot,dat,y,gparam=gparam,dat=dat,edat=edat,/preponly
+
 DataInd = key_indices(dat,gparam)
 
 fulltempst = dat
@@ -46,7 +52,9 @@ endif else begin
    name='Polynomial (order '+strtrim(long(polyord),2)+')'
 endelse 
 
-fitpol = ev_robust_poly(xtofit,ytofit,polyord,nsig=3,customfunc=customfunc,start=start)
+if n_elements(nsig) EQ 0 then nsig=3
+fitpol = ev_robust_poly(xtofit,ytofit,polyord,nsig=nsig,customfunc=customfunc,$
+                        start=start,_extra=ex)
 xmodel = findgen(npmod)/float(npmod-1) * (max(xtofit) - min(xtofit)) + min(xtofit)
 if n_elements(customfunc) EQ 0 then begin
    ymodel = poly(xmodel,fitpol)
@@ -85,6 +93,8 @@ endif else begin
    ev_add_tag,tempParam,'SLABEL',['Data',name]
 endelse
 
-disp_plot,fulltempst,edata,gparam=tempParam
+if not ev_tag_true(gparam,'SILENTFIT') then begin
+   disp_plot,fulltempst,edata,gparam=tempParam
+endif
 
 end
