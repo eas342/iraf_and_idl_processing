@@ -78,8 +78,8 @@ endif else begin
    endif else fileDescrip = 'NONE'
 
    ;; Find the aperture photometry
-   aperRad = [5,7,10,13,16]
-   skyArr = [16,22]
+   aperRad = 80
+   skyArr = [90,130]
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
 
    nAp = n_elements(aperRad)
