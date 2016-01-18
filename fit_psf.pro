@@ -88,6 +88,11 @@ endif else begin
 
    get_phot_params,aperRad,skyArr
 
+   ;; Ignore bad pixels
+   badpix = where(finite(a) EQ 0,nbadpix)
+   if nbadpix NE 0 then begin
+      a[badpix] = 0
+   endif
    aper,a,fitp[4],fitp[5],mags,errap,sky,skyerr,1E,aperRad,skyArr,[1,1],/flux,silent=keyword_set(noplot)
 
 ;   bigsky = where(skyArr[0]^2
