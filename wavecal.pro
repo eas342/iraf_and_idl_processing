@@ -1,7 +1,7 @@
 function wavecal,origimg=origimg
 ;; Finds the wavelength versus pixel solution
 
-Npoly = 5 ;; polynomial solution
+Npoly = 4 ;; polynomial solution
 
 if keyword_set(origimg) then begin
 ;; Check the original image for trim section and
@@ -63,7 +63,7 @@ oplot,xshow,yshow,color=mycol('yellow')
 
 resid = wavel - eval_poly(pixel,polyMod)
 
-plot,wavel,resid,psym=4
+plot,pixel,resid,psym=4
 
 !p.multi = 0
 
