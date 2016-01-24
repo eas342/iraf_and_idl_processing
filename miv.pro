@@ -395,7 +395,11 @@ if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
 if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
 if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
 openw,1,'ev_local_display_params.json'
-printf,1,allParams;,/implied_print
+if float(!Version.Release) GE 8.5 then begin
+   printf,1,allParams,/implied_print
+endif else begin
+   printf,1,allParams
+endelse
 close,1
 
 end
