@@ -8,6 +8,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(o)pen new file w/ browser','set (s)cale',$
            '(fullscale) to use min/max for scaling',$
            '(ref #) to refesh the last #',$
+           '(ignore string) to ignore files with the string',$
            '(h)elp prints the commands',$
            '(t)oggle image mode','(cindex) to change current index',$
            '(d)raw a line',$
@@ -120,6 +121,11 @@ while status NE 'q' and status NE 'Q' do begin
       end
       splitstatus[0] EQ 'pared': $
          fileL = pare_down(splitstatus,nfile,fileL,slot=slot)
+      splitstatus[0] EQ 'ignore': begin
+         if n_elements(splitstatus) GE 2 then begin
+            ev_add_tag,plotp,'IGNORE_STR',splitstatus[1]
+         endif else message,'No string specified',/cont
+      end
       splitstatus[0] EQ 'ref': begin
          if n_elements(splitstatus) GT 2 then begin
             pref =splitstatus[2]
@@ -339,8 +345,17 @@ while status NE 'q' and status NE 'Q' do begin
          fileL[slot] = fits_backsub(fileL[slot],lineP=lineP,plotp=plotp)
       end
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
-         quick_specsum,filel[slot],float(splitstatus[1]),$
-                       float(splitstatus[2]),plotp=plotp
+         if n_elements(splitstatus) GE 2 then begin
+            if valid_num(splitstatus[1]) and $
+               valid_num(splitstatus[2]) then begin
+               quick_specsum,filel[slot],float(splitstatus[1]),$
+                             float(splitstatus[2]),plotp=plotp
+            endif else begin
+               message,'Invalid qspec parameters specified',/cont
+            endelse
+         endif else begin
+            message,'Not enough qspec parameters specified',/cont
+         endelse
       end
       splitstatus[0] EQ 'dospec' OR splitstatus[0] EQ 'DOSPEC': begin
          if n_elements(splitstatus) LT 2 then doap=7.0 else doap=float(splitstatus[1])
