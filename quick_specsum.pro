@@ -30,6 +30,7 @@ if keyword_set(hydr) then begin
    print,'Adding hydrogen ...'
 endif
 
-genplot,yp,showp,gparam=gparam,/noinit
-
+adjust_pwindow,type='Plot Window'
+genplot,yp,showp,gparam=gparam
+adjust_pwindow,type='FITS Window'
 end

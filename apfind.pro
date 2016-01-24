@@ -68,12 +68,14 @@ restore,reduction_dir()+'/data/ts4_order_coeff.sav'
       ev_add_tag,ycomb,'CALIB',newSum
    endif
 
+   adjust_pwindow,type='Plot Window'
 ;   genplot,ydat,gparam=gparam
    if keyword_set(peak) then begin
       gparam.pkeys=['WAV','PEAK']
       genplot,ypos,gparam=gparam
    endif else genplot,ycomb,gparam=gparam
 
+   adjust_pwindow,type='FITS Window'
    cali = ycomb
    if keyword_set(savecal) then begin
       threshCal = threshold(cali.sum)
