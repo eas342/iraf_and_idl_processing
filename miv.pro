@@ -345,7 +345,7 @@ while status NE 'q' and status NE 'Q' do begin
          fileL[slot] = fits_backsub(fileL[slot],lineP=lineP,plotp=plotp)
       end
       splitstatus[0] EQ 'qspec' OR splitstatus[0] EQ 'QSPEC': begin
-         if n_elements(splitstatus) GE 2 then begin
+         if n_elements(splitstatus) GE 3 then begin
             if valid_num(splitstatus[1]) and $
                valid_num(splitstatus[2]) then begin
                quick_specsum,filel[slot],float(splitstatus[1]),$
