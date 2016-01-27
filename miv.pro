@@ -55,6 +55,7 @@ actions = ['(q)uit','(r)ead new file',$
            '(rot)ation change','(maskedit) mask edit',$
            '(imcombine) image combine',$
            '(nimcombine) normalize each image by box to combine',$
+           '(ts4foc) to find the best fit focus for ARCoIRIS/TS4',$
            '(aedit) Edit Action List',$
            '(nodsub) nod subtract image w/ next',$
            '(head) to show FITS header',$
