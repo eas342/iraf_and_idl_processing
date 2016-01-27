@@ -29,7 +29,7 @@ npmod = 512
 
 gparam = create_struct('PKEYS',['FTELFOCUS','MAFWHM'],'PSYM',[8,0],$
                        'XTHRESH',1,'YTHRESH',1,$
-                       'TITLES',['Focus - '+strtrim(offset,1)+' um','FWHM',''],$
+                       'TITLES',['Focus (um)','FWHM',''],$
                        'NOMARGLEG',1,'SLABEL',['Data','Parabola'])
 
 
@@ -71,7 +71,10 @@ for i=0l,ngroup-1l do begin
                               [[0.5,0.9],[0.5,0.8]])
 
          if keyword_set(showp) then begin
+            adjust_pwindow,type='Plot Window'
             genplot,tempst,edat,gparam=gparam
+            adjust_pwindow,type='FITS Window'
+
             if quit_caught() then return
          endif
 
