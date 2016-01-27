@@ -389,11 +389,13 @@ while status NE 'q' and status NE 'Q' do begin
          ev_add_tag,plotp,'DCSSUB',0
       end
       splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
-         if valid_num(splitstatus[1]) then begin
-            ev_add_tag,plotp,'ChoosePlane',long(splitstatus[1])
-         endif else begin
-            print,'No valid plane specified.'
-         endelse
+         if n_elements(splitstatus) GE 2 then begin
+            if valid_num(splitstatus[1]) then begin
+               ev_add_tag,plotp,'ChoosePlane',long(splitstatus[1])
+            endif else begin
+               message,'Invalid plane specified.',/cont
+            endelse
+         endif else message,'No plane specified',/cont
       end
       splitstatus[0] EQ 'qplane': begin
          ev_undefine_tag,plotp,'ChoosePlane'
