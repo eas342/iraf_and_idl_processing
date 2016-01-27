@@ -1,5 +1,6 @@
-pro plot_focus_curve,showp=showp
+pro plot_focus_curve,showp=showp,nopwidg=nopwidg
 ;; showp - show parabola plots at each star position?
+;; nopwidg - no plot widget which is slow on some remote machines
 
 ;; read the photometry
    restore,'ev_phot_data.sav'
@@ -72,7 +73,11 @@ for i=0l,ngroup-1l do begin
 
          if keyword_set(showp) then begin
             adjust_pwindow,type='Plot Window'
-            genplot,tempst,edat,gparam=gparam
+            if keyword_set(nopwidg) then begin
+               disp_plot,tempst,edat,gparam=gparam
+            endif else begin
+               genplot,tempst,edat,gparam=gparam
+            endelse
             adjust_pwindow,type='FITS Window'
 
             if quit_caught() then return

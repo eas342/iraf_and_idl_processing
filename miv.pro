@@ -323,6 +323,9 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'qfoc' OR status EQ 'QFOC': begin
          quick_foc,filel,plotp,linep,slot
       end
+      status EQ 'ts4foc' OR status EQ 'TS4FOC': begin
+         quick_foc,filel,plotp,linep,slot,/nopwidg
+      end
       status EQ 'refit' OR status EQ 'REFIT': begin
          refit_psf,fileL[slot],LineP,plotp=plotp
       end
