@@ -70,7 +70,7 @@ while counter LT maxCounter do begin
 
    ;; Choose either file names or a specified keyword
    if ev_tag_exist(plotp,'PLOTFKEY') then begin
-      legendLabel = fxpar(header,plotp.plotfkey)
+      legendLabel = string(fxpar(header,plotp.plotfkey))
    endif else legendLabel = clobber_dir(filel[i],/exten)
 
    if counter GT 0 and keyword_set(overplot) then begin
@@ -90,6 +90,9 @@ while counter LT maxCounter do begin
                                        'Counts',''],$
                             'FILENAME',clobber_dir(filel[i],/exten),$
                             'SLABEL',legendLabel)
+      if ev_tag_exist(plotp,'PLOTFKEY') then begin
+         gparam = create_struct(gparam,'LEGTITLE',plotp.plotfkey)
+      endif
       data = struct_arrays(create_struct('X',xplot,'Y',yplot))
       genplot,data,gparam=gparam
 ;      plot,xplot,yplot,ystyle=16,$
