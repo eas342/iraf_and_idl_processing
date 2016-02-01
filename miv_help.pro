@@ -5,7 +5,7 @@ widget_control, ev.top, get_uvalue= filen ;; retrieve the filename
 CASE uval of
     'DONE': begin
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+       es_cmd_focus
        return
     end
  ENDCASE

@@ -43,7 +43,7 @@ CASE uval of
        ev_add_tag,gparam,'QUIT',1
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+       es_cmd_focus
        return
     end
     'SAVEDAT': check_idlsave,data,y,gparam,filename='es_plot_data.sav',$
@@ -124,7 +124,7 @@ CASE uval of
     'DONE': begin
        save,gparam,filename='ev_local_pparams.sav'
        WIDGET_CONTROL, ev.TOP, /DESTROY
-;       spawn,'open -a Terminal'
+
        return
     end
  ENDCASE

@@ -21,7 +21,7 @@ CASE uval of
     'DONE': begin
        slottemp = slot
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+       es_cmd_focus
        return
     end
 ENDCASE

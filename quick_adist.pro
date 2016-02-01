@@ -13,7 +13,7 @@ PRO quick_adist_event, ev
      end
      'DONE': begin
         WIDGET_CONTROL, ev.TOP, /DESTROY
-        spawn,'open -a Terminal'
+        es_cmd_focus
         return
      end
   ENDCASE

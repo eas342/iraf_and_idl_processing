@@ -24,7 +24,7 @@ CASE uval of
     'SAVE': dosave = 1l
     'DONE': begin
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+       es_cmd_focus
        return
     end
 ENDCASE

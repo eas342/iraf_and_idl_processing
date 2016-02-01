@@ -10,6 +10,7 @@ FindPref = file_search(currentD+'/ev_local_display_params.sav')
 ;;                                        images
 adjust_pwindow,type='Plot Window'
 adjust_pwindow,type='FITS Window'
+es_cmd_focus
 
 if findPref NE '' then begin
    restore,currentD+'/ev_local_display_params.sav'
