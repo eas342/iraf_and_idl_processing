@@ -6,10 +6,29 @@ widget_control, ev.top, get_uvalue= filen ;; retrieve the filename
 CASE uval of
     'DONE': begin
        WIDGET_CONTROL, ev.TOP, /DESTROY
-       spawn,'open -a Terminal'
+       if !Version.OS EQ 'darwin' then spawn,'open -a Terminal'
        return
     end
     'SEARCH': begin
+       ;; Retrieve the ID and text of the text widget
+       idText = widget_info(ev.top,find_by_uname="TEXT")
+       widget_control, idText, get_value= text
+       sz = size(text)
+       ;; Retrieve the ID and text of the search widget
+       idsText = widget_info(ev.top,find_by_uname="STEXT")
+       widget_control, idsText, get_value= sText
+       matchTrue = strmatch(text,'*'+sText+'*',/fold_case)
+       wherematch = where(matchTrue[*] GE 1,nmatch) ;; the * turns into 1 d array
+
+       ;; Start all rows as white background
+       colarr = intarr(3,sz[1] * sz[2]) + 255
+
+       ;; Highlight the matched rows
+       if nmatch GE 1 then begin
+          colarr[*,wherematch] = rebin([255,255,0],3,nmatch)
+       endif
+       widget_control, idText, background_color=colarr
+
     end
  ENDCASE
 
@@ -47,11 +66,11 @@ outL = [transpose(keys),transpose(hd)]
                        /scroll,background_color=[255,255,255],$
                        column_widths=[100,700],row_labels=keys,$
                         column_labels=['Value/comment'],/no_headers,$
-                       uvalue='TEXT')
+                       uname='TEXT')
   ;; Allow a quit
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
   ;; Search text field
-  searchField = widget_text(cntl, VALUE='OBJECT', UVALUE='STEXT',/editable)
+  searchField = widget_text(cntl, VALUE='OBJECT', UNAME='STEXT',/editable,uvalue='SEARCH')
   searchbutton = widget_button(cntl, value='Search', uvalue='SEARCH')
 
   WIDGET_CONTROL, base, /REALIZE
