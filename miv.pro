@@ -1,71 +1,6 @@
 pro miv
 ;; Displays multiple fits files and lets you go between them
-
-actions = ['(q)uit','(r)ead new file',$
-           '(rf) read a file with filter',$
-           '(rfa) read a set of files with a filter',$
-           '(pared) # to pare down file list into # images',$
-           '(o)pen new file w/ browser','set (s)cale',$
-           '(fullscale) to use min/max for scaling',$
-           '(ref #) to refesh the last #',$
-           '(ignore string) to ignore files with the string',$
-           '(h)elp prints the commands',$
-           '(t)oggle image mode','(cindex) to change current index',$
-           '(d)raw a line',$
-           '(p)lot a line or box','(pm) to plot median',$
-           '(op) overplot line or box mode',$
-           '(opd) overplot and divide by median',$
-           '(opp) overplot and divide by the peak',$
-           '(ps) to plot and stop',$
-           '(b)ox draw mode','(c)lear previous settings',$
-           '(cf) to clear file list',$
-           '(cfolder) to open the current folder in finder',$
-           '(fedit) to export filelist to a text file for editing',$
-           '(fread) to read filelist that was made by fedit',$
-           '(l)oad another parameter file.',$
-           '(st)retch image to fill screen (losing 1:1 pixel aspect ratio)',$
-           '(unst)retch image to preserve 1:1 pixel aspect ratio',$
-           '(z)oom in','(save) EPS of FITS image',$
-           '(zz)oom in from a zoomed',$
-           '(rzoom) to reset the zoom',$
-           '(cflat) to choose a flat','(qflat) to cancel a flat',$
-           '(dcssub) to automatically do a Double-correlated subtraction',$
-           '(qdcs) to cancel DCS subtraction',$
-           '(cplane #) to Choose an image Plane in Cube',$
-           '(qplane) to undefine the Image plane',$
-           '(fitpsf) to fit a PSF',$
-           '(bsize) to set the box size for PSF fitting',$
-           '(mfit) to fit many PSFs',$
-           '(sphot) to save the photomery',$
-           '(tser) to save a time series of photometry',$
-           '(refit) to fit many PSFs from previous file',$
-           '(allfit) to fit many PSFs in all FITs files',$
-           '(cphot) to clear photometry',$
-           '(showphot) to show photometry',$
-           '(qshowphot) to stop showing photometry',$
-           '(boxstat) box statistics','(allbox) for box statistics on all images',$
-           '(boxtser) to make a time series of the box statistics',$
-           '(bsub) to do a background subtraction from the box',$
-           '(qspec # #) to extract a quick spectrum with #ap #pos',$
-           '(dospec # ) to auto find a spectrum #ap and quickly extract',$
-           '(calspec #) to save a calibration spectrum)',$
-           '(ashift) to use arrow keys to shift an image',$
-           '(asave) to save all images in file list',$
-           '(sparam) to save the display parameters as custom filename',$
-           '(rot)ation change','(maskedit) mask edit',$
-           '(imcombine) image combine',$
-           '(nimcombine) normalize each image by box to combine',$
-           '(ts4foc) to find the best fit focus for ARCoIRIS/TS4',$
-           '(aedit) Edit Action List',$
-           '(nodsub) nod subtract image w/ next',$
-           '(head) to show FITS header',$
-           '(ckey) to choose a FITS keyword to print',$
-           '(keyedit) to edit the FITS keywords',$
-           '(keyread) to read the FITS keyword list',$
-           '(dispkey) to choose a FITS keyword for plot legend',$
-           '(titlekey) to choose a FITS keyword for image titles',$
-           '(qtitlekey) to choose a FITS keyword for image titles']
-naction = n_elements(actions)
+;; data/miv_help.txt has help on the commands
 
 ;; Load in previous preferences, if it finds the right file
 cd,current=currentD
@@ -274,14 +209,7 @@ while status NE 'q' and status NE 'Q' do begin
       status EQ 'nothing': begin
       end
       status EQ 'h' OR status EQ 'H': begin
-         midP = ceil(float(naction)/2E)
-         for i=0l,midp-1l do begin
-            print,actions[i],format='(A-38," ",$)'
-            if i + midp LE naction-1l then begin
-               print,actions[i + midp],format='(A-38)'
-            endif
-         endfor
-         print,''
+         miv_help
       end
       status EQ 'head' OR status EQ 'HEAD': begin
          showhead,fileL[slot]

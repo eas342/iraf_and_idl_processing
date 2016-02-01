@@ -1,0 +1,114 @@
+-------------------------------------
+Help
+-------------------------------------
+(h)			Shows the help
+
+-------------------------------------
+Quitting, Saving
+-------------------------------------
+(q)			Quit
+(l)			To load another parameter file
+(c)			To clear all previous settings
+(sparam)	To save the display parameters as custom filename
+(save)		Save an EPS of FITS image
+(asave)		To save EPS of all images in file list
+
+-------------------------------------
+Reading Files and controlling the file list
+-------------------------------------
+(r)			Read new file (choos from list)
+(rf)		Read a single file with filter (choose from list)
+(rfa)		Read all files with a given filter
+(pared) 	To pare down file list into # images
+(o)			To open new file w/ browser
+(ref #)		To set the filelist to the most recent # files
+(ignore st) To ignore files with the string st
+(t)			Toggle through images using the arrow keys
+(cindex)	To change current index/slot in the file list
+(cf) 		To clear file list and open a new file with the GUI browser
+(cfolder)	To open the current folder in finder
+(fedit)		To export filelist to a text file for editing
+(fread)		To read filelist that was made by fedit
+
+-------------------------------------
+Controlling the Planes of image cubes
+-------------------------------------
+(cplane #)	To Choose an image Plane in Cube
+(qplane)	To undefine the Image plane
+(dcssub)	Automatically do a Double-correlated subtraction of the input images (last frame - first)
+(qdcs)		To cancel DCS subtraction
+
+-------------------------------------
+Adjusting scaling, zoom and rotation of Fits Viewer
+-------------------------------------
+(s)			Set scale
+(fullscale) To use min/max for scaling
+(st)		Sretch image to fill screen (losing 1:1 pixel aspect ratio)
+(unst)		Unstretch image to preserve 1:1 pixel aspect ratio
+(z)			Zoom in with cursor
+(zz)		Zoom in from a previously zoomed image
+(rzoom)		To reset the zoom
+(rot)		Change te rotation (choose from list)
+
+-------------------------------------
+Plotting
+-------------------------------------
+(d)			Draw a line along columns or rows only
+(b)			Draw a box along columsn or rows only. Keep clicking to change integration direction
+(p)			Plot a line or box
+(pm)		To plot median normalized flux
+(op)		Overplot the line or box one new image added at a time
+(opd)		Overplot as above, but divide by the median
+(opp)		Overplot as above, but divide by the peak value
+(ps)		To plot and then stop in code
+
+-------------------------------------
+Processing and Reduction
+-------------------------------------
+(aedit) 	Edit Action List on which to process frames such as image combination. The default is the current file list.
+(cflat)		To choose a flat that all frames will be divided by
+(qflat)		To cancel using a flat
+(nodsub) 	Nod subtract current image by the next one
+(imcombine) Average images in action list and also save a median image
+(nimcombine)	Normalize each image by box to before combining
+(maskedit)	Edit a pixel Mask for that will be used by imcombine and others
+
+-------------------------------------
+Photometry
+-------------------------------------
+
+(fitpsf)	To fit a PSF, and to photometry at the centroid
+(bsize)		To set the box size for PSF fitting/photometry
+(mfit)		To fit many PSFs by clicking around and right-clicking to exit
+(sphot)		To save the photomery as a CSV file
+(refit)		To fit many PSFs from previous saved photometry
+(allfit)	To fit many PSFs in all FITs files using starting positions from previous photometry
+(tser)		To create a time series of saved photometry (after running allfit) and plot it
+(cphot)		To clear all photometry
+(showphot)	To show previous photometry each time loading a FITS file
+(qshowphot) to stop showing photometry apertures for each FITS file
+(ashift)	To use arrow keys to shift an image
+(ts4foc)	To find the best fit focus for 7 images. Designed specifically for ARCoIRIS/TS4
+
+-------------------------------------
+Box Stastics and Spectral Extraction
+-------------------------------------
+
+(boxstat)	Box statistics (RMS), median ect.
+(allbox)	For box statistics on all images
+(boxtser)	To make a time series of the box statistics (after running allbox)
+(bsub)		To do a background subtraction from the box and save this image
+(qspec # #)	To extract a quick spectrum with #ap #pos
+(dospec # )	To auto find a spectrum #ap and quickly extract
+(calspec #)	To save a calibration spectrum
+
+-------------------------------------
+Headers and Keywords
+-------------------------------------
+(head)		To show FITS header
+(ckey)		To choose a FITS keyword to print and include in photometry/box extraction
+(keyedit)	To edit the FITS keywords that are selected by (ckey) with a text editor
+(keyread)	To read the FITS keyword list that was edited with keyread
+(dispkey)	To choose a FITS keyword for plot legend when doing (op), (opp), etc.
+(titlekey)	To choose a FITS keyword for image titles
+(qtitlekey)	To stop  choose a FITS keyword for image titles
