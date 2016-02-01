@@ -66,7 +66,7 @@ outL = [transpose(keys),transpose(hd)]
                        /scroll,background_color=[255,255,255],$
                        column_widths=[100,700],row_labels=keys,$
                         column_labels=['Value/comment'],/no_headers,$
-                       uname='TEXT')
+                       uname='TEXT',uvalue=filename)
   ;; Allow a quit
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
   ;; Search text field
