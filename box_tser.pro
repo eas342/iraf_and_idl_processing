@@ -44,6 +44,8 @@ gparam = create_struct('PKEYS',['AINDEX','NORM_FLUX'],$
                       'TITLES',['Image #','Normalized Flux',''],$
                       'FILENAME','box_time_ser')
 
+adjust_pwindow,type='Plot Window'
 genplot,statdat,gparam=gparam
+adjust_pwindow,type='FITS Window'
 
 end
