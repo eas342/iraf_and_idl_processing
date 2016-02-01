@@ -7,6 +7,7 @@ Help
 Quitting, Saving
 -------------------------------------
 (q)			Quit
+(nsq)		Quit without saving and parameters (no save quit)
 (l)			To load another parameter file
 (c)			To clear all previous settings
 (sparam)	To save the display parameters as custom filename

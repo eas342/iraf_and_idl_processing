@@ -17,7 +17,7 @@ if findPref NE '' then begin
    if n_elements(filel) NE 0 then status='nothing' else status = 'r'
 endif else status = 'o'
 
-while status NE 'q' and status NE 'Q' do begin
+while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
    nfile = n_elements(fileL)
    skipaction = 0
    if n_elements(slot) EQ 0 then slot = nfile-1l
@@ -337,19 +337,22 @@ while status NE 'q' and status NE 'Q' do begin
 ;   status = get_kbrd()
 
 endwhile
-save,fileL,slot,lineP,plotp,$
-     filename='ev_local_display_params.sav'
 
-if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
-if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
-if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
-if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
-openw,1,'ev_local_display_params.json'
-if float(!Version.Release) GE 8.5 then begin
-   printf,1,allParams,/implied_print
-endif else begin
-   printf,1,allParams
-endelse
-close,1
+if status EQ 'q' or status EQ 'Q' then begin
+   save,fileL,slot,lineP,plotp,$
+        filename='ev_local_display_params.sav'
+   
+   if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
+   if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
+   if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
+   if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
+   openw,1,'ev_local_display_params.json'
+   if float(!Version.Release) GE 8.5 then begin
+      printf,1,allParams,/implied_print
+   endif else begin
+      printf,1,allParams
+   endelse
+   close,1
+endif
 
 end
