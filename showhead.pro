@@ -70,7 +70,7 @@ outL = [transpose(keys),transpose(hd)]
   ;; Allow a quit
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
   ;; Search text field
-  searchField = widget_text(cntl, VALUE='OBJECT', UNAME='STEXT',/editable,uvalue='SEARCH')
+  searchField = widget_text(cntl, VALUE='', UNAME='STEXT',/editable,uvalue='SEARCH')
   searchbutton = widget_button(cntl, value='Search', uvalue='SEARCH')
 
   WIDGET_CONTROL, base, /REALIZE
