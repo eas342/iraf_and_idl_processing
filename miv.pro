@@ -339,10 +339,10 @@ endwhile
 save,fileL,slot,lineP,plotp,$
      filename='ev_local_display_params.sav'
 
-if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
-if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
-if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
 if n_elements(plotp) GT 0 then ev_add_tag,allParams,'plotp',plotp
+if n_elements(lineP) GT 0 then ev_add_tag,allParams,'lineP',lineP
+if n_elements(slot) GT 0 then ev_add_tag,allParams,'slot',slot
+if n_elements(fileL) GT 0 then ev_add_tag,allParams,'filel',fileL
 openw,1,'ev_local_display_params.json'
 if float(!Version.Release) GE 8.5 then begin
    printf,1,allParams,/implied_print
