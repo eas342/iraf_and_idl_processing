@@ -44,7 +44,7 @@ Adjusting scaling, zoom and rotation of Fits Viewer
 -------------------------------------
 (s)			Set scale
 (fullscale) To use min/max for scaling
-(st)		Sretch image to fill screen (losing 1:1 pixel aspect ratio)
+(st)		Stretch image to fill screen (losing 1:1 pixel aspect ratio)
 (unst)		Unstretch image to preserve 1:1 pixel aspect ratio
 (z)			Zoom in with cursor
 (zz)		Zoom in from a previously zoomed image
