@@ -53,7 +53,12 @@ while counter LT maxCounter do begin
    endif else begin
       if LineP.direction EQ 'x' then begin
          if LineP.type EQ 'box' then begin
-            yplot = total(a[xplot,ycoor[0]:ycoor[1]],2)
+            if ycoor[1] - ycoor[0] EQ 0 then begin
+               ;; doesn't work to add if it's only 1 pix tall
+               yplot = a[xplot,ycoor[0]]
+            endif else begin
+               yplot = total(a[xplot,ycoor[0]:ycoor[1]],2)
+            endelse
             yplot = yplot / float(ycoor[1] - ycoor[0] + 1l) ;; renormalize for avg
          endif else yplot = a[xplot,ycoor[0]]
       endif else begin
