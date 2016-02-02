@@ -10,14 +10,17 @@ pro box_stats,input,lineP=lineP,plotp=plotp
         return
      endif
   endelse
-  
+
   a = mod_rdfits(input,0,header,plotp=plotp,fileDescrip=fileDescrip)
 
   sz = size(a)
-  xstart = max([lineP.Xcoor[0],0])
-  xend = min([lineP.Xcoor[1],sz[1]-1l])
-  ystart = max([lineP.Ycoor[0],0])
-  yend = min([lineP.Ycoor[1],sz[2]-1l])
+
+  xcoor = float(checkrange(floor(LineP.xcoor),0,sz[1]-1l))
+  ycoor = float(checkrange(floor(LineP.ycoor),0,sz[2]-1l))
+  xstart = min(xcoor)
+  xend = max(xcoor)
+  ystart = min(ycoor)
+  yend = max(ycoor)
 
   subArr = a[xstart:xend,ystart:yend]
   medVal = median(subArr)
@@ -55,15 +58,18 @@ pro box_stats,input,lineP=lineP,plotp=plotp
 
   descrip = ["File","Min","Max","Median","Robust Sig",$
              "Robust Mean"]
-  print,descrip,format='(A15,5A12)'
+  print,descrip,format='(A15,5A13)'
   showNm = clobber_dir(stat.filen)
   lenName = strlen(showNm)
+
   print,strmid(showNm,LenName-15,LenName),$
-        stat.min,stat.max,stat.median,$
-        stat.rstdev,stat.rmean,$
-        format='(A15,5G12)'
-        
-  boxFile = 'box_stats.sav'
+        float(stat.min),float(stat.max),$
+        float(stat.median),$
+        float(stat.rstdev),float(stat.rmean),$
+        format='(A15,5G13)'
+
+  boxFile = 'es_box_stats.sav'
+
   prevFile = file_search(boxFile)
   if prevFile NE '' then begin
      restore, boxFile

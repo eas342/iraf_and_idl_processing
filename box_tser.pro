@@ -4,7 +4,7 @@ pro box_tser,filen
 
 if n_elements(filen) EQ 0 then begin
    ;; Look for default file name
-   filen = 'box_stats.sav'
+   filen = 'es_box_stats.sav'
 endif
 
 if file_exists(filen) then begin
