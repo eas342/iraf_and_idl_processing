@@ -34,10 +34,10 @@ CASE uval of
 
 END
 
-PRO showhead,filen
+PRO showhead,filen,extension=extension
 ;; Allows the user to view the header and quickly exit
 
-hd = headfits(filen)
+hd = headfits(filen,ext=extension)
 keys = gettok(hd,'=')
 
 ;; Pre-pend with the full path name
