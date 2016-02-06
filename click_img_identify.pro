@@ -3,10 +3,6 @@ pro click_img_identify,data,Y,gparam=gparam,plotp=plotp
 ;; If there is a FITS image associated with that point, it will
 ;; display the FITS image 
 
-  xLength = (!x.crange[1] - !x.crange[0])
-  yLength = (!y.crange[1] - !y.crange[0])
-  xspacing = 0.005 * xlength ;; spacing for text
-  yspacing = 0.03 * ylength ;; spacing for text
   ;; Plot the wavelengths of specified points
 
   ;; Get the tags that are selected
@@ -36,8 +32,14 @@ pro click_img_identify,data,Y,gparam=gparam,plotp=plotp
   disp_plot,data,y,gparam=gparam
      cursor,xcur,ycur,/down
      ;; Find the closest point to click
-     sqrdist = (xcur - xin)^2/xlength^2 + (ycur - yin)^2/ylength^2
-     minDist = min(sqrdist,iclickX,/nan)
+     xLength = (!x.crange[1] - !x.crange[0]);; normalize to viewable dimensions
+     yLength = (!y.crange[1] - !y.crange[0]);; normalize to viewable dimensions
+     xspacing = 0.005 * xlength ;; spacing for text
+     yspacing = 0.03 * ylength  ;; spacing for text
+
+
+     sqdist = double(xcur - xin)^2/xLength^2 + double(ycur - yin)^2/yLength^2
+     minDist = min(sqdist,iclickX,/nan)
 
      xNear = xin[iclickX]
      yNear = yin[iclickX]
