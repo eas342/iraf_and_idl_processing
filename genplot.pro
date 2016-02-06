@@ -103,7 +103,12 @@ CASE uval of
        update_widgets,ev.top,data,edat,gparam
     endif
     'CLICKID': begin
-       click_img_identify,data,Y,gparam=gparam
+       ;; Retrieve the FITS plotting parameters, if specified
+       ;; widget for storing MIV (multi-image viewer parameters, if
+       ;; specified. plotp
+       idplotparam = widget_info(ev.top,find_by_uname="mivparams")
+       widget_control, idplotparam, get_uvalue= plotp
+       click_img_identify,data,Y,gparam=gparam,plot=plotp
     end
     'ALLPOINTS': ev_undefine_tag,gparam,'FITREGION'
     'FITREGION': begin
@@ -137,7 +142,7 @@ CASE uval of
 END
 
 PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
-            noinit=noinit
+            noinit=noinit,linep=linep,plotp=plotp
 ;; General plotter
 ;; gparam contains all the general plotting parameters
 ;; help - calls up the help file
@@ -203,7 +208,8 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
 
   ywidget = widget_base(base,uname='ywidget') ;; widget for storing y value
   paramw = widget_base(base,uname='paramw') ;; widget for storing parameters
-
+  ;; widget for storing MIV (multi-image viewer parameters, if specified. plotp
+  mivparams = widget_base(base,uname='mivparams') 
   
   ;; Sets up the control buttons
   donebutton = WIDGET_BUTTON(cntl, VALUE='Done', UVALUE='DONE')
@@ -266,6 +272,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   if not keyword_set(noinit) then disp_plot,data,y,gparam=gparam
 
   widget_control, paramw, set_uvalue = gparam ;; save the plot parameters
+  widget_control, mivparams, set_uvalue = plotp
   widget_control, base, set_uvalue = data
   widget_control, ywidget, set_uvalue = y ;; save the y data
 

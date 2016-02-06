@@ -247,7 +247,7 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          photfile = 'ev_phot_data_tser.sav'
          if file_exists(photfile) then restore,photfile
          adjust_pwindow,type='Plot Window'
-         genplot,otdat
+         genplot,otdat,plotp=plotp
          adjust_pwindow,type='FITS Window'
       end
       status EQ 'qfoc' OR status EQ 'QFOC': begin

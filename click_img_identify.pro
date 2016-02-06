@@ -1,4 +1,4 @@
-pro click_img_identify,data,Y,gparam=gparam
+pro click_img_identify,data,Y,gparam=gparam,plotp=plotp
 ;; Identifies a point when you click on it
 ;; If there is a FITS image associated with that point, it will
 ;; display the FITS image 
@@ -32,7 +32,8 @@ pro click_img_identify,data,Y,gparam=gparam
   endfor
 
 
-  WHILE (!MOUSE.button NE 4) DO BEGIN
+;  WHILE (!MOUSE.button NE 4) DO BEGIN
+  disp_plot,data,y,gparam=gparam
      cursor,xcur,ycur,/down
      ;; Find the closest point to click
      sqrdist = (xcur - xin)^2/xlength^2 + (ycur - yin)^2/ylength^2
@@ -45,8 +46,9 @@ pro click_img_identify,data,Y,gparam=gparam
            psym=4,color=mycol('red'),symsize=2
      if listfound then begin
         adjust_pwindow,type='FITS Window'
-        fits_display,filel[iclickX]
+        fits_display,filel[iclickX],plotp=plotp
         adjust_pwindow,type='Plot Window'
+        tlabel = filel[iclickX]
      endif else tlabel=''
 
      print,xNear,ynear,tlabel
@@ -63,7 +65,7 @@ pro click_img_identify,data,Y,gparam=gparam
         yout = [yout,yNear]
 ;        tout = [tout,tlabel]
      endelse
-  end
+;  end
   !MOUSE.button = 1
 
 
