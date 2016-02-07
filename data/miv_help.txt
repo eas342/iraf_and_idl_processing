@@ -85,6 +85,7 @@ Photometry
 (refit)		To fit many PSFs from previous saved photometry
 (allfit)	To fit many PSFs in all FITs files using starting positions from previous photometry
 (tser)		To create a time series of saved photometry (after running allfit) and plot it
+(tserprev)	To load in the previous (tser) parameters (saves clicking)
 (cphot)		To clear all photometry
 (showphot)	To show previous photometry each time loading a FITS file
 (qshowphot) to stop showing photometry apertures for each FITS file

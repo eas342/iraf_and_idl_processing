@@ -250,6 +250,15 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          genplot,otdat,plotp=plotp
          adjust_pwindow,type='FITS Window'
       end
+      status EQ 'tserprev' OR status EQ 'TSERPREV': begin
+         photfile = 'ev_phot_data_tser.sav'
+         if file_exists(photfile) then restore,photfile
+         plotparamfile = 'ev_local_pparams.sav'
+         if file_exists(plotparamfile) then restore,plotparamfile
+         adjust_pwindow,type='Plot Window'
+         genplot,otdat,plotp=plotp,gparam=gparam
+         adjust_pwindow,type='FITS Window'
+      end
       status EQ 'qfoc' OR status EQ 'QFOC': begin
          quick_foc,filel,plotp,linep,slot
       end
