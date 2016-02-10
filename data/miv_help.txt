@@ -38,6 +38,7 @@ Controlling the Planes of image cubes
 (qplane)	To undefine the Image plane
 (dcssub)	Automatically do a Double-correlated subtraction of the input images (last frame - first)
 (qdcs)		To cancel DCS subtraction
+(cexten #)	To choose an image extension to read/show header for
 
 -------------------------------------
 Adjusting scaling, zoom and rotation of Fits Viewer

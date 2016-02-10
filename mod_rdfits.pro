@@ -10,6 +10,12 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      fscale=plotp.fscale
   endelse
 
+  if ev_tag_exist(plotp,'CHOOSEEXTEN') then begin
+     ;; This overrides the exten argument!!
+     ;; I should probably adjust this
+     ext = plotp.chooseexten
+  endif
+
   if type NE 7 then begin
      c = filen
      fileDescrip = 'None'

@@ -213,7 +213,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          miv_help
       end
       status EQ 'head' OR status EQ 'HEAD': begin
-         showhead,fileL[slot]
+         if ev_tag_exist(plotp,'CHOOSEEXTEN') then begin
+            showhead,fileL[slot],ext=plotp.chooseexten
+         endif else showhead,fileL[slot]
       end
       status EQ 'ckey' OR status EQ 'CKEY': $
          choose_key,fileL[slot],plotp
@@ -334,6 +336,15 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
                message,'Invalid plane specified.',/cont
             endelse
          endif else message,'No plane specified',/cont
+      end
+      splitstatus[0] EQ 'cexten' OR status EQ 'CEXTEN': begin
+         if n_elements(splitstatus) GE 2 then begin
+            if valid_num(splitstatus[1]) then begin
+               ev_add_tag,plotp,'ChooseExten',long(splitstatus[1])
+            endif else begin
+               message,'Invalid extension specified.',/cont
+            endelse
+         endif else message,'No extension specified',/cont
       end
       splitstatus[0] EQ 'qplane': begin
          ev_undefine_tag,plotp,'ChoosePlane'
