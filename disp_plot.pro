@@ -290,7 +290,7 @@ if ev_tag_exist(edat,'TEXT') then begin
          xtxt = (myXcrange[1] - myXcrange[0]) * edat.xytext[0,*] + myXcrange[0]
          ytxt = (myYcrange[1] - myYcrange[0]) * edat.xytext[1,*] + myYcrange[0]
          for i=0l,ntexts-1l do begin
-            xyouts,xtxt,ytxt,edat.text
+            xyouts,xtxt,ytxt,edat.text,charsize=legcharsize
          endfor
       endif
    endif
