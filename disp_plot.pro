@@ -208,7 +208,7 @@ for i=0l,nser-1l do begin
          endif else yerr = dat[serInd].(YerrInd)
          if total(xerr) GT 0E OR total(yerr) GT 0E then begin
             oploterror,dat[serInd].(DataInd[0]),dat[serInd].(DataInd[1]),$
-                       xerr,yerr,$
+                       xerr,yerr,psym=3,$
                        color=colArr[i],thick=thick
          endif
       endif
