@@ -285,6 +285,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'boxtser' OR status EQ 'BOXTSER': begin
          box_tser
       end
+      status[0] EQ 'clearbox' OR status EQ 'CLEARBOX': begin
+           file_move,'es_box_stats.sav','es_box_stats_backup.sav',/overwrite
+      end
       status EQ 'bsub' OR status EQ 'BSUB': begin
          fileL[slot] = fits_backsub(fileL[slot],lineP=lineP,plotp=plotp)
       end

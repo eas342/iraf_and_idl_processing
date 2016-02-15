@@ -100,6 +100,7 @@ Box Stastics and Spectral Extraction
 (boxstat)	Box statistics (RMS), median ect.
 (allbox)	For box statistics on all images
 (boxtser)	To make a time series of the box statistics (after running allbox)
+(clearbox	To clear the box data (saves a backup)
 (bsub)		To do a background subtraction from the box and save this image
 (qspec # #)	To extract a quick spectrum with #ap #pos
 (dospec # )	To auto find a spectrum #ap and quickly extract
