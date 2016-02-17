@@ -220,7 +220,7 @@ if ev_tag_true(plotp,'SHOWPHOT') then begin
       get_phot_params,aperRad,skyArr
       if count NE 0 then begin
          for i=0l,count-1l do begin
-            show_phot,photdat[prevPhotpt[i]],skyArr,aperRad,size(a)
+            show_phot,photdat[prevPhotpt[i]],skyArr,aperRad,size(a),plotp=plotp
          endfor
       endif
    endif

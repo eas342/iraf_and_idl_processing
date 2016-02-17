@@ -125,7 +125,7 @@ endif else begin
    endif
 
    if not keyword_set(noplot) then begin
-      show_phot,singlephot,skyArr,aperRad,sz
+      show_phot,singlephot,skyArr,aperRad,sz,plotp=plotp
    endif
 
 

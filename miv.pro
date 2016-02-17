@@ -252,6 +252,12 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          genplot,otdat,plotp=plotp
          adjust_pwindow,type='FITS Window'
       end
+      status[0] EQ 'silentphot' OR status[0] EQ 'SILENTPHOT': begin
+         ev_add_tag,plotp,'SILENTPHOT',1
+      end
+      status[0] EQ 'listphot' OR status[0] EQ 'LISTPHOT': begin
+         ev_add_tag,plotp,'SILENTPHOT',0
+      end
       status EQ 'tserprev' OR status EQ 'TSERPREV': begin
          photfile = 'ev_phot_data_tser.sav'
          if file_exists(photfile) then restore,photfile

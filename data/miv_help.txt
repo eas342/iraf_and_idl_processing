@@ -92,6 +92,8 @@ Photometry
 (qshowphot) to stop showing photometry apertures for each FITS file
 (ashift)	To use arrow keys to shift an image
 (ts4foc)	To find the best fit focus for 7 images. Designed specifically for ARCoIRIS/TS4
+(listphot)	To list each photometry data point out (default)
+(silentphot)	To only show photometry on the display but not print the parameters
 
 -------------------------------------
 Box Stastics and Spectral Extraction
