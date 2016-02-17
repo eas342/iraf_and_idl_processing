@@ -18,7 +18,7 @@ pro show_phot,singlephot,skyArr,aperRad,sz,plotp=plotp
   xprime = (X - xshowfit)*cos(Theta) - (Y - yshowfit)*sin(Theta)
   yprime = (X - xshowfit)*sin(Theta) + (Y - yshowfit)*cos(Theta)
   Ufit = (xprime/ singlephot.xsig)^2 + (yprime/ singlephot.ysig)^2
-  Ymodel = singlephot.backg + singlephot.peak * EXP(-Ufit/2)
+  Ymodel = singlephot.backg + singlephot.peak * myexp(-Ufit/2)
 
   if not ev_tag_true(plotp,'SILENTPHOT') then begin
      descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$
