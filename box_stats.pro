@@ -1,5 +1,11 @@
-pro box_stats,input,lineP=lineP,plotp=plotp,silent=silent
+pro box_stats,input,lineP=lineP,plotp=plotp,silent=silent,backparams=backparams
 ;; Finds the statistics of the zoombox
+;; silent - doesn't spit out values of box stats
+;; backparams - back parameters structure. The robust-sigma is found only
+;;               for points out of a given pixel radius from cen_x and
+;;               cen_y. This is subtracted from all the box pixels
+
+
 
   if not ev_tag_exist(Linep,'type') then begin
      message,'No defined box/line structure found!',/cont
@@ -25,10 +31,31 @@ pro box_stats,input,lineP=lineP,plotp=plotp,silent=silent
   subArr = a[xstart:xend,ystart:yend]
   medVal = median(subArr)
   rsigma = robust_sigma(subArr)
-  goodp = where(abs(subArr - medVal) LT 5E * rsigma,ngood)
+  if ev_tag_exist(backparams,'RADIUS') then begin
+     xdim = xend - xstart + 1l
+     ydim = yend - ystart + 1l
+     subArrX = rebin(lindgen(xdim),xdim,ydim) + xstart
+     subArrY = rebin(transpose(reverse(lindgen(ydim))),xdim,ydim) + ystart
+     dist = sqrt((subArrX - backparams.cen_x)^2 + $
+                 (subArrY - backparams.cen_y)^2)
+     goodp = where(dist GT backparams.radius and $
+                   abs(subArr - medVal) LT 5E * rsigma,ngood)
+  endif else begin
+     goodp = where(abs(subArr - medVal) LT 5E * rsigma,ngood)
+  endelse
+
   if ngood GT 0 then begin
      rmean = mean(subArr[goodp],/nan)
-  endif else rmean = !values.f_nan
+     if ev_tag_exist(backparams,'SHOWPT') then begin
+        oplot,subArrx[goodp],subarry[goodp],psym=4,color=mycol('red')
+     endif
+     if ev_tag_true(backparams,'SUBTRACT') then begin
+        subArr = subArr - rmean
+     endif
+  endif else begin
+     rmean = !values.f_nan
+     print,'Not enough valid points for robust mean'
+  endelse
 
   ;; Statistics in for one image and box
   stat = create_struct('FILEN',clobber_dir(fileDescrip),$
