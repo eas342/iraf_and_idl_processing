@@ -1,6 +1,7 @@
-pro sim_slit_loss,showbox=showbox,psplot=psplot
-;; Although the PSF is likely different (and larger) in the IR than
-;; optical, I'll simulate the slit loss with box photometry
+pro sim_slit_loss,showbox=showbox,psplot=psplot,$
+                  relative=relative
+;; Although the PSF is likely different (and larger) in the optical than
+;; IR, I'll simulate the slit loss with box photometry
 ;; This takes the MORIS data and calculates the expected slit loss for
 ;; a 3x60 arcsec slit by extracting a box around the source and then a
 ;; really wide one to see what kind of slit loss we'd expect
@@ -8,6 +9,7 @@ pro sim_slit_loss,showbox=showbox,psplot=psplot
 ;; OPTIONS
 ;; showbox - show the box on each fits image
 ;; showback - show background region used
+;; relative - show the relative loss between two sources
 
 restore,'ev_phot_data.sav'
 
@@ -105,7 +107,10 @@ for i=0l,nbox-1l do begin
    if keyword_set(showbox) then begin
       print,"loss = ",loss * 100E,"%",' ',dateobs
    endif
-   onelossdat = create_struct('FILEN',photdat[i].filen,$
+
+   onelossdat = create_struct('XCEN',photdat[i].XCEN,$
+                              'YCEN',photdat[i].YCEN,$
+                              'FILEN',photdat[i].filen,$
                               'FLUX_WIDE',flux_wide,$
                               'FLUX_SOURCE',flux_source,$
                               'LOSS',loss,'DATE_OBS',dateobs)
@@ -132,12 +137,38 @@ for i=0l,nuniq-1l do begin
          message,'Warning, only one loss value for '+thisdate,/cont
          medianloss = lossdat[alldmatch].loss
       end
-      else: medianloss = median(lossdat[alldmatch].loss)
+      else: begin
+         medianloss = median(lossdat[alldmatch].loss)
+      end
    endcase
 
    print,thisdate,' ',medianloss * 100E,'%'
 
 endfor
+
+if keyword_set(relative) then begin
+   uniqfile = uniq(lossdat.filen,sort(lossdat.filen))
+   nuniqfile = n_elements(uniqfile)
+
+   diffloss = fltarr(nuniqfile)
+   for i=0l,nuniqfile-1l do begin
+      thisfile = lossdat[uniqfile[i]].filen
+      allfmatch = where(thisfile EQ lossdat.filen,nfmatch)
+      case nfmatch of
+         0: message,'File mysteriously not found.'
+         1: begin
+            message,'Warning, only 1 photometry point for this file'
+         end
+         else: begin
+            middleX = mean(lossdat[allfmatch].xcen)
+            leftp = where(lossdat[allfmatch].xcen LT middlex,complement=rightp)
+            diffloss[i] = lossdat[allfmatch[leftp]].loss - lossdat[allfmatch[rightp]].loss
+         end
+      endcase
+   endfor
+   plot,diffloss
+   print,'robust sigma differential loss = ',robust_sigma(diffloss) * 100E,' %'
+endif
 
 save,lossdat,filename='lossdat.sav'
 
