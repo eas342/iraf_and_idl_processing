@@ -18,7 +18,11 @@ pro show_phot,singlephot,skyArr,aperRad,sz,plotp=plotp
   xprime = (X - xshowfit)*cos(Theta) - (Y - yshowfit)*sin(Theta)
   yprime = (X - xshowfit)*sin(Theta) + (Y - yshowfit)*cos(Theta)
   Ufit = (xprime/ singlephot.xsig)^2 + (yprime/ singlephot.ysig)^2
-  Ymodel = singlephot.backg + singlephot.peak * myexp(-Ufit/2)
+  if ev_tag_true(plotp,'MOFFAT') and ev_tag_exist(singlephot,'MOFFAT') then begin
+     Ymodel = singlephot.backg + singlephot.peak * (Ufit + 1E)^(-singlephot.moffat)
+  endif else begin
+     Ymodel = singlephot.backg + singlephot.peak * myexp(-Ufit/2)
+  endelse
 
   if not ev_tag_true(plotp,'SILENTPHOT') then begin
      descrip=["Back","Peak  ","Maj FWHM","Min FWHM",$

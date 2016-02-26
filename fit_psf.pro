@@ -1,4 +1,4 @@
-pro fit_psf,input,lineP,plotp=plotp,custbox=custbox
+pro fit_psf,input,lineP,plotp=plotp,custbox=custbox,noplot=noplot
 ;; FITS a PSF to an image given a zoombox
 ;; a - the image
 ;; zoombox - the BOX region to fit
@@ -8,7 +8,7 @@ minsize=2 ;; minimum size for PSF fitting (below this there is not enough data t
 type = size(input,/type)
 
 if type EQ 7 then begin
-   a = mod_rdfits(input,0,header,plotp=plotp)
+   a = mod_rdfits(input,0,header,plotp=plotp,/silent)
 endif else a=input
 
 sz = size(a)
@@ -53,7 +53,12 @@ endif else begin
    
    a2fit = a[xstart:xend,ystart:yend]
 
-   result = mpfit2dpeak(a2fit,fitp,/tilt)
+   if ev_tag_true(plotp,'MOFFAT') then begin
+      result = mpfit2dpeak(a2fit,fitp,/tilt,/moffat)
+      ;fits_display,a2fit - result
+   endif else begin
+      result = mpfit2dpeak(a2fit,fitp,/tilt)
+   endelse
 
    ;; Add the X/Ystart for the window
    ;; Add the 0.5 to be consistent with showing in plot image
@@ -111,6 +116,10 @@ endif else begin
                               'FILEN',fileDescrip,$
                               'APSKY',sky)
 
+   if ev_tag_true(plotp,'MOFFAT') then begin
+      ev_add_tag,singlephot,'MOFFAT',fitp[7]
+   endif
+
    for i=0l,nAp-1l do begin
       ev_add_tag,singlephot,'AP'+string(i,format='(i02)')+'_FLUX',mags[i]
       ev_add_tag,singlephot,'AP'+string(i,format='(i02)')+'_ERR',errap[i]
@@ -129,15 +138,18 @@ endif else begin
    endif
 
 
-
-   prevFile = file_search('ev_phot_data.sav')
-   if prevFile NE '' then begin
-      restore,'ev_phot_data.sav'
-      photdat = [photDat,singlePhot]
+   if ev_tag_true(plotp,'MOFFAT') then begin
+      save,singlephot,filename='ev_phot_moffat.sav'
    endif else begin
-      photdat = singlePhot
+      prevFile = file_search('ev_phot_data.sav')
+      if prevFile NE '' then begin
+         restore,'ev_phot_data.sav'
+         photdat = [photDat,singlePhot]
+      endif else begin
+         photdat = singlePhot
+      endelse
+      save,photdat,filename='ev_phot_data.sav'
    endelse
-   save,photdat,filename='ev_phot_data.sav'
 
 endelse
    

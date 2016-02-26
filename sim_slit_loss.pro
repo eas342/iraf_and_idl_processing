@@ -1,5 +1,5 @@
 pro sim_slit_loss,showbox=showbox,psplot=psplot,$
-                  relative=relative
+                  relative=relative,moffat=moffat
 ;; Although the PSF is likely different (and larger) in the optical than
 ;; IR, I'll simulate the slit loss with box photometry
 ;; This takes the MORIS data and calculates the expected slit loss for
@@ -10,6 +10,8 @@ pro sim_slit_loss,showbox=showbox,psplot=psplot,$
 ;; showbox - show the box on each fits image
 ;; showback - show background region used
 ;; relative - show the relative loss between two sources
+;; moffat - fits stars with moffat profile to get slit loss without
+;;           other sources or detector complications
 
 restore,'ev_phot_data.sav'
 
@@ -20,7 +22,7 @@ slitdimY = 3E
 
 ;; Dimensions in arcseconds of wider simulated slit
 widedimX = 15E
-widedimY = 10E
+widedimY = 20E
 
 ;; Source avoidance radius in arc-seconds
 avoidRadius = 6E
@@ -29,6 +31,10 @@ avoidRadius = 6E
 restore,'ev_local_display_params.sav'
 ;; Get the display parameters
 
+if keyword_set(moffat) then begin
+   ev_add_tag,plotp,'MOFFAT',1
+   bsize = 20E
+endif
 
 nbox = n_elements(photdat)
 
@@ -67,7 +73,7 @@ for i=0l,nbox-1l do begin
                                  'CEN_Y',photdat[i].ycen,$
                                 'SUBTRACT',1)
 
-      if keyword_set(showbox) then begin
+      if keyword_set(showbox) and not keyword_set(moffat) then begin
          if keyword_set(showback) then begin
             ev_add_tag,backparams,'SHOWPT',1
             fits_display,photdat[i].filen,plotp=plotp ;,linep=linep
@@ -81,14 +87,50 @@ for i=0l,nbox-1l do begin
          stop
       endif
 
-      box_stats,photdat[i].filen,linep=linep,plotp=plotp,/silent,$
-                backparams=backparams
+      if keyword_set(moffat) then begin
+         custbox = create_struct('XCOOR',photdat[i].xcen + [-bsize,bsize],$
+                                 'YCOOR',photdat[i].ycen + [-bsize,bsize])
+         fit_psf,photdat[i].filen,linep,plotp=plotp,custbox=custbox,/noplot
+         restore,'ev_phot_moffat.sav'
+           ;; Set up simulated star image
+         
+         Theta = singlephot.OrigTheta
+         xshowfit = singlephot.xcen
+         yshowfit = singlephot.ycen
+         simszX = fxpar(head,'NAXIS1')
+         simszY = fxpar(head,'NAXIS2')
+         X = FINDGEN(simszX) # REPLICATE(1.0, simszY)
+         Y = REPLICATE(1.0, simszY) # FINDGEN(simszX)
+         xprime = (X - xshowfit)*cos(Theta) - (Y - yshowfit)*sin(Theta)
+         yprime = (X - xshowfit)*sin(Theta) + (Y - yshowfit)*cos(Theta)
+         Ufit = (xprime/ singlephot.xsig)^2 + (yprime/ singlephot.ysig)^2
+         Zmodel = singlephot.peak * $
+                  (Ufit + 1E)^(-singlephot.moffat)
+         ;; Don't add the backgroundsinglephot.backg) so we can
+         ;; easily estimate slit loss
+
+         if keyword_set(showbox) then begin
+            mplotp = create_struct('scale',[xshowfit - 15,xshowfit + 15,$
+                                           yshowfit - 15,yshowfit + 15,$
+                                           0.0,0.45])
+            ;mplotp = create_struct('FULLSCALE',1)
+            fits_display,Zmodel,plotp=mplotp,linep=linep
+         endif
+         
+         box_stats,Zmodel,linep=linep,/silent
+
+      endif else begin
+         box_stats,photdat[i].filen,linep=linep,plotp=plotp,/silent,$
+                   backparams=backparams
+      endelse
+      
       if keyword_set(showbox) then stop
       
 ;   plotboxX = [bxindx[0],bxindx[1],bxindx[1],bxindx[0],bxindx[0]]
 ;   plotboxY = [bxindy[0],bxindy[0],bxindy[1],bxindy[1],bxindy[0]]
 ;   plots,plotboxX,plotboxY,color=mycol('yellow'),thick=2
    endfor
+   
    restore,'es_box_stats.sav'
    ;; Do a background subtraction for each
    for j=0l,1l do begin
@@ -101,13 +143,13 @@ for i=0l,nbox-1l do begin
       endif else begin
          flux_wide = bsub_flux
       endelse
-
    endfor
+   
    loss = (flux_wide - flux_source) / flux_source
    if keyword_set(showbox) then begin
       print,"loss = ",loss * 100E,"%",' ',dateobs
    endif
-
+   
    onelossdat = create_struct('XCEN',photdat[i].XCEN,$
                               'YCEN',photdat[i].YCEN,$
                               'FILEN',photdat[i].filen,$
@@ -168,6 +210,7 @@ if keyword_set(relative) then begin
    endfor
    plot,diffloss
    print,'robust sigma differential loss = ',robust_sigma(diffloss) * 100E,' %'
+
 endif
 
 save,lossdat,filename='lossdat.sav'
