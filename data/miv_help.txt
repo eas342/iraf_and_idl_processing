@@ -94,6 +94,7 @@ Photometry
 (ts4foc)	To find the best fit focus for 7 images. Designed specifically for ARCoIRIS/TS4
 (listphot)	To list each photometry data point out (default)
 (silentphot)	To only show photometry on the display but not print the parameters
+(addphotkey)	To add a FITS keyword to the photometry (such as forgetting MJD or Time-Obs)
 
 -------------------------------------
 Box Stastics and Spectral Extraction

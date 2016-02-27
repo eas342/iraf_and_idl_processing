@@ -252,6 +252,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          genplot,otdat,plotp=plotp
          adjust_pwindow,type='FITS Window'
       end
+      status[0] EQ 'addphotkey' or status[0]: begin
+         add_to_tser
+      end
       status[0] EQ 'silentphot' OR status[0] EQ 'SILENTPHOT': begin
          ev_add_tag,plotp,'SILENTPHOT',1
       end
