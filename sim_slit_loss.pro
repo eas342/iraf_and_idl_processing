@@ -1,5 +1,6 @@
 pro sim_slit_loss,showbox=showbox,psplot=psplot,$
-                  relative=relative,moffat=moffat
+                  relative=relative,moffat=moffat,$
+                  fixbox=fixbox
 ;; Although the PSF is likely different (and larger) in the optical than
 ;; IR, I'll simulate the slit loss with box photometry
 ;; This takes the MORIS data and calculates the expected slit loss for
@@ -9,9 +10,9 @@ pro sim_slit_loss,showbox=showbox,psplot=psplot,$
 ;; OPTIONS
 ;; showbox - show the box on each fits image
 ;; showback - show background region used
-;; relative - show the relative loss between two sources
 ;; moffat - fits stars with moffat profile to get slit loss without
 ;;           other sources or detector complications
+;; fixbox - fixes the box center position at the median (X,Y) coordinate
 
 restore,'ev_phot_data.sav'
 
@@ -22,7 +23,7 @@ slitdimY = 3E
 
 ;; Dimensions in arcseconds of wider simulated slit
 widedimX = 15E
-widedimY = 20E
+widedimY = 15E
 
 ;; Source avoidance radius in arc-seconds
 avoidRadius = 6E
@@ -63,8 +64,13 @@ for i=0l,nbox-1l do begin
       dimXpx = boxdimX / ps
       dimYpx = boxdimY / ps
 
-      bxindx = photdat[i].xcen + [-0.5E,0.5E] * dimXpx
-      bxindy = photdat[i].ycen + [-0.5E,0.5E] * dimYpx
+      if keyword_set(fixbox) then begin
+         bxindx = photdat[i].xcen + [-0.5E,0.5E] * dimXpx
+         bxindy = median(photdat.ycen) + [-0.5E,0.5E] * dimYpx
+      endif else begin
+         bxindx = photdat[i].xcen + [-0.5E,0.5E] * dimXpx
+         bxindy = photdat[i].ycen + [-0.5E,0.5E] * dimYpx
+      endelse
       
       linep = create_struct('type','box','direction','y',$
                             'xcoor',bxindx,'ycoor',bxindy)
@@ -97,10 +103,10 @@ for i=0l,nbox-1l do begin
          Theta = singlephot.OrigTheta
          xshowfit = singlephot.xcen
          yshowfit = singlephot.ycen
-         simszX = fxpar(head,'NAXIS1')
+         simszX = fxpar(head,'NAXIS1') + 300
          simszY = fxpar(head,'NAXIS2')
          X = FINDGEN(simszX) # REPLICATE(1.0, simszY)
-         Y = REPLICATE(1.0, simszY) # FINDGEN(simszX)
+         Y = REPLICATE(1.0, simszX) # FINDGEN(simszY)
          xprime = (X - xshowfit)*cos(Theta) - (Y - yshowfit)*sin(Theta)
          yprime = (X - xshowfit)*sin(Theta) + (Y - yshowfit)*cos(Theta)
          Ufit = (xprime/ singlephot.xsig)^2 + (yprime/ singlephot.ysig)^2
@@ -110,8 +116,8 @@ for i=0l,nbox-1l do begin
          ;; easily estimate slit loss
 
          if keyword_set(showbox) then begin
-            mplotp = create_struct('scale',[xshowfit - 15,xshowfit + 15,$
-                                           yshowfit - 15,yshowfit + 15,$
+            mplotp = create_struct('scale',[xshowfit - 25,xshowfit + 25,$
+                                           yshowfit - 25,yshowfit + 25,$
                                            0.0,0.45])
             ;mplotp = create_struct('FULLSCALE',1)
             fits_display,Zmodel,plotp=mplotp,linep=linep
@@ -188,30 +194,6 @@ for i=0l,nuniq-1l do begin
 
 endfor
 
-if keyword_set(relative) then begin
-   uniqfile = uniq(lossdat.filen,sort(lossdat.filen))
-   nuniqfile = n_elements(uniqfile)
-
-   diffloss = fltarr(nuniqfile)
-   for i=0l,nuniqfile-1l do begin
-      thisfile = lossdat[uniqfile[i]].filen
-      allfmatch = where(thisfile EQ lossdat.filen,nfmatch)
-      case nfmatch of
-         0: message,'File mysteriously not found.'
-         1: begin
-            message,'Warning, only 1 photometry point for this file'
-         end
-         else: begin
-            middleX = mean(lossdat[allfmatch].xcen)
-            leftp = where(lossdat[allfmatch].xcen LT middlex,complement=rightp)
-            diffloss[i] = lossdat[allfmatch[leftp]].loss - lossdat[allfmatch[rightp]].loss
-         end
-      endcase
-   endfor
-   plot,diffloss
-   print,'robust sigma differential loss = ',robust_sigma(diffloss) * 100E,' %'
-
-endif
 
 save,lossdat,filename='lossdat.sav'
 
