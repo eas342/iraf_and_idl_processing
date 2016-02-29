@@ -68,6 +68,12 @@ CASE uval of
        gparam.PKEYS[1] = dattags[ev.index]
        gparam.TITLES[1] = gparam.PKEYS[1]
     end
+    'XSCALE': begin
+       ev_add_tag,gparam,'XLOG',ev.value
+    end
+    'YSCALE': begin
+       ev_add_tag,gparam,'YLOG',ev.value
+    end
     'SWITCHXY': begin
        prevkeys = gparam.PKEYS
        gparam.PKEYS = reverse(gparam.PKEYS)
@@ -189,6 +195,7 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
   choiceWidg = lonarr(nch)
   choicelabel = lonarr(nch)
   choiceSelector = lonarr(nch)
+  choiceScale = lonarr(nch)
   cPref = ['X','Y','SER']
   cName = ['X','Y','Series']
   for i=0l,nch-1l do begin
@@ -199,7 +206,12 @@ PRO genplot,data,y,gparam=gparam,help=help,restore=restore,$
                                       uname=cPref[i]+'CHOICE')
      if cPREF[i] EQ 'SER' then begin
         roundSer = widget_text(choiceWidg[i],value='1',uvalue='ROUNDSER',uname='ROUNDSER',/editable)
-     endif
+     endif else begin
+        choiceScale = CW_BGROUP(choiceWidg[i], ['Lin','Log'], button_uvalue = [0,1],$
+                                /ROW, /EXCLUSIVE, /NO_RELEASE, $
+                                uvalue=cPref[i]+'SCALE',set_value=ev_tag_true(gparam,cPref+'LOG'),$
+                                /frame)
+     endelse
   endfor
   ;; Button to switch X and Y axes
   choiceSwitch = widget_button(xyChoiceB,Value='Switch X/Y',UVALUE='SWITCHXY')

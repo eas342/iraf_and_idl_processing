@@ -157,8 +157,8 @@ endelse
 if ev_tag_true(gparam,'XFLIP') then myXrange = reverse(myXrange)
 if ev_tag_true(gparam,'YFLIP') then myYrange = reverse(myYrange)
 
-if ev_tag_exist(gparam,'XLOG') then Xlog=1 else xlog=0
-if ev_tag_exist(gparam,'YLOG') then Ylog=1 else Ylog=0
+if ev_tag_true(gparam,'XLOG') then Xlog=1 else xlog=0
+if ev_tag_true(gparam,'YLOG') then Ylog=1 else Ylog=0
 
 serTag = dataInd[2]
 
