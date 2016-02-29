@@ -1,6 +1,6 @@
 pro sim_slit_loss,showbox=showbox,psplot=psplot,$
                   relative=relative,moffat=moffat,$
-                  fixbox=fixbox
+                  fixbox=fixbox,gauss=gauss
 ;; Although the PSF is likely different (and larger) in the optical than
 ;; IR, I'll simulate the slit loss with box photometry
 ;; This takes the MORIS data and calculates the expected slit loss for
@@ -13,6 +13,7 @@ pro sim_slit_loss,showbox=showbox,psplot=psplot,$
 ;; moffat - fits stars with moffat profile to get slit loss without
 ;;           other sources or detector complications
 ;; fixbox - fixes the box center position at the median (X,Y) coordinate
+;; gauss - does Gaussian profiles
 
 restore,'ev_phot_data.sav'
 
@@ -33,7 +34,11 @@ restore,'ev_local_display_params.sav'
 ;; Get the display parameters
 
 if keyword_set(moffat) then begin
-   ev_add_tag,plotp,'MOFFAT',1
+   if keyword_set(gaussian) then begin
+      ev_add_tag,plotp,'MOFFAT',0
+   endif else begin
+      ev_add_tag,plotp,'MOFFAT',1
+   endelse
    bsize = 20E
 endif
 
@@ -94,31 +99,41 @@ for i=0l,nbox-1l do begin
       endif
 
       if keyword_set(moffat) then begin
-         custbox = create_struct('XCOOR',photdat[i].xcen + [-bsize,bsize],$
-                                 'YCOOR',photdat[i].ycen + [-bsize,bsize])
-         fit_psf,photdat[i].filen,linep,plotp=plotp,custbox=custbox,/noplot
-         restore,'ev_phot_moffat.sav'
-           ;; Set up simulated star image
+         if keyword_set(gauss) then begin
+            singlephot = photdat[i]
+         endif else begin
+            custbox = create_struct('XCOOR',photdat[i].xcen + [-bsize,bsize],$
+                                    'YCOOR',photdat[i].ycen + [-bsize,bsize])
+            fit_psf,photdat[i].filen,linep,plotp=plotp,custbox=custbox,/noplot
+            ;; Set up simulated star image
+            restore,'ev_phot_moffat.sav'
+         endelse
          
          Theta = singlephot.OrigTheta
          xshowfit = singlephot.xcen
          yshowfit = singlephot.ycen
          simszX = fxpar(head,'NAXIS1') + 300
          simszY = fxpar(head,'NAXIS2')
+         
          X = FINDGEN(simszX) # REPLICATE(1.0, simszY)
          Y = REPLICATE(1.0, simszX) # FINDGEN(simszY)
+         
          xprime = (X - xshowfit)*cos(Theta) - (Y - yshowfit)*sin(Theta)
          yprime = (X - xshowfit)*sin(Theta) + (Y - yshowfit)*cos(Theta)
          Ufit = (xprime/ singlephot.xsig)^2 + (yprime/ singlephot.ysig)^2
-         Zmodel = singlephot.peak * $
-                  (Ufit + 1E)^(-singlephot.moffat)
+         if keyword_set(gauss) then begin
+            Zmodel = singlephot.peak * myexp(-Ufit/2)
+         endif else begin
+            Zmodel = singlephot.peak * $
+                     (Ufit + 1E)^(-singlephot.moffat)
+         endelse
          ;; Don't add the backgroundsinglephot.backg) so we can
          ;; easily estimate slit loss
-
+         
          if keyword_set(showbox) then begin
             mplotp = create_struct('scale',[xshowfit - 25,xshowfit + 25,$
-                                           yshowfit - 25,yshowfit + 25,$
-                                           0.0,0.45])
+                                            yshowfit - 25,yshowfit + 25,$
+                                            0.0,0.45])
             ;mplotp = create_struct('FULLSCALE',1)
             fits_display,Zmodel,plotp=mplotp,linep=linep
          endif
