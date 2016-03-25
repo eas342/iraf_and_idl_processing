@@ -13,6 +13,7 @@ Quitting, Saving
 (sparam)	To save the display parameters as custom filename
 (save)		Save an EPS of FITS image
 (asave)		To save EPS of all images in file list
+(savedcs)   To save the current image, which is useful if you want 1 plane of DCS data
 
 -------------------------------------
 Reading Files and controlling the file list

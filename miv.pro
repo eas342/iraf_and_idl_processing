@@ -340,6 +340,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'qDCS' OR status EQ 'qdcs': begin
          ev_add_tag,plotp,'DCSSUB',0
       end
+      status[0] EQ 'savedcs' OR status EQ 'SAVEDCS': begin
+         save_dcs,filel,plotp=plotp,linep=linep,slot=slot
+      end
       splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
          if n_elements(splitstatus) GE 2 then begin
             if valid_num(splitstatus[1]) then begin
