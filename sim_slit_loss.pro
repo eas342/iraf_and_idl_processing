@@ -112,7 +112,7 @@ for i=0l,nbox-1l do begin
          Theta = singlephot.OrigTheta
          xshowfit = singlephot.xcen
          yshowfit = singlephot.ycen
-         simszX = fxpar(head,'NAXIS1') + 300
+         simszX = fxpar(head,'NAXIS1')
          simszY = fxpar(head,'NAXIS2')
          
          X = FINDGEN(simszX) # REPLICATE(1.0, simszY)
@@ -137,7 +137,7 @@ for i=0l,nbox-1l do begin
             ;mplotp = create_struct('FULLSCALE',1)
             fits_display,Zmodel,plotp=mplotp,linep=linep
          endif
-         
+         writefits,'moffat_model.fits',Zmodel
          box_stats,Zmodel,linep=linep,/silent
 
       endif else begin
