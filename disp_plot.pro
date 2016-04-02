@@ -294,6 +294,15 @@ if ev_tag_exist(edat,'TEXT') then begin
          endfor
       endif
    endif
+   if ev_tag_exist(edat,'DXYTEXT') then begin
+      if ntexts * 2 EQ n_elements(edat.dxytext) then begin
+         xtxt = edat.dxytext[0,*]
+         ytxt = edat.dxytext[1,*]
+         for i=0l,ntexts-1l do begin
+            xyouts,xtxt,ytxt,edat.text,charsize=legcharsize
+         endfor
+      endif
+   endif
 endif
 
 if ev_tag_exist(edat,'POLYX') and ev_tag_exist(edat,'POLYY') then begin
