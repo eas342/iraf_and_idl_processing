@@ -75,6 +75,7 @@ Processing and Reduction
 (imcombine) Average images in action list and also save a median image
 (nimcombine)	Normalize each image by box to before combining
 (maskedit)	Edit a pixel Mask for that will be used by imcombine and others
+(ashift)	To use arrow keys to shift an image
 
 -------------------------------------
 Photometry
@@ -91,7 +92,6 @@ Photometry
 (cphot)		To clear all photometry
 (showphot)	To show previous photometry each time loading a FITS file
 (qshowphot) to stop showing photometry apertures for each FITS file
-(ashift)	To use arrow keys to shift an image
 (ts4foc)	To find the best fit focus for 7 images. Designed specifically for ARCoIRIS/TS4
 (listphot)	To list each photometry data point out (default)
 (silentphot)	To only show photometry on the display but not print the parameters
