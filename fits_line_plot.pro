@@ -57,12 +57,12 @@ while counter LT maxCounter do begin
                ;; doesn't work to add if it's only 1 pix tall
                yplot = a[xplot,ycoor[0]]
             endif else begin
-               yplot = total(a[xplot,ycoor[0]:ycoor[1]],2)
+               yplot = total(a[xplot,ycoor[0]:ycoor[1]],2,/nan)
             endelse
             yplot = yplot / float(ycoor[1] - ycoor[0] + 1l) ;; renormalize for avg
          endif else yplot = a[xplot,ycoor[0]]
       endif else begin
-         yplot = total(a[xcoor[0]:xcoor[1],xplot],1)
+         yplot = total(a[xcoor[0]:xcoor[1],xplot],1,/nan)
          yplot = yplot / float(xcoor[1] - xcoor[0] + 1l) ;; renormalize for avg
       endelse
    endelse
