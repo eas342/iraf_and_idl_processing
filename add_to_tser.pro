@@ -17,6 +17,7 @@ for i=0l,nphot-1l do begin
    endif else valuearr = [valuearr,value]
 endfor
 
+newkey = struct_tag_clean(newkey)
 ev_add_tag,photdat,newkey,valuearr
 
 save,photdat,filename='ev_phot_data.sav'
