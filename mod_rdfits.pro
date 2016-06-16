@@ -76,6 +76,16 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      endcase
   endif else c=b
 
+  if ev_tag_exist(plotp,'BIASFILE') then begin
+     subName = clobber_exten(plotp.biasfile,exten=exten)
+     if exten EQ '.sav' then begin 
+        restore,plotp.biasfile
+     endif else begin
+        bias = mrdfits(plotp.biasfile,ext,biashead,silent=silent,fscale=fscale)
+     endelse
+     c = c - biasimg
+  endif
+
   if ev_tag_exist(plotp,'FLATFILE') then begin
      subName = clobber_exten(plotp.flatfile,exten=exten)
      if exten EQ '.sav' then begin 

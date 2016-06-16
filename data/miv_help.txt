@@ -71,6 +71,8 @@ Processing and Reduction
 (aedit) 	Edit Action List on which to process frames such as image combination. The default is the current file list.
 (cflat)		To choose a flat that all frames will be divided by
 (qflat)		To cancel using a flat
+(cbias)		To choose a bias that all frames will be subtracted by
+(qbias)		To cancel using a bias
 (nodsub) 	Nod subtract current image by the next one
 (imcombine) Average images in action list and also save a median image
 (nimcombine)	Normalize each image by box to before combining

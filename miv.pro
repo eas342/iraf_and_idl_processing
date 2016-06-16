@@ -334,6 +334,12 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'qflat' OR status EQ 'QFLAT': begin
          ev_undefine_tag,plotp,'FLATFILE'
       end
+      status EQ 'cbias' OR status EQ 'CFLAT': begin
+         choose_bias,plotp
+      end
+      status EQ 'qbias' OR status EQ 'QFLAT': begin
+         ev_undefine_tag,plotp,'BIASFILE'
+      end
       status EQ 'DCSsub' OR status EQ 'dcssub': begin
          ev_add_tag,plotp,'DCSSUB',1
       end
