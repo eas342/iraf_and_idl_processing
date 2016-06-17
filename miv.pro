@@ -244,6 +244,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'sphot' OR status EQ 'SPHOT': begin
          save_phot
       end
+      status EQ 'stser' OR status EQ 'STSER': begin 
+          save_phot,/tser
+      end
       status EQ 'tser' OR status EQ 'TSER': begin
          make_tser,/norm
          photfile = 'ev_phot_data_tser.sav'
