@@ -18,6 +18,7 @@ All flat images (with relevant (3x60) slit) should be "flat*.fits"
 All dark images should be dark*.fits
 All arc images (with relevant (0.3 x 60) slit) should be arc*.fits
 All sky files (if using) should be listed in sky_choices.txt
+Get rid of all periods except for the ending of files may be file.a.fits or file.b.fits
 Make a "proc" directory adjacent to the edited folder
 
 
