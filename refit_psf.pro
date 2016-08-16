@@ -1,4 +1,4 @@
-pro refit_psf,filel,linep,plotp=plotp,bsize=bsize
+pro refit_psf,filel,linep,plotp=plotp,bsize=bsize,redo=redo
 ;; Runs the fit_psf script over all previous photometry points
 ;; bsize - contains the box size
 
@@ -14,11 +14,19 @@ if file_exists(fn) then restore,fn else begin
    return
 endelse
 clear_phot
+
 npt = n_elements(photdat)
 nfile = n_elements(filel)
 
 for j=0l,nfile-1l do begin
-   for i=0l,npt-1l do begin
+   if keyword_set(redo) then begin
+      startp = j
+      endp = j
+   endif else begin
+      startp = 0l
+      endp = npt-1l
+   endelse
+   for i=startp,endp do begin
       fits_display,filel[j],plotp=plotp,linep=linep
       custbox = create_struct('Xcoor',photdat[i].XCEN + [-bsize,bsize],$
                               'Ycoor',photdat[i].YCEN + [-bsize,bsize])

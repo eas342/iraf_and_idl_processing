@@ -282,6 +282,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'refit' OR status EQ 'REFIT': begin
          refit_psf,fileL[slot],LineP,plotp=plotp
       end
+      status EQ 'redophot' OR status EQ 'REDOPHOT': begin
+         refit_psf,fileL,lineP,plotp=plotp,/redo
+      end
       status EQ 'allfit' OR status EQ 'ALLFIT': begin
          refit_psf,fileL,LineP,plotp=plotp
       end

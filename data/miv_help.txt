@@ -1,31 +1,31 @@
 -------------------------------------
 Help
 -------------------------------------
-(h)			Shows the help
+(h)		Shows the help
 
 -------------------------------------
 Quitting, Saving
 -------------------------------------
-(q)			Quit
+(q)		Quit
 (nsq)		Quit without saving and parameters (no save quit)
-(l)			To load another parameter file
-(c)			To clear all previous settings
+(l)		To load another parameter file
+(c)		To clear all previous settings
 (sparam)	To save the display parameters as custom filename
 (save)		Save an EPS of FITS image
 (asave)		To save EPS of all images in file list
-(savedcs)   To save the current image, which is useful if you want 1 plane of DCS data
+(savedcs)   	To save the current image, which is useful if you want 1 plane of DCS data
 
 -------------------------------------
 Reading Files and controlling the file list
 -------------------------------------
-(r)			Read new file (choos from list)
+(r)		Read new file (choos from list)
 (rf)		Read a single file with filter (choose from list)
 (rfa)		Read all files with a given filter
 (pared) 	To pare down file list into # images
-(o)			To open new file w/ browser
+(o)		To open new file w/ browser
 (ref #)		To set the filelist to the most recent # files
-(ignore st) To ignore files with the string st
-(t)			Toggle through images using the arrow keys
+(ignore st) 	To ignore files with the string st
+(t)		Toggle through images using the arrow keys
 (cindex)	To change current index/slot in the file list
 (cf) 		To clear file list and open a new file with the GUI browser
 (cfolder)	To open the current folder in finder
@@ -44,11 +44,11 @@ Controlling the Planes of image cubes
 -------------------------------------
 Adjusting scaling, zoom and rotation of Fits Viewer
 -------------------------------------
-(s)			Set scale
-(fullscale) To use min/max for scaling
+(s)		Set scale
+(fullscale) 	To use min/max for scaling
 (st)		Stretch image to fill screen (losing 1:1 pixel aspect ratio)
 (unst)		Unstretch image to preserve 1:1 pixel aspect ratio
-(z)			Zoom in with cursor
+(z)		Zoom in with cursor
 (zz)		Zoom in from a previously zoomed image
 (rzoom)		To reset the zoom
 (rot)		Change te rotation (choose from list)
@@ -56,9 +56,9 @@ Adjusting scaling, zoom and rotation of Fits Viewer
 -------------------------------------
 Plotting
 -------------------------------------
-(d)			Draw a line along columns or rows only
-(b)			Draw a box along columsn or rows only. Keep clicking to change integration direction
-(p)			Plot a line or box
+(d)		Draw a line along columns or rows only
+(b)		Draw a box along columsn or rows only. Keep clicking to change integration direction
+(p)		Plot a line or box
 (pm)		To plot median normalized flux
 (op)		Overplot the line or box one new image added at a time
 (opd)		Overplot as above, but divide by the median
@@ -74,7 +74,7 @@ Processing and Reduction
 (cbias)		To choose a bias that all frames will be subtracted by
 (qbias)		To cancel using a bias
 (nodsub) 	Nod subtract current image by the next one
-(imcombine) Average images in action list and also save a median image
+(imcombine) 	Average images in action list and also save a median image
 (nimcombine)	Normalize each image by box to before combining
 (maskedit)	Edit a pixel Mask for that will be used by imcombine and others
 (ashift)	To use arrow keys to shift an image
@@ -88,13 +88,14 @@ Photometry
 (mfit)		To fit many PSFs by clicking around and right-clicking to exit
 (sphot)		To save the photomery as a CSV file
 (refit)		To fit many PSFs from previous saved photometry
+(redofit)	To redo all the photometry (useful for updated phot_params or keywords)
 (allfit)	To fit many PSFs in all FITs files using starting positions from previous photometry
 (tser)		To create a time series of saved photometry (after running allfit) and plot it
-(stser)     To save the time series photometry
+(stser)		To save the time series photometry
 (tserprev)	To load in the previous (tser) parameters (saves clicking)
 (cphot)		To clear all photometry
 (showphot)	To show previous photometry each time loading a FITS file
-(qshowphot) to stop showing photometry apertures for each FITS file
+(qshowphot) 	To stop showing photometry apertures for each FITS file
 (ts4foc)	To find the best fit focus for 7 images. Designed specifically for ARCoIRIS/TS4
 (listphot)	To list each photometry data point out (default)
 (silentphot)	To only show photometry on the display but not print the parameters
