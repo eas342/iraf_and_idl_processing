@@ -88,7 +88,7 @@ Photometry
 (mfit)		To fit many PSFs by clicking around and right-clicking to exit
 (sphot)		To save the photomery as a CSV file
 (refit)		To fit many PSFs from previous saved photometry
-(redofit)	To redo all the photometry (useful for updated phot_params or keywords)
+(redophot)	To redo all the photometry (useful for updated phot_params or keywords)
 (allfit)	To fit many PSFs in all FITs files using starting positions from previous photometry
 (tser)		To create a time series of saved photometry (after running allfit) and plot it
 (stser)		To save the time series photometry
