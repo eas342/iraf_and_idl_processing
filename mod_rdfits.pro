@@ -71,9 +71,10 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   if fxpar(header,'NAXIS') EQ 3 then begin
      ;; For now we'll read spectra 3d data cubes for spsectra
      ;; as firsta aperture
+     sz = size(b) ;; could be different from original array b/c of trimming/subarrays
      case 1 of
         ev_tag_true(plotp,'DCSsub'): begin
-           c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS2'))
+           c = fltarr(sz[1],sz[2])
            c[*,*] = b[*,*,-1] - b[*,*,0]
         end
         ev_tag_exist(plotp,'ChoosePlane'): begin
@@ -87,7 +88,6 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
            endelse
         end
         else: begin
-           sz = size(b) ;; could be different from a
            c = fltarr(sz[1],sz[3])
            c[*,*] = b[*,0,*]
         end
