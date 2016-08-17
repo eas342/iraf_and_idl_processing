@@ -31,6 +31,7 @@ Reading Files and controlling the file list
 (cfolder)	To open the current folder in finder
 (fedit)		To export filelist to a text file for editing
 (fread)		To read filelist that was made by fedit
+(jwsub)		Turn on JWST subarray mode to handle subarray corners
 
 -------------------------------------
 Controlling the Planes of image cubes

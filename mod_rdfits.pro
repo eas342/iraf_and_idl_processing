@@ -35,6 +35,7 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      print,"No Header found"
      return,[0]
   endif
+
   ttrue = fxpar(header,"TRIM",count=count)
   if count GE 1 then begin ;; was it trimmed?
      ccdsec = fxpar(header,"CCDSEC",count=count2)
@@ -49,7 +50,23 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
            b[trimReg[0]:trimReg[1],trimReg[2]:trimReg[3]] = a
         endif else b =a
      endelse
-  endif else b=a
+  endif else begin
+     if ev_tag_true(plotp,'JWSUB') then begin
+        colcnr = fxpar(header,'COLCORNR')
+        rowcnr = fxpar(header,'ROWCORNR')
+        oNAXIS1 = fxpar(header,'NAXIS1')
+        oNAXIS2 = fxpar(header,'NAXIS2')
+        showRegX = [colcnr -1l,colcnr -2l + oNAXIS1]
+        showRegY = [rowcnr -1l,rowcnr -2l + oNAXIS2]
+        if fxpar(header,'NAXIS') EQ 3 then begin
+           b = fltarr(oNAXIS1 + colcnr - 1l,oNAXIS2 + rowcnr - 1l,fxpar(header,'NAXIS3'))
+           b[showRegX[0]:showRegX[1],showRegY[0]:showRegY[1],*] = a
+        endif else begin
+           b = fltarr(oNAXIS1 + colcnr - 1l,oNAXIS2 + rowcnr - 1l)
+           b[showRegX[0]:showRegX[1],showRegY[0]:showRegY[1]] = a
+        endelse
+     endif else b=a
+  endelse
 
   if fxpar(header,'NAXIS') EQ 3 then begin
      ;; For now we'll read spectra 3d data cubes for spsectra
@@ -70,7 +87,8 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
            endelse
         end
         else: begin
-           c = fltarr(fxpar(header,'NAXIS1'),fxpar(header,'NAXIS3'))
+           sz = size(b) ;; could be different from a
+           c = fltarr(sz[1],sz[3])
            c[*,*] = b[*,0,*]
         end
      endcase
