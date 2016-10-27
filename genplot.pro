@@ -84,6 +84,7 @@ CASE uval of
     end
     'SERCHOICE': begin
        gparam.SERIES = dattags[ev.index]
+       ev_undefine_tag,gparam,'SLABEL'
     end
     'LINFIT': begin
        quick_fit,dat,edat,gparam=gparam,polyord=1
