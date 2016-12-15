@@ -39,7 +39,7 @@ CASE uval of
 ENDCASE
 
 if ev_tag_exist(plotp,'KEYDISP') then begin
-   temphead = headfits(filetemp[slot])
+   temphead = miv_headfits(plotp,filetemp[slot])
    if n_elements(temphead) GT 1 then begin
       nkey = n_elements(plotp.keyDisp)
       for j=0l,nkey-1l do begin
