@@ -358,6 +358,11 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status[0] EQ 'savedcs' OR status EQ 'SAVEDCS': begin
          save_dcs,filel,plotp=plotp,linep=linep,slot=slot
       end
+      status[0] EQ 'asavedcs' OR status EQ 'ASAVEDCS': begin
+         for i=0l,n_elements(fileL)-1l do begin
+            save_dcs,fileL[i],plotp=plotp,lineP=lineP,slot=i
+         endfor
+      end
       splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
          if n_elements(splitstatus) GE 2 then begin
             if valid_num(splitstatus[1]) then begin
