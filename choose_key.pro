@@ -5,7 +5,8 @@ pro choose_key,filen,plotp,insertkey=insertkey
 ;;           plotting legend
 
   keypar = ''
-  temphead = headfits(filen)
+
+  temphead = miv_headfits(plotp,filen)
   nkeys = n_elements(temphead)
   for i=0l,nkeys-1l do begin
      print,nkeys-1l - i,temphead[nkeys-1l - i],format='(I03," ",A70)'

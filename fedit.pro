@@ -14,7 +14,7 @@ endcase
      nkeys = n_elements(plotp.keydisp)
      nameLength = max(strlen(filel))
      for i=0l,nfile-1l do begin
-        temphead = headfits(filel[i])
+        temphead = miv_headfits(plotp,filel[i])
         printf,1,filel[i],format='(A'+strtrim(nameLength,1)+'," ",$)'
         if n_elements(temphead) GT 1 then begin
            for j=0l,nkeys-1l do begin
