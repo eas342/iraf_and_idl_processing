@@ -360,7 +360,7 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       end
       status[0] EQ 'asavedcs' OR status EQ 'ASAVEDCS': begin
          for i=0l,n_elements(fileL)-1l do begin
-            save_dcs,fileL[i],plotp=plotp,lineP=lineP,slot=i
+            save_dcs,fileL,plotp=plotp,lineP=lineP,slot=i
          endfor
       end
       splitstatus[0] EQ 'cplane' OR status EQ 'CPLANE': begin
