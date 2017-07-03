@@ -13,7 +13,7 @@ The pipeline will take raw data and apply the following:
  - Extract spectral with optimal extraction techniques
 This refereed paper describes the pipeline: http://adsabs.harvard.edu/abs/2014ApJ...783....5S
 
-#Requirements
+# Requirements
 There is a hefty list of code requirements for this pipeline.
 Be prepared that installing all these pieces may take a long time unless you already have experience with them.
 
