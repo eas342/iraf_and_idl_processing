@@ -78,7 +78,7 @@ If you are not using sky flats, set `b1 = no`
  - Run the reduction script with `reduction_script`
  - If at any time, you need to re-run the script, use `reset_reduction` to clear out any previously created files. Note that this will wipe files from the `../proc` directory.
 
-## E: Extract Spectra.
+## E: Initial Spectral Extraction
 This step will rectify the images, extract spectra from each source, do background subtraction.
 It first uses the `IRAF` `apall` routines, but then can be run again with custom optimal extraction techniques.
 The resulting files are FITS images with flux and background as function of wavelength for each star.
@@ -98,10 +98,15 @@ The Argon line identification is a very tedious process. It is easier to start b
  - Create an initial `IRAF` extractions on the data by running `extraction_script`
  - If the first time running, edit the identification file so that the coefficients for Aperture 1 and Aperture 2 are identical and run again: `emacs database/idfirst_wavecal`
  - If at any time you need to re-run the extraction, first run `reset_extraction` to wipe the previously created files.
- - Run the custom IDL extraction routine with:
+
+## F: Run the custom IDL extraction routine with:
+This step has IDL routines to do optimal extraction and also gives more control over the background subtraction process.
 
     `idl`
     `IDL> es_backsub`
 
+One can run `es_backsub,/saveSteps` to save the individual steps and view background-subtracted fits images to test the residuals.
+Since this multiplies the amount of data by the number of steps, it only runs on 10 images by default.
+
 ## G: Known errors.
-Error in image section specification - usually it happens when I haven’t loaded the local parameters in (either cl < local_red_parameters in the “edited” directory or cl < local_parameters in the “processed” directory).
+Error in image section specification - usually it happens when I haven’t loaded the local parameters in (either `cl < local_red_parameters.cl` in the “edited” directory or `cl < local_parameters.cl` in the “processed” directory).
