@@ -25,46 +25,57 @@ Be prepared that installing all these pieces may take a long time unless you alr
 # Instructions
 These are intended as reminders to oneself and not a complete set of instructions for a new user.
 
-## A: Load the necessary NOAO procedures
-    noao
-    imred
-    specred
-    ccdred
-
-You may get a warning with my IRAF about camera.dat.
-A solution is available here:
-<http://iraf.net/forum/viewtopic.php?showtopic=1467939>
-
-    setinst
-	Choose `camera.dat`
-
-## B: Prepare data
- - Put all data into a directory called "edited" - this will contain a duplicate of all raw data
+## A: Prepare data
+ - Put all data into a directory called `edited` - this will contain a duplicate of all raw data
  - All data files should be called `run*.fits` (it’s OK if they’re sky images called `runsky*.fits`)
- - All flat images (with relevant (3x60) slit) should be `flat*.fits`
+ - All flat images (with relevant 3x60 slit) should be `flat*.fits`
  - All dark images should be `dark*.fits`
  - All arc images (only the 0.3 x 60 slit) should be arc*.fits
  - All sky files (if using) should be listed in sky_choices.txt
  - Get rid of all periods except for the ending of files may be file.a.fits or file.b.fits
  - Remove all files not explicitly described in this list
- - Make a "proc" directory adjacent to the edited folder
- - You may have to modify permissions to the fits files (they were all read only). Accomplished this with `chmod 755 *`
+ - Make a `proc` directory adjacent to the edited folder
+ - You may have to modify permissions to the fits files (for example, the files may be set to read-only). This can be accomplished with `chmod 755 *`
+
+## B: Load the necessary NOAO procedures
+Start by opening IRAF:
+
+	cd ~/iraf
+	xgterm -sb
+(Now in xgterm)
+
+	cl
+	cd /data/OBJECT5/bigdog/
+	noao
+	imred
+	specred
+	ccdred
+where `/data/OBJECT5/bigdog/` is the location of the IRTF SpeX prism spectrograph data.
+You may get a warning with my IRAF about camera.dat.
+A solution is available here:
+<http://iraf.net/forum/viewtopic.php?showtopic=1467939>
+
+    setinst
+Choose `camera.dat`
 
 ## C: Load all IRAF scripts
-These can also be placed in the login.cl file so they are loaded with each log-in.
 
-    task $adjust_headers=/Users/everettschlawin/es_programs/reduction_scripts/adjust_headers.cl
-    task $reduction_script=/Users/everettschlawin/es_programs/reduction_scripts/reduction_script.cl
-    task $reset_reduction=/Users/everettschlawin/es_programs/reduction_scripts/reset_reduction.cl
-    task $extraction_script=/Users/everettschlawin/es_programs/reduction_scripts/extraction_script.cl
-    task $reset_extraction=/Users/everettschlawin/es_programs/reduction_scripts/reset_extraction.cl
-    task $cleanup_dup_files=/Users/everettschlawin/es_programs/reduction_scripts/cleanup_dup_files.cl
+	
+These can also be placed in the `login.cl` file so they are loaded with each log-in.
+
+    task $adjust_headers=path_to_reduction_scripts/adjust_headers.cl
+    task $reduction_script=path_to_reduction_scripts/reduction_script.cl
+    task $reset_reduction=path_to_reduction_scripts/reset_reduction.cl
+    task $extraction_script=path_to_reduction_scripts/extraction_script.cl
+    task $reset_extraction=path_to_reduction_scripts/reset_extraction.cl
+    task $cleanup_dup_files=path_to_reduction_scripts/cleanup_dup_files.cl
+where `path_to_reduction_scripts` is the path to this repository.
 
 ## D: Reduce data from the “edited” directory
 The reduction steps will apply linearity corrections (optional), flat fields, bad pixel masks, dark subtractions and accounts for flexure of the telescope, which 
 causes the spectra and background to shift positions.
 
-Navigate to the `edited` directory which contains a copy of all relevant raw files.
+ - Navigate to the `edited` directory which contains a copy of all relevant raw files.
 Edit the `local_red_params.cl` file to have the correct parameters for your file.
 You will need to set a trim region the default is `s1 = "[65:749,33:607]"`
 Open the image to locate the sources. Make sure that the background box and background spectrum region are between the two sources.
@@ -72,7 +83,6 @@ X,Y coordinates are from the bottom left corner.
 If you have local `b1 = yes`, it will use the sky flats. You’ll need to select a set of sky images to combine (called `sky_choices.txt`).
 You can also have optional `mask_for_runsky005.fits` files to specify where to mask out sources.
 If you are not using sky flats, set `b1 = no`
-
  - Run `adjust_headers` which will set all the `darktime` and other parameters needed by IRAF.
  - (optional) Correct for non-linearity with `IDL`. This can be done within `IRAF` with the following command: `!echo “correct_linearity” | idl`
  - Set the local parameters with custom values with `cl < local_red_params.cl`
@@ -103,8 +113,8 @@ The Argon line identification is a very tedious process. It is easier to start b
 ## F: Run the custom IDL extraction routine with:
 This step has IDL routines to do optimal extraction and also gives more control over the background subtraction process.
 
-    `idl`
-    `IDL> es_backsub`
+    idl
+    es_backsub
 
 One can run `es_backsub,/saveSteps` to save the individual steps and view background-subtracted fits images to test the residuals.
 Since this multiplies the amount of data by the number of steps, it only runs on 10 images by default.
