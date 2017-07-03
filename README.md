@@ -19,8 +19,17 @@ Be prepared that installing all these pieces may take a long time unless you alr
 
  - `IRAF`
  - `IDL`
- - `added_scripts` IDL routines from E Schlawin. Put these in IDL path
+ - <a href="https://idlastro.gsfc.nasa.gov">The IDL Astronomy User's Library</a>
+ - E Schlawin's <a href="https://github.com/eas342/added_idl_scripts">IDL Routines </a>
  - Put this code repository in the IDL path
+
+My preferred way to add to the IDL path is to edit my `.bash_profile`:
+
+    export IDL_PATH='<IDL_DEFAULT>:'+/path1/astron.dir
+    export IDL_PATH=$IDL_PATH:+/path2/added_scripts
+    export IDL_PATH=$IDL_PATH:+/path3/reduction_scripts
+where `path1` is to the <a href="https://idlastro.gsfc.nasa.gov">The IDL Astronomy User's Library</a>, `path2` is to E Schlawin's <a href="https://github.com/eas342/added_idl_scripts">IDL Routines </a> and `path3` is the directory containing this code repository.
+
 
 # Instructions
 These are intended as reminders to oneself and not a complete set of instructions for a new user.
