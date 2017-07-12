@@ -107,10 +107,10 @@ Start by going through the images in the middle of the time series to be used as
 Select an image with few artifacts, cosmic rays or star-like blemishes due to alpha particles from a Th-containing coating on the optics.
 Next create a `local_parameters.cl` file where you will set the distance range between the sources and background fitting parameters (polynomial order).
 You can copy a previous file, but will need to be sure that the distance range between the source apertures includes the true value.
-The Argon line identification is a very tedious process. It is easier to start by copying the file from a previous extraction.
+The Argon line identification is a very tedious process. It is easier to start by copying the <a href='example_params/idfirst_wavecal'>Wavelength ID file</a> from a previous extraction.
 
     mkdir database
-    cp ../../other_source/bigdog/proc/database/idfirst_wavecal database/
+    cp path_to/idfirst_wavecal database/
 
  - Navigate to the “proc” directory.
  - After choosing the reference image above, write it to a file with `ls run_image_spc_00187.a.fits > ap_reference.txt`
@@ -128,5 +128,6 @@ This step has IDL routines to do optimal extraction and also gives more control 
 One can run `es_backsub,/saveSteps` to save the individual steps and view background-subtracted fits images to test the residuals.
 Since this multiplies the amount of data by the number of steps, it only runs on 10 images by default.
 
-## G: Known errors.
-Error in image section specification - usually it happens when I haven’t loaded the local parameters in (either `cl < local_red_parameters.cl` in the “edited” directory or `cl < local_parameters.cl` in the “processed” directory).
+## G: Troubleshooting.
+ - `Error in image section specification` - usually it happens when I haven’t loaded the local parameters in (either `cl < local_red_parameters.cl` in the “edited” directory or `cl < local_parameters.cl` in the “processed” directory).
+ - `Cannot find sky_choices.txt` - didn't make a sky choices file
