@@ -103,18 +103,19 @@ This step will rectify the images, extract spectra from each source, do backgrou
 It first uses the `IRAF` `apall` routines, but then can be run again with custom optimal extraction techniques.
 The resulting files are FITS images with flux and background as function of wavelength for each star.
 
-Start by going through the images in the middle of the time series to be used as a reference aperture-finding.
-Select an image with few artifacts, cosmic rays or star-like blemishes due to alpha particles from a Th-containing coating on the optics.
-Next create a `local_parameters.cl` file where you will set the distance range between the sources and background fitting parameters (polynomial order).
+ - Start by going through the images in the middle of the time series to be used as a reference aperture-finding.
+Select an image with few artifacts, cosmic rays or star-like blemishes due to alpha particles from a Th-containing coating on the optics. After choosing the reference image above, write the name of it to a file with `ls run_image_spc_00187.a.fits > ap_reference.txt`
+ - Next create a <a href="example_params/local_extract_params.cl">`local_extract_params.cl`</a> file where you will set the distance range between the sources and background fitting parameters (polynomial order).
 You can copy a previous file, but will need to be sure that the distance range between the source apertures includes the true value.
-The Argon line identification is a very tedious process. It is easier to start by copying the <a href='example_params/idfirst_wavecal'>Wavelength ID file</a> from a previous extraction.
+ - The Argon line identification is a very tedious process. It is easier to start by copying the <a href='example_params/idfirst_wavecal'>Wavelength ID file</a> from a previous extraction.
 
-    mkdir database
-    cp path_to/idfirst_wavecal database/
+		mkdir database
+		cp ~/reduction_code/example_params/idfirst_wavecal database/
 
+	where `~/reduction_code/` is the path to this repository.
  - Navigate to the “proc” directory.
- - After choosing the reference image above, write it to a file with `ls run_image_spc_00187.a.fits > ap_reference.txt`
- - Load in the extraction parameters with `cl < local_parameters.cl`
+
+ - Load in the extraction parameters with `cl < local_extract_parameters.cl`
  - Create an initial `IRAF` extractions on the data by running `extraction_script`
  - If the first time running, edit the identification file so that the coefficients for Aperture 1 and Aperture 2 are identical and run again: `emacs database/idfirst_wavecal`
  - If at any time you need to re-run the extraction, first run `reset_extraction` to wipe the previously created files.
