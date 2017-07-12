@@ -85,7 +85,7 @@ The reduction steps will apply linearity corrections (optional), flat fields, ba
 causes the spectra and background to shift positions.
 
  - Navigate to the `edited` directory which contains a copy of all relevant raw files.
-Edit the `local_red_params.cl` file to have the correct parameters for your file.
+Edit the <a href="example_params/local_red_params.cl">`local_red_params.cl`</a> file to have the correct parameters for your file.
 You will need to set a trim region the default is `s1 = "[65:749,33:607]"`
 Open the image to locate the sources. Make sure that the background box and background spectrum region are between the two sources.
 X,Y coordinates are from the bottom left corner.
