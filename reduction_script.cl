@@ -24,7 +24,7 @@ hsigma=30., ngood=3, linterp=2, cinterp=3, eqinterp=2)
 ## Merge this pixel mask with the known bad diagonals
 imcopy ("mask_from_masterdark.pl",
 "mask_from_masterdark.fits", verbose=yes)
-!echo "combine_masks,'mask_from_masterdark.fits','/Users/everettschlawin/es_programs/reduction_scripts/diagonal_mask.fits'" | idl
+!echo "combine_masks,'mask_from_masterdark.fits',reduction_dir()+'diagonal_mask.fits'" | idl
 imcopy ("combined_mask.fits[0]",
 "combined_mask.pl", verbose=yes)
 
