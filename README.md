@@ -11,7 +11,7 @@ The pipeline will take raw data and apply the following:
  - Rectify the spectra
  - Correct for bad pixels
  - Extract spectral with optimal extraction techniques
-This refereed paper describes the pipeline: http://adsabs.harvard.edu/abs/2014ApJ...783....5S
+This refereed paper describes the pipeline: <a href="http://adsabs.harvard.edu/abs/2014ApJ...783....5S">http://adsabs.harvard.edu/abs/2014ApJ...783....5S</a>
 
 # Requirements
 There is a hefty list of code requirements for this pipeline.
@@ -138,3 +138,10 @@ Also, if the wavelength identification is updated, one may run `redo_wavecal` wi
 ## G: Troubleshooting.
  - `Error in image section specification` - usually it happens when I haven’t loaded the local parameters in (either `cl < local_red_parameters.cl` in the “edited” directory or `cl < local_parameters.cl` in the “processed” directory).
  - `Cannot find sky_choices.txt` - didn't make a sky choices file
+ - You get the following error in `ev_backsub`:
+ 
+		% CROSS_COR_FIND: Inputs to cross-cor find not the same length
+		% EV_BACKSUB: Bad shift returned from cross_cor_find
+		                   $MAIN$
+	This could be that the aperture finding failed. You may notice that after `extraction_script`, you see something like `Trace of aperture 1 in run_2017A013_170704_spc_00281.a lost at column 388.` Try choosing another aperture reference file, as described in Section E. Also, make sure that `nfind=2` when running `epar apall`
+ - `ERROR: run_2017A013_170704_spc_00167.a.ms.fits - Missing reference for aperture 3`. It may have found 3 apertures instead of 2. Try choosing another aperture reference file, as described in Section E. Also, make sure that `nfind=2` when running `epar apall`
