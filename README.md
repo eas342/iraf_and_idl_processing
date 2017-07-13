@@ -123,11 +123,17 @@ You can copy a previous file, but will need to be sure that the distance range b
 ## F: Run the custom IDL extraction routine with:
 This step has IDL routines to do optimal extraction and also gives more control over the background subtraction process.
 
-    idl
-    es_backsub
+ - Navigate to the `proc` directory
+ - Make and edit a <a href="example_params/es_local_parameters.txt">`es_local_parameters.txt`</a>. For exampe `cp ~/reduction_code/example_params/es_local_parameters.txt .` The name must be exactly `es_local_parameters.txt`. In many cases the default parameters will be OK. You may need to adjust the size of the background aperture size (`BackSize`) if the sources are close.
+ - Run the backsub command from idl
+		
+    	idl
+    	ev_backsub
 
 One can run `es_backsub,/saveSteps` to save the individual steps and view background-subtracted fits images to test the residuals.
 Since this multiplies the amount of data by the number of steps, it only runs on 10 images by default.
+
+Also, if the wavelength identification is updated, one may run `redo_wavecal` without re-extracting.
 
 ## G: Troubleshooting.
  - `Error in image section specification` - usually it happens when I haven’t loaded the local parameters in (either `cl < local_red_parameters.cl` in the “edited” directory or `cl < local_parameters.cl` in the “processed” directory).

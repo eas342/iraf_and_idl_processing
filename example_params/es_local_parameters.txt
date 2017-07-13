@@ -1,0 +1,16 @@
+BackSize = 26;; background region + (or minus) surrounding # of pixels
+Nsig = 4E ;; sigma clipping in initial fit
+
+FIter = 3E ;; number of fitting iterations with rejection
+Bpoly = 4 ;; Number of polynomial terms in background
+Spoly = 5 ;; number of polynomial terms in profile (as a function of wavelength)
+Apsize = 30E ;; aperture regio + (or minuts) surrounding aperture center
+ApXStart = 6 ;; starting X location in determining the aperture profile
+ApXEnd = 681  ;; Ending X location in determining the aperture profile
+
+ReadN = 6E ;; e-/exposure
+Gain = 2.44E ;; e-/DN
+CRSigma = 20E ;; number of sigmas at which to do cosmic ray rejection from residual image
+
+Nap = 2 ;; number of apertures
+CRIter = 2 ;; number of iterations to do extraction to find cosmic rays (1 iteration does no cosmic ray rej)
