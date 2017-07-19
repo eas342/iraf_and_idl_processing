@@ -177,6 +177,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          lineP = find_click_box(filel[slot],plotp=plotp,$
                                /get_direction)
       end
+      status EQ 'eLine': begin
+         choose_linep,lineP
+      end
       status EQ 'bp' OR status EQ 'Bp': begin
          slot = fits_line_plot(fileL,boxP=boxC,current=slot)
       end

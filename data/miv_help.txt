@@ -65,6 +65,7 @@ Plotting
 (opd)		Overplot as above, but divide by the median
 (opp)		Overplot as above, but divide by the peak value
 (ps)		To plot and then stop in code
+(eLine)		To edit the line or box parameter values (not just point and click)
 
 -------------------------------------
 Processing and Reduction
