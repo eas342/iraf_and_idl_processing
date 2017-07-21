@@ -58,7 +58,11 @@ endif else begin
    starmessage = 'Using star starting locations from previous file'
 endelse
 
-fits_display,skysub,usescale=scale1,$
+if file_exists('ev_local_display_params.sav') then begin
+   restore,'ev_local_display_params.sav'
+endif
+
+fits_display,skysub,plotp=plotp,$
              message=starmessage
 ycoord = findgen(n_elements(skysub[0,*]))
 slitP = eval_poly(ycoord,slitpos)
