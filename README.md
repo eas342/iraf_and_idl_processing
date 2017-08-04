@@ -145,3 +145,4 @@ Also, if the wavelength identification is updated, one may run `redo_wavecal` wi
 		                   $MAIN$
 	This could be that the aperture finding failed. You may notice that after `extraction_script`, you see something like `Trace of aperture 1 in run_2017A013_170704_spc_00281.a lost at column 388.` Try choosing another aperture reference file, as described in Section E. Also, make sure that `nfind=2` when running `epar apall`
  - `ERROR: run_2017A013_170704_spc_00167.a.ms.fits - Missing reference for aperture 3`. It may have found 3 apertures instead of 2. Try choosing another aperture reference file, as described in Section E. Also, make sure that `nfind=2` when running `epar apall`
+ - `ERROR: HDMGETR: No value found  "sample="*", naverage=1, nit`. This may arise if you have not run `adjust_headers` first.
