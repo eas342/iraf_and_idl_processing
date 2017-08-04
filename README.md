@@ -2,7 +2,7 @@
 This repository contains some IRAF scripts and IDL scripts for viewing and processing spectrograph and image files.
 It includes a pipeline for reducing IRTF SpeX prism data in time series modes.
 The IRTF SpeX prism data should have 2 sources - a target and reference star that are imaged on the slit simultaneously.
-The pipeline is designed to work with data taken with the 3x30'' slit.
+The pipeline is designed to work with data taken with the 3x60'' slit.
 The pipeline will take raw data and apply the following:
 
  - Correct linearity, trim data
