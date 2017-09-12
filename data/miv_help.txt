@@ -32,6 +32,7 @@ Reading Files and controlling the file list
 (fedit)		To export filelist to a text file for editing
 (fread)		To read filelist that was made by fedit
 (jwsub)		Turn on JWST subarray mode to handle subarray corners
+(qjwsub)	Turn off JWST subarray mode to handle subarray corners
 
 -------------------------------------
 Controlling the Planes of image cubes
