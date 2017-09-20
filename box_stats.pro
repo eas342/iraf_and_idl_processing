@@ -100,6 +100,15 @@ pro box_stats,input,lineP=lineP,plotp=plotp,silent=silent,backparams=backparams
   boxFile = 'es_box_stats.sav'
 
   prevFile = file_search(boxFile)
+
+  
+  if ev_tag_exist(stat,'TFRAME') then begin
+     ;; Ran into a type conversion error with TFrame float vs Double
+     oldTFrame = stat.tframe
+     ev_undefine_tag,stat,'TFRAME'
+     ev_add_tag,stat,'TFRAME',double(oldTFrame)
+  endif
+
   if prevFile NE '' then begin
      restore, boxFile
      statdat = [statdat,stat]
