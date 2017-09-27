@@ -119,6 +119,7 @@ You can copy a previous file, but will need to be sure that the distance range b
  - Create an initial `IRAF` extractions on the data by running `extraction_script`
  - If the first time running, edit the identification file so that the coefficients for Aperture 1 and Aperture 2 are identical and run again: `emacs database/idfirst_wavecal`
  - If at any time you need to re-run the extraction, first run `reset_extraction` to wipe the previously created files.
+ - A useful map of the wavelength identification is included in <a href="example_params/labeled_argon_lines_nist.png">example\_params/labeled\_argon\_lines\_nist.png</a>
 
 ## F: Run the custom IDL extraction routine with:
 This step has IDL routines to do optimal extraction and also gives more control over the background subtraction process.
