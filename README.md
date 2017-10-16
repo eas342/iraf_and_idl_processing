@@ -86,12 +86,10 @@ causes the spectra and background to shift positions.
 
  - Navigate to the `edited` directory which contains a copy of all relevant raw files.
 Edit the <a href="example_params/local_red_params.cl">`local_red_params.cl`</a> file to have the correct parameters for your file.
-You will need to set a trim region the default is `s1 = "[65:749,33:607]"`
-Open the image to locate the sources. Make sure that the background box and background spectrum region are between the two sources.
-X,Y coordinates are from the bottom left corner.
-If you have local `b1 = yes`, it will use the sky flats. You’ll need to select a set of sky images to combine (called `sky_choices.txt`).
-You can also have optional `mask_for_runsky005.fits` files to specify where to mask out sources.
-If you are not using sky flats, set `b1 = no`
+	- You will need to set a trim region the default is `s1 = "[65:749,33:607]"`. However, you should make sure that the trim is the largest region that clips out all un-illuminated rows of the detector.
+	- Open the image to locate the sources. Make sure that the background box and background spectrum region are between the two sources. X,Y coordinates are from the bottom left corner. The `#ESParam backbox [X1:X2,Y1:Y2]` line should have X1 and X2 encompassing the H band background emission and the Y1 and Y2 values should be between the two sources.
+	- If you have local `b1 = yes`, it will use the sky flats. You’ll need to select a set of sky images to combine (called `sky_choices.txt`). You can also have optional `mask_for_runsky005.fits` files to specify where to mask out sources.
+If you are not using sky flats, set `b1 = no`. For first time use, it is simpler to have `b1 = no` and do the sky flats on another pipeline run.
  - Run `adjust_headers` which will set all the `darktime` and other parameters needed by IRAF.
  - (optional) Correct for non-linearity with `IDL`. This can be done within `IRAF` with the following command: `!echo “correct_linearity” | idl`
  - Set the local parameters with custom values with `cl < local_red_params.cl`
