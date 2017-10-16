@@ -3,12 +3,13 @@ from astropy.table import Table, vstack
 import glob
 import os
 from shutil import copyfile
+import pdb
 
 class prepForPipe():
     """ Takes Raw IRTF and pre-processes them for the IRAF/IDL pipeline
     """
-    def __init__(self,start_sci=85,end_sci=99999,raw_dir='bigdog',
-                start_sky=43,end_sky=57,edit_dir='edited'):
+    def __init__(self,start_sci=41,end_sci=223,raw_dir='raw',
+                start_sky=237,end_sky=241,edit_dir='edited'):
         """ 
         This Class Takes Raw IRTF and pre-processes them for the IRAF/IDL 
         Pipeline
@@ -28,22 +29,28 @@ class prepForPipe():
         self.raw_dir = raw_dir
         self.edit_dir = edit_dir
         
-        allSciList = glob.glob(self.raw_dir+'/sbd*.run*.fits')
-        self.sciTable = self.clean_names('run',start_ind=start_sci,end_ind=end_sci)
-        self.skyTable = self.clean_names('runsky',start_ind=start_sky,end_ind=end_sky)
-        self.flatTable = self.clean_names('flat',start_ind=31,end_ind=41)
-        self.arcTable = self.clean_names('arc',start_ind=21,end_ind=27)
-        self.darkTable = self.clean_names('dark',start_ind=1,end_ind=15)
+        self.sciTable = self.clean_names('run',start_ind=start_sci,end_ind=end_sci,
+                                         usedName='spc')
+        self.skyTable = self.clean_names('runsky',start_ind=start_sky,end_ind=end_sky,
+                                         usedName='spc')
+        self.flatTable = self.clean_names('flat',start_ind=21,end_ind=31)
+        self.arcTable = self.clean_names('arc',start_ind=6,end_ind=12)
+        self.darkTable = self.clean_names('dark',start_ind=370,end_ind=390,
+                                          usedName='spc')
         
         self.allTables = vstack([self.sciTable,self.skyTable,self.flatTable,
                                 self.arcTable,self.darkTable])
                                 
         
-    def clean_names(self,fileType,start_ind=0,end_ind=99999,start='sbd'):
+    def clean_names(self,fileType,start_ind=0,end_ind=99999,start='sbd',
+                    usedName=None):
         """ Cleans and prepares FITS file names for the pipeline
         Returns an astropy table with inList and outList
         """
-        allList = glob.glob(self.raw_dir+'/sbd*.'+fileType+'*.fits')
+        if usedName is None:
+            usedName = fileType
+        
+        allList = glob.glob(self.raw_dir+'/sbd*.'+usedName+'*.fits')
         cleanList, outList = [], []
         for oneFile in allList:
             baseName = os.path.splitext(os.path.basename(oneFile))[0]
