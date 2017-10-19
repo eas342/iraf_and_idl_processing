@@ -74,8 +74,17 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      sz = size(b) ;; could be different from original array b/c of trimming/subarrays
      case 1 of
         ev_tag_true(plotp,'DCSsub'): begin
+           if ev_tag_exist(plotp,'ChoosePlane') then begin
+              cPlane = plotp.ChoosePlane
+              if cPlane GE 0 and cPlane LT fxpar(header,'NAXIS3') then begin
+                 minuendPlane = cPlane
+              endif else begin
+                 message,'Invalid Plane, using -1',/cont
+                 minuendPlane = -1
+              endelse
+           endif else minuendPlane = -1
            c = fltarr(sz[1],sz[2])
-           c[*,*] = b[*,*,-1] - b[*,*,0]
+           c[*,*] = b[*,*,minuendPlane] - b[*,*,0]
         end
         ev_tag_exist(plotp,'ChoosePlane'): begin
            plane = plotp.ChoosePlane

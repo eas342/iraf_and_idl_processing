@@ -37,7 +37,7 @@ Reading Files and controlling the file list
 -------------------------------------
 Controlling the Planes of image cubes
 -------------------------------------
-(cplane #)	To Choose an image Plane in Cube
+(cplane #)	To Choose an image Plane in Cube. If dcssub is on, it will subtract this plane by the first plane.
 (qplane)	To undefine the Image plane
 (dcssub)	Automatically do a Double-correlated subtraction of the input images (last frame - first)
 (qdcs)		To cancel DCS subtraction
