@@ -10,7 +10,7 @@ pro slit_angle_find,nosky=nosky,rescale=rescale,$
 ;; reslit -- Reset the box in which to find the slit
 ;; restar -- reselect locations of the stars
 
-fwhm=8E ;; star FWHM
+fwhm=15E ;; star FWHM
 
 ;; Check for a previous set of preferences
 saveFilen = 'ev_local_slit_angle_prefs.sav'
@@ -22,7 +22,7 @@ endif
 
 ;; Find the last run file
 cd,current=currentd
-runfileL = file_search(currentd+'/run*.fits')
+runfileL = file_search(currentd+'/sgd*.fits')
 nrunfile = n_elements(runfileL)
 filen = runfileL[nrunfile-1l]
 a = mrdfits(filen,0,header)
@@ -40,10 +40,11 @@ if skyFileL NE '' and not keyword_set(nosky) then begin
 endif else skysub = a
 
 if keyword_set(rescale) then begin
-   fits_display,skysub,/findscale,outscale=scale1
+   fits_display,skysub,/findscale,plotp=plotp
 endif
 
 if n_elements(slitbox) EQ 0 OR keyword_set(reslit) then begin
+   fits_display,skysub
    slitbox = find_click_box()
 endif
 
@@ -105,7 +106,7 @@ if keyword_set(saveimgs) then begin
 endif
 
 coordstart = coord ; save the star locations for quicker analysis of future images
-save,scale1,slitBox,coordstart,$
+save,plotp,slitBox,coordstart,$
      filename=saveFilen
 
 end
