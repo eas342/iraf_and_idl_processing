@@ -10,7 +10,7 @@ The pipeline will take raw data and apply the following:
  - Shift images to account for pointing errors
  - Rectify the spectra
  - Correct for bad pixels
- - Extract spectral with optimal extraction techniques
+ - Extract spectral with optimal extraction techniques.
 This refereed paper describes the pipeline: <a href="http://adsabs.harvard.edu/abs/2014ApJ...783....5S">http://adsabs.harvard.edu/abs/2014ApJ...783....5S</a>
 
 # Requirements
@@ -45,6 +45,7 @@ These are intended as reminders to oneself and not a complete set of instruction
  - Remove all files not explicitly described in this list
  - Make a `proc` directory adjacent to the edited folder
  - You may have to modify permissions to the fits files (for example, the files may be set to read-only). This can be accomplished with `chmod 755 *`
+ - The python script <a href="prep_SpeX_images.py">`prep_SpeX_images.py`</a>, can help with the above tasks.
 
 ## B: Load the necessary NOAO procedures
 Start by opening IRAF:
