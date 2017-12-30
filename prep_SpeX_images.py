@@ -9,8 +9,11 @@ import numpy as np
 class prepForPipe():
     """ Takes Raw IRTF and pre-processes them for the IRAF/IDL pipeline
     """
-    def __init__(self,start_sci=48,end_sci=163,raw_dir='bigdog',
-                start_sky=35,end_sky=44,edit_dir='edited'):
+    def __init__(self,start_sci=48,end_sci=301,raw_dir='bigdog',
+                start_sky=35,end_sky=44,edit_dir='edited',
+                start_flat=23,end_flat=34,
+                start_arc=11,end_arc=22,
+                start_dark=1,end_dark=10):
         """ 
         This Class Takes Raw IRTF and pre-processes them for the IRAF/IDL 
         Pipeline
@@ -34,9 +37,9 @@ class prepForPipe():
                                          usedName='spc')
         self.skyTable = self.clean_names('runsky',start_ind=start_sky,end_ind=end_sky,
                                          usedName='spc')
-        self.flatTable = self.clean_names('flat',start_ind=21,end_ind=31)
-        self.arcTable = self.clean_names('arc',start_ind=6,end_ind=12)
-        self.darkTable = self.clean_names('dark',start_ind=370,end_ind=390,
+        self.flatTable = self.clean_names('flat',start_ind=start_flat,end_ind=end_flat)
+        self.arcTable = self.clean_names('arc',start_ind=start_arc,end_ind=end_arc)
+        self.darkTable = self.clean_names('dark',start_ind=start_dark,end_ind=end_dark,
                                           usedName='spc')
         self.allTables = vstack([self.sciTable,self.skyTable,self.flatTable,
                                 self.arcTable,self.darkTable])
