@@ -4,12 +4,13 @@ import glob
 import os
 from shutil import copyfile
 import pdb
+import numpy as np
 
 class prepForPipe():
     """ Takes Raw IRTF and pre-processes them for the IRAF/IDL pipeline
     """
-    def __init__(self,start_sci=41,end_sci=223,raw_dir='raw',
-                start_sky=237,end_sky=241,edit_dir='edited'):
+    def __init__(self,start_sci=48,end_sci=163,raw_dir='bigdog',
+                start_sky=35,end_sky=44,edit_dir='edited'):
         """ 
         This Class Takes Raw IRTF and pre-processes them for the IRAF/IDL 
         Pipeline
@@ -37,7 +38,6 @@ class prepForPipe():
         self.arcTable = self.clean_names('arc',start_ind=6,end_ind=12)
         self.darkTable = self.clean_names('dark',start_ind=370,end_ind=390,
                                           usedName='spc')
-        
         self.allTables = vstack([self.sciTable,self.skyTable,self.flatTable,
                                 self.arcTable,self.darkTable])
                                 
@@ -60,8 +60,8 @@ class prepForPipe():
                 cleanList.append(oneFile)
                 outList.append(fileType+'_'+r"_".join(splitPeriods)+'.fits')
         t = Table()
-        t['inFile'] = cleanList
-        t['outFile'] = outList
+        t['inFile'] = np.array(cleanList,dtype='S150')
+        t['outFile'] = np.array(outList,dtype='S150')
         return t
     
     def copy_files(self,overwrite=False):
@@ -78,7 +78,7 @@ class prepForPipe():
     def make_dirs(self):
         for oneDir in ['edited','proc']:
             if os.path.exists(oneDir) == False:
-                os.path.mkdir(oneDir)
+                os.mkdir(oneDir)
     
     def do_all(self):
         self.make_dirs()
