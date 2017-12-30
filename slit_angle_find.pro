@@ -10,7 +10,7 @@ pro slit_angle_find,nosky=nosky,rescale=rescale,$
 ;; reslit -- Reset the box in which to find the slit
 ;; restar -- reselect locations of the stars
 
-fwhm=15E ;; star FWHM
+fwhm=11E ;; star FWHM
 
 ;; Check for a previous set of preferences
 saveFilen = 'ev_local_slit_angle_prefs.sav'
