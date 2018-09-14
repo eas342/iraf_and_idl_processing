@@ -237,6 +237,8 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       end
       status EQ 'dispkey' OR status EQ 'DISPKEY': $
          choose_key,fileL[slot],plotp,insertkey='PLOTFKEY'
+      status EQ 'qdispkey' OR status EQ 'QDISPKEY': $
+         ev_undefine_tag,plotp,'PLOTFKEY'
       status EQ 'titlekey' OR status EQ 'TITLEKEY': $
          choose_key,fileL[slot],plotp,insertkey='IMGTITLEKEY'
       status EQ 'qtitlekey' OR status EQ 'QTITLEKEY': $
