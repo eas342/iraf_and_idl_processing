@@ -33,6 +33,7 @@ Reading Files and controlling the file list
 (fread)		To read filelist that was made by fedit
 (jwsub)		Turn on JWST subarray mode to handle subarray corners
 (qjwsub)	Turn off JWST subarray mode to handle subarray corners
+(lris)		Turn on LRIS mosaic mode using readmhdufits to combine extensions.
 
 -------------------------------------
 Controlling the Planes of image cubes
