@@ -206,6 +206,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
       status EQ 'jwsub' OR status EQ 'JWSUB': begin
          ev_add_tag,plotp,'JWSUB',1
       end
+      status EQ 'lris' OR status EQ 'LRIS': begin
+         ev_add_tag,plotp,'LRIS',1
+      end
       status EQ 'qjwsub' OR status EQ 'qJWSUB': begin
          ev_add_tag,plotp,'JWSUB',0
       end

@@ -23,7 +23,12 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
      ;; Check if it's already an image
   endif else fileDescrip=filen
 
-  a = mrdfits(filen,ext,header,silent=silent,fscale=fscale)
+  if ev_tag_true(plotp,'LRIS') then begin
+     a = readmhdufits(filen,header=header)
+  endif else begin
+     a = mrdfits(filen,ext,header,silent=silent,fscale=fscale)
+  endelse
+  
   if n_elements(a) LT 2 then begin
      message,'Extension '+strtrim(ext,1)+' not found, trying '+strtrim(ext+1l,1),/cont
      a = mrdfits(filen,ext+1,header,silent=silent,fscale=fscale)
