@@ -85,6 +85,7 @@ Processing and Reduction
 
 -------------------------------------
 Photometry
+Set the aperture parameters with a text file called "phot_params.txt"
 -------------------------------------
 
 (fitpsf)	To fit a PSF, and to photometry at the centroid
