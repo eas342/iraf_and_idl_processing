@@ -149,3 +149,16 @@ Also, if the wavelength identification is updated, one may run `redo_wavecal` wi
  - `ERROR: No images to combine
      line 17: reduction_script.cl`. No darks were found. Probably the wrong indices in the pre-processing python script.
  - `ERROR: No write permission on file (String_File)`. Double check that the `ap_reference.txt` file is OK. This happened when I accidentally set ap_reference to be a copy of the FITS file rather than the name of it.
+
+# MIV: Multi-Image Viewer
+Multi-image viewer can aid in glancing through files, doing photometry etc.
+
+### Photometry
+Type `mphot` to do photometry by clicking stars. It will ask you for a box search size in pixels. Create a file in the same directory that `miv` is run in called `phot_params.txt`. It should have the following format:
+
+	## Photometry Parameters
+	## Aperture size (px)
+	70
+	## Sky annulus start and end
+	75, 100
+
