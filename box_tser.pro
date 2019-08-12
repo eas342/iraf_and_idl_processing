@@ -1,4 +1,4 @@
-pro box_tser,filen
+pro box_tser,filen,plotp=plotp
 ;; Takes the statistics on the box total and makes a time series
 ;; filen - optional filename keyword
 
@@ -45,7 +45,7 @@ gparam = create_struct('PKEYS',['AINDEX','NORM_FLUX'],$
                       'FILENAME','box_time_ser')
 
 adjust_pwindow,type='Plot Window'
-genplot,statdat,gparam=gparam
+genplot,statdat,gparam=gparam,plotp=plotp
 adjust_pwindow,type='FITS Window'
 
 end

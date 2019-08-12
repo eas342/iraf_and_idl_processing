@@ -312,7 +312,7 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
          allbox,fileL,lineP=lineP,plotp=plotp
       end
       status EQ 'boxtser' OR status EQ 'BOXTSER': begin
-         box_tser
+         box_tser,plotp=plotp
       end
       status[0] EQ 'clearbox' OR status EQ 'CLEARBOX': begin
            file_move,'es_box_stats.sav','es_box_stats_backup.sav',/overwrite
