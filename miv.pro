@@ -392,6 +392,9 @@ while status NE 'q' and status NE 'Q' and status NE 'nsq' do begin
             endelse
          endif else message,'No extension specified',/cont
       end
+      splitstatus[0] EQ 'qexten': begin
+         ev_undefine_tag,plotp,'ChooseExten'
+      end
       splitstatus[0] EQ 'qplane': begin
          ev_undefine_tag,plotp,'ChoosePlane'
       end
