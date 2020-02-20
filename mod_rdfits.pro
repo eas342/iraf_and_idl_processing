@@ -26,6 +26,11 @@ function mod_rdfits,filen,ext,header,trimReg=trimReg,silent=silent,$
   if ev_tag_true(plotp,'LRIS') then begin
      a = readmhdufits(filen,header=header)
   endif else begin
+     fits_info,filen,N_ext=N_ext,/silent
+     if ext GT (N_ext - 1) then begin
+        message,'Only '+strtrim(N_ext,1)+' extensions in file. Reading 0',/cont
+        ext = 0
+     endif
      a = mrdfits(filen,ext,header,silent=silent,fscale=fscale)
   endelse
   
